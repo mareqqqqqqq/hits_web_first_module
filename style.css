@@ -1,0 +1,17 @@
+* {  /*звёддочка это для всех эоментов*/
+    margin: 0; /**/
+    padding: 0;
+}
+
+.content {
+    box-shadow: 3px 3px 10px grey;
+    width: 20%;
+    height: 100vh; 
+}
+
+.body {
+    background-color: blueviolet;
+    height: 100%;
+    
+}
+
