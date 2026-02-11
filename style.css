@@ -1,44 +1,53 @@
-/* */
-
-* {  /*звёддочка это для всех эоментов*/
-    margin: 0; /**/
-    padding: 0;
-    box-sizing: border-box; /*делает так, чтобы width и height включали в себя padding и border*/
+* {
+    margin: 0; 
+    padding: 0; 
+    box-sizing: boxer-box; 
+    overflow-x: hidden; 
 }
 
 .body {
-    background-color: blueviolet;
-    height: 100vh;
+    background-color: rgba(77, 72, 72, 0);
+    height: 100vh; 
     display: flex; 
+    flex-direction: column; /*всё юудет друг под другом а не в строчку*/ 
 }
 
-.right_part_of_site{
-    flex: 1; /* часть с выводом и рабочим место занимает все оставшееся место */
-    display: flex; /* гибкие блоки*/
-    flex-direction: column; /* по умолчанию row, без этой штуки он по порядку располагаются (в строку)*/
-    /*а так один над другим будет */
+.main-cotainer {
+    display: flex; 
+    width: 100%;
+    flex: 1; 
+    overflow: hidden;
+}
+
+.header {
+    width: 100%; 
+    display: flex; 
+    padding: 0 24px; 
+    height: 60px;
+    background-color: rgb(27, 182, 78); 
+    align-items: center; 
+    flex-shrink: 0;
+    border-bottom: 1px solid #ffffff;
+    box-shadow: 0 1px 4px rgba(34, 34, 36, 0.02);
+}
+
+.header img {
+    object-fit: contain;
+    height: 32px;
+    width: auto;
 }
 
 .sidebar {
-    height: 100%;
-    width: 300px;
-    background-color: pink ;
+    width: 250px;
+    display: flex;
+    height: calc(100vh - 60px); 
+    padding: 20px 16px; /*отступы слева-справа*/
+    flex-shrink: 0; 
+    background-color: #fafbfc;
+    border-right: 1px solid #e6ecf0;
+    flex-direction: column; 
+    gap: 8px; /*расстояние между блоками */ 
 }
 
-.content {
-    height: 80%;
-    background-color: aquamarine;
-}
 
-.output {
-    height: 20%;
-    background-color:gold;
-}
-.block{
-    background-color: brown;
-    height: 80px;
-    width: 100px;
-    border-radius: 10px; /* закгругляет углы */
-    margin: 5px; /*отступ (еще пораспррашивтаь)*/
-    padding: 10px; /*текст около середины*/
-}
+
