@@ -1,17 +1,44 @@
+/* */
+
 * {  /*звёддочка это для всех эоментов*/
     margin: 0; /**/
     padding: 0;
-}
-
-.content {
-    box-shadow: 3px 3px 10px grey;
-    width: 20%;
-    height: 100vh; 
+    box-sizing: border-box; /*делает так, чтобы width и height включали в себя padding и border*/
 }
 
 .body {
     background-color: blueviolet;
-    height: 100%;
-    
+    height: 100vh;
+    display: flex; 
 }
 
+.right_part_of_site{
+    flex: 1; /* часть с выводом и рабочим место занимает все оставшееся место */
+    display: flex; /* гибкие блоки*/
+    flex-direction: column; /* по умолчанию row, без этой штуки он по порядку располагаются (в строку)*/
+    /*а так один над другим будет */
+}
+
+.sidebar {
+    height: 100%;
+    width: 300px;
+    background-color: pink ;
+}
+
+.content {
+    height: 80%;
+    background-color: aquamarine;
+}
+
+.output {
+    height: 20%;
+    background-color:gold;
+}
+.block{
+    background-color: brown;
+    height: 80px;
+    width: 100px;
+    border-radius: 10px; /* закгругляет углы */
+    margin: 5px; /*отступ (еще пораспррашивтаь)*/
+    padding: 10px; /*текст около середины*/
+}
