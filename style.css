@@ -28,7 +28,6 @@
     align-items: center; 
     flex-shrink: 0;
     border-bottom: 1px solid #ffffff;
-    box-shadow: 0 1px 4px rgba(34, 34, 36, 0.3);
     border-bottom-left-radius: 10px; 
 }
 
@@ -47,7 +46,7 @@
     padding: 20px 16px; /*отступы слева-справа*/
     border-right: 1px solid #e6ecf0;
     flex-direction: column; 
-    gap: 8px; /*расстояние между блоками */ 
+    gap: 8px; /*расстояние между блоками */
 }
 
 .right_part_of_site {
@@ -55,36 +54,33 @@
     width: calc(100% - 250px);  
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
     padding: 20px;
-    margin: -10px;
+    margin: -8px;
 }
 
 .content {
     background-color: rgba(255, 255, 255, 0.993);
     height: 75%;
     border-radius: 5px;
-    margin-right: -6px;
+    margin-right: -10px;
+    margin-top: -10px;
     box-shadow: 0 1px 4px rgba(34, 34, 36, 0.6);
     margin-left: -6px;
     
     background-size: 20px 20px;
     background-image: radial-gradient(circle, rgba(200,200,200,0.5) 1px, transparent 1px);
+    /*добавляет точечки */
 }
 
 .output {
     background-color: rgb(0, 0, 0);
     height: calc(100vh - 75%);
     border-radius: 5px;
-    margin-right: -6px;
+    margin-right: -10px;
     box-shadow: 0 1px 4px rgba(34, 34, 36, 0.6);
     margin-left: -6px;
-
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     color: #ffffff;
 }
-
-
-
-
 
