@@ -1,7 +1,6 @@
 * {
     margin: 0; 
     padding: 0; 
-    box-sizing: boxer-box; 
     overflow-x: hidden;
 }
 
@@ -84,22 +83,38 @@
     color: #ffffff;
 }
 
+
+
+
+
+
+
+
+
+
 .row_blocks {
     flex-direction: row; 
     gap: 8px; 
     display: flex; 
 }
 
+.block {
+    cursor: grab;
+}
 
-/*контейнеры с блоками */
-.varuable_blocks {
-    height: 45px;
-    width: fit-content;
-    background-color: blue; 
-    display: flex;
-    box-shadow: 0 1px 4px rgba(34, 34, 36, 0.6);
-    border-radius: 10%;  
-    padding: 0 7px;
+.varuable_block, .for_cycle_block, .other_block {
+    background-color:rgb(81, 0, 233); 
+    padding: 5px 10px; /*отступы внутри блока*/
+    border-radius: 5px; 
+    cursor: grab; 
+    color: #fff; 
+    user-select: none; /*нельзя выделить текст*/
+}
+
+.content svg {
+    width: 100%; 
+    height: 100%; 
+    display: block; 
 }
 
 
