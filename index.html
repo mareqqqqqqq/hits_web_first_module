@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head> 
-        <title>Blockcoвe</title>
+        <title>Blockcode</title>
         <meta charset="UTF-8"> <!--русский язык-->
         <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--базовый подгон под рахмер окна-->
         <link rel="stylesheet" href="style.css">
@@ -16,9 +16,12 @@
         <div class="main-container">
             <!-- боковая менюшка в диве которая-->
             <div class="sidebar"> 
-                <div class = "block" data-type="var" draggable>int переменная</div>
-                <div class="block" data-type="assign" draggable="true">присвоить =</div>
-                <div class="block" data-type="if" draggable="true">условие if</div>
+                <div class="row_blocks">
+                    <div class="varuable_block" draggable="true">переменная</div>
+                    <div class="for_cycle_block" data-type="assign" draggable="true">присвоить</div>
+                </div>
+
+                <div class="other_block" data-type="if" draggable="true">условие if</div>
             </div>
 
             <div class = "right_part_of_site">

@@ -2,7 +2,7 @@
     margin: 0; 
     padding: 0; 
     box-sizing: boxer-box; 
-    overflow-x: hidden; 
+    overflow-x: hidden;
 }
 
 .body {
@@ -44,7 +44,7 @@
     display: flex;
     flex-shrink: 0; 
     padding: 20px 16px; /*отступы слева-справа*/
-    border-right: 1px solid #e6ecf0;
+    border-right: 1px solid rgba(200, 200, 200, 0.5);
     flex-direction: column; 
     gap: 8px; /*расстояние между блоками */
 }
@@ -64,7 +64,7 @@
     height: 75%;
     border-radius: 5px;
     margin-right: -10px;
-    margin-top: -10px;
+    margin-top: -6px;
     box-shadow: 0 1px 4px rgba(34, 34, 36, 0.6);
     margin-left: -6px;
     
@@ -83,4 +83,24 @@
     margin-bottom: 15px;
     color: #ffffff;
 }
+
+.row_blocks {
+    flex-direction: row; 
+    gap: 8px; 
+    display: flex; 
+}
+
+
+/*контейнеры с блоками */
+.varuable_blocks {
+    height: 45px;
+    width: fit-content;
+    background-color: blue; 
+    display: flex;
+    box-shadow: 0 1px 4px rgba(34, 34, 36, 0.6);
+    border-radius: 10%;  
+    padding: 0 7px;
+}
+
+
 
