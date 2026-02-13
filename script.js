@@ -24,6 +24,8 @@ const sidebarBlocks = document.querySelectorAll (
     '.varuable_block, .for_cycle_block, .other_block'
 );
 
+
+// DONE !!!!!!!
 // для всех сайдбар блоков указываем действия для маус даун
 sidebarBlocks.forEach(el => { // e - типо event  
     el.addEventListener('mousedown', e => { // когда событие маусдаун
@@ -56,75 +58,84 @@ sidebarBlocks.forEach(el => { // e - типо event
     });
 });
 
+//DONE !!!!!!!!!
+// gперетаскивание блока 
 document.addEventListener('mousemove',e => {
-    if (!selected) 
+    if (!selected) // если не выбюран блок то пока  
         return;
 
+    // получаем данные также как и в блоке выше через rect 
     const rect = canvas.getBoundingClientRect(); 
-    const x = e.clientX - rect.left - offsetX; 
-    const y = e.clientY - rect.top - offsetY;
+    const x = e.clientX - rect.left - offsetX;  // offset - чтобы блок не прыгал а оставался там где мы его схвалили 
+    const y = e.clientY - rect.top - offsetY;   // перемещаем чтоб блок не прыгал, чтобы блок можно было захватить за любое его место(offset )
 
+    // сдвигаем блок в новые коорды 
     selected.setAttribute('transform', `translate(${x},${y})`);
 });
 
+// слушаем на всём документе чтобы мы могли отпутить даже вне сanvas
 document.addEventListener('mouseup', e => {
-    if (!selected) return;
+    if (!selected) return; // база)
 
-    const selMatrix = selected.transform.baseVal.consolidate().matrix;
-    const selBBox = selected.getBBox();
+    const selMatrix = selected.transform.baseVal.consolidate().matrix; // текущие коорды блока так же в матрице 
+    const selBBox = selected.getBBox(); // границы выбранного блока 
 
-    const selX = selMatrix.e;
-    const selY = selMatrix.f;
+    const selX = selMatrix.e; // получили коорды с матрицы 
+    const selY = selMatrix.f; 
 
-    const blocks = Array.from(document.querySelectorAll('.block'))
-        .filter(b => b !== selected);
+    const blocks = Array.from(document.querySelectorAll('.block')) // выбираем все блоки с нужным классом чтобы чекнуть к чему можно прилепить 
+        .filter(b => b !== selected); // todo 
 
     blocks.forEach(block => {
-        const m = block.transform.baseVal.consolidate().matrix;
-        const bBox = block.getBBox();
+        const m = block.transform.baseVal.consolidate().matrix;// берём коорды каждого блка (consolidate = упорядочивание)
+        const bBox = block.getBBox(); // получаем коорды блока 
 
-        const bx = m.e;
+        const bx = m.e; 
         const by = m.f;
 
         // расстояние между правым краем одного и левым краем другого
-        const dx = Math.abs((selX + selBBox.width) - bx);
-        const dy = Math.abs((selY + selBBox.height / 2) - (by + bBox.height / 2));
+        const dx = Math.abs((selX + selBBox.width) - bx); // расстояние между правым краем выбранного блока и левым краем др блока 
+        const dy = Math.abs((selY + selBBox.height / 2) - (by + bBox.height / 2)); // расстояние по вертикали между центрими блоков 
 
         // если достаточно близко — прилипает
-        if (dx < 15 && dy < 15) {
-            const snapX = bx - selBBox.width;
-            const snapY = by;
-
+        if (dx < 100 && dy < 100) { // если блоки достаточно близко то липнут 
+            const snapX = bx - selBBox.width; // от bx минус кооды стенок блока 
+            const snapY = by; // same 
+ 
             selected.setAttribute(
                 'transform',
                 `translate(${snapX}, ${snapY})`
-            );
+            ); // перемещаем 
         }
     });
 
+    // база 
     selected.style.cursor = 'grab';
     selected = null;
 });
 
 // e - типо event  
 
+// тут у нас обращение к canvas то есть это рабаотет только для самох блоков типо когда moseup 
 canvas.addEventListener('mousedown', e => {
-    if (!e.target.classList.contains('block'))
+    if (!e.target.classList.contains('block')) // проверка что мы кликнули не просто на canvas облатсь, а неа canvas c
+    //class block(который присваиватеся про создании блока ) 
         return;
 
-    e.preventDefault(); 
+    e.preventDefault(); // чтобы тект не выделялся(крч стандарт браузере убераем)
 
-    selected = e.target;
+    selected = e.target; // устанавливаем selected на нащ выбранный блок 
 
-    const rect = canvas.getBoundingClientRect();
+    const rect = canvas.getBoundingClientRect(); // получаем данные чреез rect(1000000 раз писал)
 
-    const matrix = selected.transform.baseVal.consolidate().matrix;
+    const matrix = selected.transform.baseVal.consolidate().matrix; // baseVal это список всех трансформаций 
+    // consolidate - превращает все трансформаци в одну матрицу в одно числор x y 
 
-    offsetX = e.clientX - rect.left - matrix.e; 
-    offsetY = e.clientY - rect.top - matrix.f; 
+    // посчитали корды а точнее сдвиг, то есть курсор остётся там же где и нажали 
+    offsetX = e.clientX - rect.left - matrix.e; // matrix.e - x  ь
+    offsetY = e.clientY - rect.top - matrix.f;  // matrix.f - y 
 
     // на сколько мышь смещена по x и y (чтобы блок не прыгал) ^
-
     selected.style.cursor = 'grabbing';
 })
 
