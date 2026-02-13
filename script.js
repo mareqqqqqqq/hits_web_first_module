@@ -3,42 +3,71 @@ let selected = null; // текущий выбранный блок
 let offsetX = 0; 
 let offsetY = 0; 
 
+//DONE!!!!!!!!!!!
 function createBlock(x, y, color, id) {
     const ns = "http://www.w3.org/2000/svg";
-    const path = document.createElementNS(ns, "path"); 
+    const path = document.createElementNS(ns, "path"); // обтект svg 
 
-    path.setAttribute("d", "M0,0 H80 v30 h-20 v10 h20 v30 h-80 z");
-    path.setAttribute("fill", color); 
-    path.setAttribute("transform", `translate(${x},${y})`); 
-    path.setAttribute("id", id);
-    path.classList.add("block"); 
+    path.setAttribute("d", "M0,0 H80 v30 h-40 v10 h40 v30 h-80 Z"); // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
+    path.setAttribute("fill", color); // заливка color как параметр
+    path.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
+    path.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
+    path.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
 
-    canvas.appendChild(path); //добавляет в дом блок виден и можн перетаскивать 
+    canvas.appendChild(path); // добавляет path в svg html
+
+    return path;
 }
 
-canvas.addEvent
+// создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
+const sidebarBlocks = document.querySelectorAll (
+    '.varuable_block, .for_cycle_block, .other_block'
+);
 
+// для всех сайдбар блоков указываем действия для маус даун
+sidebarBlocks.forEach(el => { // e - типо event  
+    el.addEventListener('mousedown', e => { // когда событие маусдаун
+        e.preventDefault(); 
 
+        // задаём цвета для дивов, свг блоков, на самом деле
+        const color = 
+            el.classList.contains('for_cycle_block') ? '#2196f3' :
+            el.classList.contains('other_block') ? '#ff9800' :
+            '#4caf50';
 
+    
+    // получится обьект с полями: left top wigth height 
+    const rect = canvas.getBoundingClientRect(); // возвращает позицию и размеры элемента на стринцу в px
+    const x = e.clientX - rect.left; 
+    const y = e.clientY - rect.top;
 
-canvas.addEventListener('mousemove',e => {
+    // вызвали функцю(создался блок) также сохранили path(сам блок) чтобы дальше юзадть
+    const path = createBlock(x, y, color, 'block_' + Date.now());
+ 
+    //  этот болок выбран для перетасиквания 
+    selected = path; 
+
+    // вычисляем смещение 
+    offsetX = e.clientX - rect.left - x; 
+    offsetY = e.clientY - rect.top - y; 
+
+    // сменили тип курсора на руку когда навелись 
+    selected.style.cursor = 'grabbing';
+    });
+});
+
+document.addEventListener('mousemove',e => {
     if (!selected) 
         return;
 
-    const pt = canvas.createSVGPoint();
-
-    pt.x = e.clientX;
-    pt.y = e.clientY;
-
-    const x = pt.x - offsetX;
-    const y = pt.y - offsetY;
+    const rect = canvas.getBoundingClientRect(); 
+    const x = e.clientX - rect.left - offsetX; 
+    const y = e.clientY - rect.top - offsetY;
 
     selected.setAttribute('transform', `translate(${x},${y})`);
-})
+});
 
-
-
-canvas.addEventListener('mouseup', e => {
+document.addEventListener('mouseup', e => {
     if (!selected) return;
 
     const selMatrix = selected.transform.baseVal.consolidate().matrix;
@@ -68,7 +97,7 @@ canvas.addEventListener('mouseup', e => {
 
             selected.setAttribute(
                 'transform',
-                translate(${snapX}, ${snapY})
+                `translate(${snapX}, ${snapY})`
             );
         }
     });
@@ -76,23 +105,23 @@ canvas.addEventListener('mouseup', e => {
     selected.style.cursor = 'grab';
     selected = null;
 });
+
 // e - типо event  
 
 canvas.addEventListener('mousedown', e => {
     if (!e.target.classList.contains('block'))
         return;
 
+    e.preventDefault(); 
+
     selected = e.target;
 
-    const pt = canvas.createSVGPoint();
-
-    pt.x = e.clientX;
-    pt.y = e.clientY;
+    const rect = canvas.getBoundingClientRect();
 
     const matrix = selected.transform.baseVal.consolidate().matrix;
 
-    offsetX = pt.x - matrix.e;
-    offsetY = pt.y - matrix.f;
+    offsetX = e.clientX - rect.left - matrix.e; 
+    offsetY = e.clientY - rect.top - matrix.f; 
 
     // на сколько мышь смещена по x и y (чтобы блок не прыгал) ^
 
