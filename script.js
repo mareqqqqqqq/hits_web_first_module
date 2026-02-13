@@ -33,7 +33,7 @@ canvas.addEventListener('mousemove',e => {
     const x = pt.x - offsetX;
     const y = pt.y - offsetY;
 
-    selected.setAttribute(`transform`, `translate(${x},${y})`);
+    selected.setAttribute('transform', `translate(${x},${y})`);
 })
 
 
@@ -76,9 +76,6 @@ canvas.addEventListener('mouseup', e => {
     selected.style.cursor = 'grab';
     selected = null;
 });
-
-// РАЗОБРАТЬ ЧТО ВЫШЕ ЗАВТРА ЖБШНО
-
 // e - типо event  
 
 canvas.addEventListener('mousedown', e => {
@@ -97,8 +94,13 @@ canvas.addEventListener('mousedown', e => {
     offsetX = pt.x - matrix.e;
     offsetY = pt.y - matrix.f;
 
+    // на сколько мышь смещена по x и y (чтобы блок не прыгал) ^
+
     selected.style.cursor = 'grabbing';
 })
+
+
+
 
 
 
