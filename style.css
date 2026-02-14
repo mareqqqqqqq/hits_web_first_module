@@ -55,7 +55,7 @@
     flex-direction: column;
     gap: 5px;
     padding: 20px;
-    margin: -8px;
+    margin: 2px;
 }
 
 .content {
@@ -73,19 +73,98 @@
 }
 
 .output {
-    background-color: rgb(0, 0, 0);
+    position: relative;
+
     height: calc(100vh - 75%);
-    border-radius: 5px;
     margin-right: -10px;
-    box-shadow: 0 1px 4px rgba(34, 34, 36, 0.6);
     margin-left: -6px;
     margin-bottom: 15px;
-    color: #ffffff;
+    border-radius: 14px;
+
+    background: rgb(26 75 169 / 55%);
+    backdrop-filter: blur(14px);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+    font-family: Consolas, monospace;
+    color: #e6e6e6;
+    overflow: hidden;
+}
+
+.output::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 14px;
+
+    background-color: rgba(26, 75, 169, 0.55);
+
+    background-image: 
+        repeating-linear-gradient(
+            45deg,
+          rgba(255, 255, 255, 0.12) 0px,
+          rgba(255, 255, 255, 0.12) 1px,
+          transparent 1px,
+          transparent 2px
+        ),
+        radial-gradient(
+            120% 80% at 10% 100%,
+            rgb(0 137 255),
+            transparent 60%
+        );
+
+        background-size: 180px 180px, 100%, 100%;
+
+        opacity: 0.35;
+
+        mix-blend-mode: overlay;
 }
 
 
+.output_header {
+    padding: 10px 16px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    color: #9fd4ff;
 
+    background: rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
 
+.output_body{
+    padding: 14px 16px;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.line.output { color: #7CFF9E; }
+.line.info { color: #7CC7FF; }
+.line.error { color: #FF7A7A; }
+
+.cursor_line{
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.promt{
+    color: #9CFF9C;
+    margin-right: 6px;
+}
+
+.cursor{
+    width: 8px;
+    height: 18px;
+    background: #9CFF9C;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+}
 
 
 
