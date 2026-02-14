@@ -2,13 +2,23 @@ const canvas = document.getElementById('canvas');
 let selected = null; // текущий выбранный блок 
 let offsetX = 0; 
 let offsetY = 0; 
+let connections = [];
 
 //DONE!!!!!!!!!!!
-function createBlock(x, y, color, id) {
+function createBlock(x, y, color, id, data_type) {
     const ns = "http://www.w3.org/2000/svg";
     const path = document.createElementNS(ns, "path"); // обтект svg 
 
-    path.setAttribute("d", "M0,0 H80 v30 h-40 v10 h40 v30 h-80 Z"); // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
+    // исходя из переданного типа блока присваеваем ему стили 
+    if (data_type === "varuable_block") {
+        // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
+        path.setAttribute("d", "M0,0 v15 l10,10 v15 l-10,10 v10 h20 l10,10 h20 l10,-10     h40      v-10 l10,-10 v-15 l-10,-10  v-15 Z");
+    }
+
+    if (data_type === "assignment_block") {
+        path.setAttribute("d", "M0,0 v50 h60 v-50 h-10 l-10,10 h-20 l-10,-10 Z");
+    }
+
     path.setAttribute("fill", color); // заливка color как параметр
     path.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
     path.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
@@ -21,13 +31,13 @@ function createBlock(x, y, color, id) {
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .for_cycle_block, .other_block'
+    '.varuable_block, .for_cycle_block, .other_block, .assignment_block' 
 );
 
 
 // DONE !!!!!!!
 // для всех сайдбар блоков указываем действия для маус даун
-sidebarBlocks.forEach(el => { // e - типо event  
+sidebarBlocks.forEach(el => { // el - это элемент по которому кликнули   
     el.addEventListener('mousedown', e => { // когда событие маусдаун
         e.preventDefault(); 
 
@@ -35,26 +45,41 @@ sidebarBlocks.forEach(el => { // e - типо event
         const color = 
             el.classList.contains('for_cycle_block') ? '#2196f3' :
             el.classList.contains('other_block') ? '#ff9800' :
+            el.classList.contains('assignment_block') ? '#494bd4' :
+            el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             '#4caf50';
 
     
-    // получится обьект с полями: left top wigth height 
-    const rect = canvas.getBoundingClientRect(); // возвращает позицию и размеры элемента на стринцу в px
-    const x = e.clientX - rect.left; 
-    const y = e.clientY - rect.top;
+            // получится обьект с полями: left top wigth height 
+            const rect = canvas.getBoundingClientRect(); // возвращает позицию и размеры элемента на стринцу в px
+            const x = e.clientX - rect.left; 
+            const y = e.clientY - rect.top;
 
-    // вызвали функцю(создался блок) также сохранили path(сам блок) чтобы дальше юзадть
-    const path = createBlock(x, y, color, 'block_' + Date.now());
- 
-    //  этот болок выбран для перетасиквания 
-    selected = path; 
+            let path = null; 
 
-    // вычисляем смещение 
-    offsetX = e.clientX - rect.left - x; 
-    offsetY = e.clientY - rect.top - y; 
+            if (el.classList.contains("assignment_block")) {
+                // вызвали функцю(создался блок) также сохранили path(сам блок) чтобы дальше юзадть
+                path = createBlock(x, y, color, 'block_' + Date.now(), "assignment_block");    
+            }
 
-    // сменили тип курсора на руку когда навелись 
-    selected.style.cursor = 'grabbing';
+            else if (el.classList.contains("varuable_block")) {
+                // вызвали функцю(создался блок) также сохранили path(сам блок) чтобы дальше юзадть
+                path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");    
+            }
+
+            else {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");
+            }
+
+            //  этот болок выбран для перетасиквания 
+            selected = path; 
+
+            // вычисляем смещение 
+            offsetX = e.clientX - rect.left - x; 
+            offsetY = e.clientY - rect.top - y; 
+
+            // сменили тип курсора на руку когда навелись 
+            selected.style.cursor = 'grabbing';
     });
 });
 
@@ -75,44 +100,87 @@ document.addEventListener('mousemove',e => {
 
 // слушаем на всём документе чтобы мы могли отпутить даже вне сanvas
 document.addEventListener('mouseup', e => {
-    if (!selected) return; // база)
+    if (!selected) return;
 
-    const selMatrix = selected.transform.baseVal.consolidate().matrix; // текущие коорды блока так же в матрице 
-    const selBBox = selected.getBBox(); // границы выбранного блока 
+    const selMatrix = selected.transform.baseVal.consolidate().matrix;
+    const selBBox = selected.getBBox();
 
-    const selX = selMatrix.e; // получили коорды с матрицы 
-    const selY = selMatrix.f; 
+    const selX = selMatrix.e;
+    const selY = selMatrix.f;
 
-    const blocks = Array.from(document.querySelectorAll('.block')) // выбираем все блоки с нужным классом чтобы чекнуть к чему можно прилепить 
-        .filter(b => b !== selected); // todo 
+    const blocks = Array.from(document.querySelectorAll('.block'))
+        .filter(b => b !== selected);
 
     blocks.forEach(block => {
-        const m = block.transform.baseVal.consolidate().matrix;// берём коорды каждого блка (consolidate = упорядочивание)
-        const bBox = block.getBBox(); // получаем коорды блока 
+        const m = block.transform.baseVal.consolidate().matrix;
+        const bBox = block.getBBox();
 
-        const bx = m.e; 
+        const bx = m.e;
         const by = m.f;
 
-        // расстояние между правым краем одного и левым краем другого
-        const dx = Math.abs((selX + selBBox.width) - bx); // расстояние между правым краем выбранного блока и левым краем др блока 
-        const dy = Math.abs((selY + selBBox.height / 2) - (by + bBox.height / 2)); // расстояние по вертикали между центрими блоков 
+        // ---- ГОРИЗОНТАЛЬНОЕ соединение ----
+        const dxHor = Math.abs((selX + selBBox.width) - bx);
+        const dyHor = Math.abs((selY + selBBox.height / 2) - (by + bBox.height / 2));
+    
+        // ---- ВЕРТИКАЛЬНОЕ соединение ----
+        const dxVer = Math.abs((selX + selBBox.width / 2) - (bx + bBox.width / 2));
+        const dyVer = Math.abs(selY - (by + bBox.height));
 
-        // если достаточно близко — прилипает
-        if (dx < 100 && dy < 100) { // если блоки достаточно близко то липнут 
-            const snapX = bx - selBBox.width; // от bx минус кооды стенок блока 
-            const snapY = by; // same 
- 
-            selected.setAttribute(
-                'transform',
-                `translate(${snapX}, ${snapY})`
-            ); // перемещаем 
+            // проверяем, есть ли уже дети у этого блока
+        const hasHorizontalChild = connections.some(conn =>
+            conn.parent === block.id && conn.direction === 'horizontal'
+        );
+
+        const hasVerticalChild = connections.some(conn =>
+            conn.parent === block.id && conn.direction === 'vertical'
+        );
+
+        // ---- ГОРИЗОНТАЛЬНОЕ прилипание ----
+        if (dxHor < 40 && dyHor < 40 && !hasHorizontalChild) {
+            const snapX = bx - selBBox.width; // встаем слева
+            const snapY = by; // на том же уровне по Y
+
+            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+
+            connections.push({
+                parent: block.id,
+                child: selected.id,
+                direction: 'horizontal'
+            });
         }
-    });
 
-    // база 
+        // ---- ВЕРТИКАЛЬНОЕ прилипание ----
+        else if (dxVer < 40 && dyVer < 40 && !hasVerticalChild) {
+            const snapX = bx; // на том же уровне по X
+            const snapY = by + bBox.height; // встаем снизу под блоком
+
+            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+
+            connections.push({
+                parent: block.id,
+                child: selected.id,
+                direction: 'vertical'
+            });
+        }
+    
+        // ---- ВЕРТИКАЛЬНОЕ прилипание ----
+        else if (dxVer < 40 && dyVer < 40 && !hasVerticalChild) {
+            const snapX = bx;
+            const snapY = by + bBox.height;
+
+            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+
+            connections.push({
+                parent: block.id,
+                child: selected.id,
+                direction: 'vertical'
+            });
+        }
+    }); // ЗАКРЫВАЕТ forEach
+
     selected.style.cursor = 'grab';
     selected = null;
-});
+}); // ЗАКРЫВАЕТ MOUSEUP - ЭТО БЫЛО НУЖНО!
 
 // e - типо event  
 
@@ -121,6 +189,12 @@ canvas.addEventListener('mousedown', e => {
     if (!e.target.classList.contains('block')) // проверка что мы кликнули не просто на canvas облатсь, а неа canvas c
     //class block(который присваиватеся про создании блока ) 
         return;
+
+    const blockId = e.target.id; 
+
+    connections = connections.filter(conn => 
+        conn.parent != blockId && conn.child != blockId
+    );
 
     e.preventDefault(); // чтобы тект не выделялся(крч стандарт браузере убераем)
 
