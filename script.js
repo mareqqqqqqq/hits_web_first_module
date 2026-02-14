@@ -33,6 +33,11 @@ function getBlockPos(block) {
     return { x: matrix.e, y: matrix.f };
 }
 
+// ------------------ ПРОВЕРКА: ЗАНЯТ ЛИ КОНКРЕТНЫЙ СОКЕТ ------------------
+function isSocketOccupied(parentId, socketType) {
+    return connections.some(conn => conn.parent === parentId && conn.socketType === socketType);
+}
+
 // ------------------ НАЙТИ ПРИЛИПАНИЕ ------------------
 function findSnapTarget(draggedBlock, threshold = 15) {
     const blocks = Array.from(document.querySelectorAll('.block')).filter(b => b !== draggedBlock);
@@ -46,8 +51,13 @@ function findSnapTarget(draggedBlock, threshold = 15) {
         const targetType = target.getAttribute('data-type');
         const targetPos = getBlockPos(target);
 
-        // VARIABLE К VARIABLE - левый выступ в правую выемку (горизонтально)
+        // VARIABLE К VARIABLE - левый выступ в правую выемку (подключаем СПРАВА к target)
         if (draggedType === "varuable_block" && targetType === "varuable_block") {
+            // ПРОВЕРКА: у target справа уже занято?
+            if (isSocketOccupied(target.id, 'right')) {
+                continue;
+            }
+            
             const draggedLeftTabX = draggedPos.x + 0;
             const draggedLeftTabY = draggedPos.y + 32;
             
@@ -60,17 +70,43 @@ function findSnapTarget(draggedBlock, threshold = 15) {
             
             if (dist < bestDist) {
                 bestDist = dist;
-                bestSnap = { dx, dy, target };
+                bestSnap = { dx, dy, target, socketType: 'right' };
             }
         }
 
-        // ASSIGNMENT К VARIABLE - верхняя выемка assignment к нижнему выступу variable
+        // VARIABLE К VARIABLE - правый край к левому выступу (подключаем СЛЕВА к target)
+        if (draggedType === "varuable_block" && targetType === "varuable_block") {
+            // ПРОВЕРКА: у target слева уже занято?
+            if (isSocketOccupied(target.id, 'left')) {
+                continue;
+            }
+            
+            const draggedRightX = draggedPos.x + 100;
+            const draggedRightY = draggedPos.y + 32;
+            
+            const targetLeftTabX = targetPos.x + 0;
+            const targetLeftTabY = targetPos.y + 32;
+            
+            const dx = targetLeftTabX - draggedRightX;
+            const dy = targetLeftTabY - draggedRightY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < bestDist) {
+                bestDist = dist;
+                bestSnap = { dx, dy, target, socketType: 'left' };
+            }
+        }
+
+        // ASSIGNMENT К VARIABLE - верхняя выемка assignment к нижнему выступу variable (подключаем СНИЗУ к target)
         if (draggedType === "assignment_block" && targetType === "varuable_block") {
-            // Верхняя выемка assignment: глубина выемки y=10, центр x=30
+            // ПРОВЕРКА: у target снизу уже занято?
+            if (isSocketOccupied(target.id, 'bottom')) {
+                continue;
+            }
+            
             const draggedTopNotchX = draggedPos.x + 30;
             const draggedTopNotchY = draggedPos.y + 10;
             
-            // Нижний выступ variable: кончик выступа y=70, центр x=40
             const targetBottomTabX = targetPos.x + 40;
             const targetBottomTabY = targetPos.y + 70;
             
@@ -80,46 +116,18 @@ function findSnapTarget(draggedBlock, threshold = 15) {
             
             if (dist < bestDist) {
                 bestDist = dist;
-                bestSnap = { dx, dy, target };
+                bestSnap = { dx, dy, target, socketType: 'bottom' };
             }
         }
 
-        // VARIABLE К ASSIGNMENT - нижний выступ variable в верхнюю выемку assignment
+        // VARIABLE К ASSIGNMENT - не поддерживается (assignment не может иметь детей)
         if (draggedType === "varuable_block" && targetType === "assignment_block") {
-            // Нижний выступ variable
-            const draggedBottomTabX = draggedPos.x + 40;
-            const draggedBottomTabY = draggedPos.y + 70;
-            
-            // Верхняя выемка assignment
-            const targetTopNotchX = targetPos.x + 30;
-            const targetTopNotchY = targetPos.y + 10;
-            
-            const dx = targetTopNotchX - draggedBottomTabX;
-            const dy = targetTopNotchY - draggedBottomTabY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            
-            if (dist < bestDist) {
-                bestDist = dist;
-                bestSnap = { dx, dy, target };
-            }
+            continue;
         }
 
-        // ASSIGNMENT К ASSIGNMENT
+        // ASSIGNMENT К ASSIGNMENT - не поддерживается
         if (draggedType === "assignment_block" && targetType === "assignment_block") {
-            const draggedTopNotchX = draggedPos.x + 30;
-            const draggedTopNotchY = draggedPos.y + 10;
-            
-            const targetBottomX = targetPos.x + 30;
-            const targetBottomY = targetPos.y + 50;
-            
-            const dx = targetBottomX - draggedTopNotchX;
-            const dy = targetBottomY - draggedTopNotchY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            
-            if (dist < bestDist) {
-                bestDist = dist;
-                bestSnap = { dx, dy, target };
-            }
+            continue;
         }
     }
 
@@ -184,10 +192,10 @@ document.addEventListener('mouseup', e => {
         connections.push({
             parent: snap.target.id,
             child: selected.id,
-            direction: 'snap'
+            socketType: snap.socketType
         });
         
-        addLine(`Блок подключен`, "info");
+        addLine(`Блок подключен к ${snap.socketType} сокету`, "info");
     }
 
     selected.style.cursor = 'grab';
