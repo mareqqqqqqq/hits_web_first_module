@@ -140,6 +140,22 @@ canvas.addEventListener('mousedown', e => {
 })
 
 
+// класс для ввода в output
+function addLine (text, type = "output"){
+    const body = document.getElementById("outputBody");
+
+    const div = document.createElement("div");
+    div.className = "line " + type;
+    div.textContent = text;
+
+    body.insertBefore(div, body.lastElementChild);
+    body.scrollTop = body.scrollHeight;
+}
+
+setTimeout(()=> addLine("Programm is finished", "output"), 1500);
+
+
+
 
 
 
