@@ -1,39 +1,87 @@
 const canvas = document.getElementById('canvas');
-let selected = null;
-let offsetX = 0;
-let offsetY = 0;
+let selected = null; // текущий выбранный блок 
+let offsetX = 0; 
+let offsetY = 0; 
 let connections = [];
 
-// ------------------ СОЗДАНИЕ БЛОКА ------------------
+//DONE!!!!!!!!!!!
 function createBlock(x, y, color, id, data_type) {
     const ns = "http://www.w3.org/2000/svg";
-    const path = document.createElementNS(ns, "path");
+    const path = document.createElementNS(ns, "path"); // обтект svg 
 
+    // исходя из переданного типа блока присваеваем ему стили 
     if (data_type === "varuable_block") {
-        path.setAttribute("d", "M0,0 v15 l10,10 v15 l-10,10 v10 h20 l10,10 h20 l10,-10 h40 v-10 l10,-10 v-15 l-10,-10 v-15 Z");
+        // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
+        path.setAttribute("d", "M0,0 v15 l10,10 v15 l-10,10 v10 h20 l10,10 h20 l10,-10     h40      v-10 l10,-10 v-15 l-10,-10  v-15 Z");
     }
 
     if (data_type === "assignment_block") {
         path.setAttribute("d", "M0,0 v50 h60 v-50 h-10 l-10,10 h-20 l-10,-10 Z");
     }
 
-    path.setAttribute("fill", color);
-    path.setAttribute("transform", `translate(${x},${y})`);
-    path.setAttribute("id", id);
-    path.setAttribute("data-type", data_type);
-    path.classList.add("block");
+    path.setAttribute("fill", color); // заливка color как параметр
+    path.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
+    path.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
+    path.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
 
-    canvas.appendChild(path);
+    if (data_type === "assignment_block") {
+        path.dataset.pizdaTop = "true";
+        path.dataset.pizdaLeft = "false";
+        path.dataset.pizdaRight = "fasle";
+        path.dataset.pizdaBottom = "false"; 
+
+        path.dataset.pipkaTop = "false";
+        path.dataset.pipkaLeft = "false";
+        path.dataset.pipkaRight = "false";
+        path.dataset.pipkaBottom = "false"; 
+    }
+
+    else if (data_type === "varuable_block") {
+        path.dataset.pizdaTop = "false";
+        path.dataset.pizdaLeft = "true";
+        path.dataset.pizdaRight = "false";
+        path.dataset.pizdaBottom = "false";
+
+        path.dataset.pipkaTop = "false";
+        path.dataset.pipkaLeft = "false";
+        path.dataset.pipkaRight = "true";
+        path.dataset.pipkaBottom = "true"; 
+    }
+
+    else {
+        path.dataset.pizdaTop = "true";
+        path.dataset.pizdaLeft = "false";
+        path.dataset.pizdaRight = "fasle";
+        path.dataset.pizdaBottom = "false"; 
+
+        path.dataset.pipkaTop = "false";
+        path.dataset.pipkaLeft = "false";
+        path.dataset.pipkaRight = "false";
+        path.dataset.pipkaBottom = "false";
+    }
+
+    canvas.appendChild(path); // добавляет path в svg html
+
     return path;
 }
 
-// ------------------ САЙДБАР ------------------
-const sidebarBlocks = document.querySelectorAll('.varuable_block, .for_cycle_block, .other_block, .assignment_block');
+// создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
+const sidebarBlocks = document.querySelectorAll (
+    '.varuable_block, .for_cycle_block, .other_block, .assignment_block' 
+);
 
-sidebarBlocks.forEach(el => {
-    el.addEventListener('mousedown', e => {
-        e.preventDefault();
+const varuable_block_dirca = document.querySelectorAll (
+    '.varuable_block'
+)
 
+
+// DONE !!!!!!!
+// для всех сайдбар блоков указываем действия для маус даун
+sidebarBlocks.forEach(el => { // el - это элемент по которому кликнули   
+    el.addEventListener('mousedown', e => { // когда событие маусдаун
+        e.preventDefault(); 
+
+        // задаём цвета для дивов, свг блоков, на самом деле
         const color = 
             el.classList.contains('for_cycle_block') ? '#2196f3' :
             el.classList.contains('other_block') ? '#ff9800' :
@@ -41,47 +89,61 @@ sidebarBlocks.forEach(el => {
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             '#4caf50';
 
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+    
+            // получится обьект с полями: left top wigth height 
+            const rect = canvas.getBoundingClientRect(); // возвращает позицию и размеры элемента на стринцу в px
+            const x = e.clientX - rect.left; 
+            const y = e.clientY - rect.top;
 
-        let path = null;
+            let path = null; 
 
-        if (el.classList.contains("assignment_block")) {
-            path = createBlock(x, y, color, 'block_' + Date.now(), "assignment_block");
-        }
-        else if (el.classList.contains("varuable_block")) {
-            path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");
-        }
-        else {
-            path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");
-        }
+            if (el.classList.contains("assignment_block")) {
+                // вызвали функцю(создался блок) также сохранили path(сам блок) чтобы дальше юзадть
+                path = createBlock(x, y, color, 'block_' + Date.now(), "assignment_block");    
+            }
 
-        selected = path;
-        offsetX = e.clientX - rect.left - x;
-        offsetY = e.clientY - rect.top - y;
-        selected.style.cursor = 'grabbing';
+            else if (el.classList.contains("varuable_block")) {
+                // вызвали функцю(создался блок) также сохранили path(сам блок) чтобы дальше юзадть
+                path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");    
+            }
+
+            else {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");
+            }
+
+            //  этот болок выбран для перетасиквания 
+            selected = path; 
+
+            // вычисляем смещение 
+            offsetX = e.clientX - rect.left - x; 
+            offsetY = e.clientY - rect.top - y; 
+
+            // сменили тип курсора на руку когда навелись 
+            selected.style.cursor = 'grabbing';
     });
 });
 
-// ------------------ ПЕРЕТАСКИВАНИЕ ------------------
-document.addEventListener('mousemove', e => {
-    if (!selected) return;
+//DONE !!!!!!!!!
+// перетаскивание блока 
+document.addEventListener('mousemove',e => {
+    if (!selected) // если не выбюран блок то пока  
+        return;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left - offsetX;
-    const y = e.clientY - rect.top - offsetY;
+    // получаем данные также как и в блоке выше через rect 
+    const rect = canvas.getBoundingClientRect(); 
+    const x = e.clientX - rect.left - offsetX;  // offset - чтобы блок не прыгал а оставался там где мы его схвалили 
+    const y = e.clientY - rect.top - offsetY;   // перемещаем чтоб блок не прыгал, чтобы блок можно было захватить за любое его место(offset )
 
+    // сдвигаем блок в новые коорды 
     selected.setAttribute('transform', `translate(${x},${y})`);
 });
 
-// ------------------ ПРИЛИПАНИЕ ------------------
+// слушаем на всём документе чтобы мы могли отпутить даже вне сanvas
 document.addEventListener('mouseup', e => {
     if (!selected) return;
 
     const selMatrix = selected.transform.baseVal.consolidate().matrix;
-    const selBBox = selected.getBBox();
-    const selType = selected.getAttribute('data-type');
+    const selBBox = selected.getBBox(); // границы элемента 
 
     const selX = selMatrix.e;
     const selY = selMatrix.f;
@@ -92,115 +154,98 @@ document.addEventListener('mouseup', e => {
     blocks.forEach(block => {
         const m = block.transform.baseVal.consolidate().matrix;
         const bBox = block.getBBox();
-        const blockType = block.getAttribute('data-type');
 
         const bx = m.e;
         const by = m.f;
 
-        // ЛОГИКА ИЗ ПЕРВОГО ФАЙЛА - проверка расстояний по bBox
-        const dxHor = Math.abs((selX) - (bx + bBox.width));
-        const dyHor = Math.abs((selY + selBBox.height / 2) - (by + bBox.height / 2));
+        const dxHor = Math.abs((selX + selBBox.width) - bx - selBBox.width - selBBox.width );
+        const dyHor = Math.abs((selY - selBBox.height / 2) - (by - bBox.height / 2));
 
-        const dxVer = Math.abs((selX + selBBox.width / 2) - (bx + bBox.width / 2));
+        const dxHor_1 = Math.abs((selX + selBBox.width) - bx);
+        const dyHor_1 = Math.abs((selY - selBBox.height / 2) - (by - bBox.height / 2));
+    
+        const dxVer = Math.abs((selX - selBBox.width / 2) - (bx - bBox.width / 2));
         const dyVer = Math.abs(selY - (by + bBox.height));
 
         const hasHorizontalChild = connections.some(conn =>
-            conn.parent === block.id && conn.direction === 'horizontal'
+             conn.parent === block.id && conn.direction === 'horizontal'
         );
 
         const hasVerticalChild = connections.some(conn =>
-            conn.parent === block.id && conn.direction === 'vertical'
+           conn.parent === block.id && conn.direction === 'vertical'
         );
+    
+        if (dxHor < 40 && dyHor < 40 && !hasHorizontalChild && block.dataset.pipkaRight === "true" && selected.dataset.pizdaLeft === "true") {
+            // корды прилипания 
+            const snapX = bx + selBBox.width - 10; 
+            const snapY = by; 
 
-        // ГОРИЗОНТАЛЬНОЕ прилипание
-        if (dxHor < 40 && dyHor < 40 && !hasHorizontalChild) {
-            // ПИКСЕЛИ ИЗ ВТОРОГО ФАЙЛА - точное позиционирование
-            if (selType === "varuable_block" && blockType === "varuable_block") {
-                const snapX = bx + 100; // правая выемка
-                const snapY = by; // та же высота
-                
-                selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+            
+            connections.push({
+                parent: block.id,
+                child: selected.id,
+                direction: 'horizontal'
+            });
 
-                connections.push({
-                    parent: block.id,
-                    child: selected.id,
-                    direction: 'horizontal'
-                });
-            }
         }
+        //  (block.dataset.pipkaRight === "true" && selected.dataset.pizdaLeft === "true")
 
-        // ВЕРТИКАЛЬНОЕ прилипание
-        else if (dxVer < 40 && dyVer < 40 && !hasVerticalChild) {
-            // ПИКСЕЛИ ИЗ ВТОРОГО ФАЙЛА
-            if (selType === "assignment_block" && blockType === "varuable_block") {
-                const snapX = bx + 40 - 30; // выступ variable(40) - выемка assignment(30)
-                const snapY = by + 70 - 10; // выступ variable(70) - выемка assignment(10)
-                
-                selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+        else if (dxVer < 40 && dyVer < 40 && !hasVerticalChild && selected.dataset.pizdaTop === "true" && block.dataset.pipkaBottom === "true") {
+            const snapX = bx + 10; 
+            const snapY = by + bBox.height - 11; 
 
-                connections.push({
-                    parent: block.id,
-                    child: selected.id,
-                    direction: 'vertical'
-                });
-            }
-            else if (selType === "varuable_block" && blockType === "assignment_block") {
-                const snapX = bx + 30 - 40;
-                const snapY = by + 10 - 70;
-                
-                selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
 
-                connections.push({
-                    parent: block.id,
-                    child: selected.id,
-                    direction: 'vertical'
-                });
-            }
-            else if (selType === "varuable_block" && blockType === "varuable_block") {
-                const snapX = bx + 40 - 40; // центр к центру
-                const snapY = by + 70 - 10;
-                
-                selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
-
-                connections.push({
-                    parent: block.id,
-                    child: selected.id,
-                    direction: 'vertical'
-                });
-            }
+            connections.push({
+                parent: block.id,
+                child: selected.id,
+                direction: 'vertical'
+            });
         }
     });
-
     selected.style.cursor = 'grab';
     selected = null;
-});
+}); 
 
-// ------------------ УДАЛЕНИЕ СОЕДИНЕНИЙ ------------------
+// e - типо event  
+
+// тут у нас обращение к canvas то есть это рабаотет только для самох блоков типо когда moseup 
 canvas.addEventListener('mousedown', e => {
-    if (!e.target.classList.contains('block'))
+    if (!e.target.classList.contains('block')) // проверка что мы кликнули не просто на canvas облатсь, а неа canvas c
+    //class block(который присваиватеся про создании блока ) 
         return;
 
-    const blockId = e.target.id;
+    const blockId = e.target.id; 
 
-    connections = connections.filter(conn =>
+    connections = connections.filter(conn => 
         conn.parent != blockId && conn.child != blockId
     );
 
-    e.preventDefault();
+    e.preventDefault(); // чтобы тект не выделялся(крч стандарт браузере убераем)
 
-    selected = e.target;
+    selected = e.target; // устанавливаем selected на нащ выбранный блок 
 
-    const rect = canvas.getBoundingClientRect();
-    const matrix = selected.transform.baseVal.consolidate().matrix;
+    if (selected.data_type === "varuable_block") {
+        selected.dataset.topFree = "true"; 
+    }
 
-    offsetX = e.clientX - rect.left - matrix.e;
-    offsetY = e.clientY - rect.top - matrix.f;
+    const rect = canvas.getBoundingClientRect(); // получаем данные чреез rect(1000000 раз писал)
 
+    const matrix = selected.transform.baseVal.consolidate().matrix; // baseVal это список всех трансформаций 
+    // consolidate - превращает все трансформаци в одну матрицу в одно числор x y 
+
+    // посчитали корды а точнее сдвиг, то есть курсор остётся там же где и нажали 
+    offsetX = e.clientX - rect.left - matrix.e; // matrix.e - x  ь
+    offsetY = e.clientY - rect.top - matrix.f;  // matrix.f - y 
+
+    // на сколько мышь смещена по x и y (чтобы блок не прыгал) ^
     selected.style.cursor = 'grabbing';
-});
+})
 
-// ------------------ OUTPUT ------------------
-function addLine(text, type = "output") {
+
+// класс для ввода в output
+function addLine (text, type = "output"){
     const body = document.getElementById("outputBody");
 
     const div = document.createElement("div");
@@ -211,4 +256,16 @@ function addLine(text, type = "output") {
     body.scrollTop = body.scrollHeight;
 }
 
-setTimeout(() => addLine("Programm is finished", "output"), 1500);
+setTimeout(()=> addLine("Programm is finished", "output"), 1500);
+
+
+
+
+
+
+
+
+
+
+
+
