@@ -144,6 +144,7 @@ document.addEventListener('mouseup', e => {
 
     const selMatrix = selected.transform.baseVal.consolidate().matrix;
     const selBBox = selected.getBBox();
+
     const selX = selMatrix.e;
     const selY = selMatrix.f;
 
@@ -153,17 +154,19 @@ document.addEventListener('mouseup', e => {
     blocks.forEach(block => {
         const m = block.transform.baseVal.consolidate().matrix;
         const bBox = block.getBBox();
+
         const bx = m.e;
         const by = m.f;
 
-        const dxRight = Math.abs(selX - (bx + bBox.width));
+       
+        const dxRight = Math.abs((selX + selBBox.width) - bx - selBBox.width - selBBox.width);
         
         // selected слева от блок
         const dxLeft = Math.abs((selX + selBBox.width) - bx);
-        
-        // расстояние по вертикали (центры)
-        const dy = Math.abs((selY + selBBox.height/2) - (by + bBox.height/2));
 
+        // расстояние по вертикали (центры)
+
+        const dy = Math.abs((selY - selBBox.height / 2) - (by - bBox.height / 2));
 
         const hasRightChild = connections.some(conn => 
             conn.parent === block.id && conn.position === 'right'
@@ -180,7 +183,6 @@ document.addEventListener('mouseup', e => {
         
         // поверяем, не занято ли место справа
         const isSpaceRightTaken = blocks.some(otherBlock => {
-            if (otherBlock === block) return false;
             const otherPos = getBlockPos(otherBlock);
             return Math.abs(otherPos.x - wouldSnapXRight) < 5 && 
                    Math.abs(otherPos.y - by) < 5;
@@ -188,7 +190,6 @@ document.addEventListener('mouseup', e => {
         
         // проверяем, не занято ли место слева
         const isSpaceLeftTaken = blocks.some(otherBlock => {
-            if (otherBlock === block) return false;
             const otherPos = getBlockPos(otherBlock);
             return Math.abs(otherPos.x - wouldSnapXLeft) < 5 && 
                    Math.abs(otherPos.y - by) < 5;
@@ -288,15 +289,5 @@ function addLine (text, type = "output"){
 }
 
 setTimeout(()=> addLine("Programm is finished", "output"), 1500);
-
-
-
-
-
-
-
-
-
-
 
 
