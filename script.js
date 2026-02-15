@@ -168,6 +168,9 @@ document.addEventListener('mouseup', e => {
 
         const dy = Math.abs((selY - selBBox.height / 2) - (by - bBox.height / 2));
 
+        const dxVer = Math.abs((selX - selBBox.width / 2) - (bx - bBox.width / 2));
+        const dyVer = Math.abs(selY - (by + bBox.height));
+
         const hasRightChild = connections.some(conn => 
             conn.parent === block.id && conn.position === 'right'
         );
@@ -175,6 +178,10 @@ document.addEventListener('mouseup', e => {
         // есть ли у блока ребенок СЛЕВА
         const hasLeftChild = connections.some(conn => 
             conn.parent === block.id && conn.position === 'left'
+        );
+
+        const hasVerticalChild = connections.some(conn =>
+           conn.parent === block.id && conn.direction === 'vertical'
         );
 
         // есть ли блок в том месте, куда хотим встать
@@ -230,6 +237,21 @@ document.addEventListener('mouseup', e => {
                 parent: block.id,
                 child: selected.id,
                 position: 'left'
+            });
+        }
+
+        else if (dxVer < 40 && dyVer < 40 && 
+            !hasVerticalChild && selected.dataset.pizdaTop === "true"
+             && block.dataset.pipkaBottom === "true") {
+            const snapX = bx + 10; 
+            const snapY = by + bBox.height - 11; 
+
+            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+
+            connections.push({
+                parent: block.id,
+                child: selected.id,
+                direction: 'vertical'
             });
         }
     });
@@ -290,4 +312,30 @@ function addLine (text, type = "output"){
 
 setTimeout(()=> addLine("Programm is finished", "output"), 1500);
 
+//Очистка воркспейса
+const clearButton = document.getElementById("clearContentButton");
+
+clearButton.addEventListener("click", () =>{ 
+    const blocks = canvas.querySelectorAll(".block");
+
+    blocks.forEach(block => {
+
+        const matrix = block.transform.baseVal.consolidate().matrix;
+
+        const x = matrix.e;
+        const y = matrix.f;
+
+        block.setAttribute(
+            "transform",
+            `translate(${x}, ${y}) scale(0.8)`
+        );
+
+        block.classList.add("clear");
+    });
+
+    setTimeout(() => {
+        canvas.replaceChild();
+        selected = null;
+    }, 300);
+ });
 
