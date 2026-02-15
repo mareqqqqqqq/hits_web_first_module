@@ -1,55 +1,63 @@
 <!DOCTYPE html>
 <html>
-    <head> 
-        <title>Blockcode</title>
-        <meta charset="UTF-8"> <!--русский язык-->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--базовый подгон под рахмер окна-->
-        <link rel="stylesheet" href="style.css">
-    </head>
-    
-    <body class="body">
-        <div class="header"> 
-            <img src="hits.png">
-        </div>
 
-        <div class="main-container">
-            <!-- боковая менюшка в диве которая-->
-            <div class="sidebar"> 
-                <div class="row_blocks">
-                    <div class="varuable_block" draggable="true">переменная</div>
-                    <div class="for_cycle_block" data-type="assign" draggable="true">присвоить</div>
-                </div>
+<head>
+    <title>Blockcode</title>
+    <meta charset="UTF-8"> <!--русский язык-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--базовый подгон под рахмер окна-->
+    <link rel="stylesheet" href="style.css">
+</head>
 
-                <div class="other_block" data-type="if" draggable="true">условие if</div>
+<body class="body">
+    <div class="header">
+        <img src="hits.png">
+    </div>
+
+    <div class="main-container">
+        <!-- боковая менюшка в диве которая-->
+        <div class="sidebar">
+            <div class="row_blocks">
+                <div class="varuable_block" draggable="true">переменная</div>
+                <div class="for_cycle_block" data-type="assign" draggable="true">присвоить</div>
             </div>
 
-            <div class = "right_part_of_site">
-                <div class="content">
-                    <!--id нудо для jsки wigth="100%" height="100%" - 
+            <div class="other_block" data-type="if" draggable="true">условие if</div>
+        </div>
+
+        <div class="right_part_of_site">
+
+            <div class="content" id="content">
+                <!--id нудо для jsки wigth="100%" height="100%" - 
                     занимает всю оюласть род-го блока -->
-                    <svg id="canvas" width="100%" height="100%"></svg>
-                </div>
-
-                <div class = "output">
-                    
-                    <div class="output_header">
-                        Output
-                    </div>
-
-                    <div class = "output_body" id = "outputBody">
-                        <div class = "line output">Output: Progress started...</div>
-                        <div class = "line info">Info: This is a status message.</div>
-                        <div class = "line error">Error: Somthing went wrong!!!</div>
-
-                        <div class = "cursor_line">
-                            <span class = "promt">▶</span>
-                            <span class = "cursor"></span>
-                        </div>
-                    </div>
-                </div>
+                <svg id="canvas" width="100%" height="100%"></svg>
                 
+                <div class="top-content">
+                    <button class="button start_button">Start</button>
+                    <button class="button clear_button" id="clearContentButton">Clear</button>
+                </div>
             </div>
-            <script src="script.js"></script>
+
+            <div class="output">
+
+                <div class="output_header">
+                    Output
+                </div>
+
+                <div class="output_body" id="outputBody">
+                    <div class="line output">Output: Progress started...</div>
+                    <div class="line info">Info: This is a status message.</div>
+                    <div class="line error">Error: Somthing went wrong!!!</div>
+
+                    <div class="cursor_line">
+                        <span class="promt">▶</span>
+                        <span class="cursor"></span>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </body>
-</html> 
+        <script src="script.js"></script>
+    </div>
+</body>
+
+</html>
