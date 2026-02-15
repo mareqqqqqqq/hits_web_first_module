@@ -143,8 +143,7 @@ document.addEventListener('mouseup', e => {
     if (!selected) return;
 
     const selMatrix = selected.transform.baseVal.consolidate().matrix;
-    const selBBox = selected.getBBox(); // границы элемента 
-
+    const selBBox = selected.getBBox();
     const selX = selMatrix.e;
     const selY = selMatrix.f;
 
@@ -154,59 +153,95 @@ document.addEventListener('mouseup', e => {
     blocks.forEach(block => {
         const m = block.transform.baseVal.consolidate().matrix;
         const bBox = block.getBBox();
-
         const bx = m.e;
         const by = m.f;
 
-        const dxHor = Math.abs((selX + selBBox.width) - bx - selBBox.width - selBBox.width );
-        const dyHor = Math.abs((selY - selBBox.height / 2) - (by - bBox.height / 2));
+        const dxRight = Math.abs(selX - (bx + bBox.width));
+        
+        // selected слева от блок
+        const dxLeft = Math.abs((selX + selBBox.width) - bx);
+        
+        // расстояние по вертикали (центры)
+        const dy = Math.abs((selY + selBBox.height/2) - (by + bBox.height/2));
 
-        const dxHor_1 = Math.abs((selX + selBBox.width) - bx);
-        const dyHor_1 = Math.abs((selY - selBBox.height / 2) - (by - bBox.height / 2));
-    
-        const dxVer = Math.abs((selX - selBBox.width / 2) - (bx - bBox.width / 2));
-        const dyVer = Math.abs(selY - (by + bBox.height));
 
-        const hasHorizontalChild = connections.some(conn =>
-             conn.parent === block.id && conn.direction === 'horizontal'
+        const hasRightChild = connections.some(conn => 
+            conn.parent === block.id && conn.position === 'right'
+        );
+        
+        // есть ли у блока ребенок СЛЕВА
+        const hasLeftChild = connections.some(conn => 
+            conn.parent === block.id && conn.position === 'left'
         );
 
-        const hasVerticalChild = connections.some(conn =>
-           conn.parent === block.id && conn.direction === 'vertical'
-        );
-    
-        if (dxHor < 40 && dyHor < 40 && !hasHorizontalChild && block.dataset.pipkaRight === "true" && selected.dataset.pizdaLeft === "true") {
-            // корды прилипания 
-            const snapX = bx + selBBox.width - 10; 
-            const snapY = by; 
+        // есть ли блок в том месте, куда хотим встать
+        const wouldSnapXRight = bx + bBox.width - 10;
+        const wouldSnapXLeft = bx - selBBox.width + 10;
+        
+        // поверяем, не занято ли место справа
+        const isSpaceRightTaken = blocks.some(otherBlock => {
+            if (otherBlock === block) return false;
+            const otherPos = getBlockPos(otherBlock);
+            return Math.abs(otherPos.x - wouldSnapXRight) < 5 && 
+                   Math.abs(otherPos.y - by) < 5;
+        });
+        
+        // проверяем, не занято ли место слева
+        const isSpaceLeftTaken = blocks.some(otherBlock => {
+            if (otherBlock === block) return false;
+            const otherPos = getBlockPos(otherBlock);
+            return Math.abs(otherPos.x - wouldSnapXLeft) < 5 && 
+                   Math.abs(otherPos.y - by) < 5;
+        });
 
+        // 
+        if (dxRight < 40 && dy < 40 && 
+            block.dataset.pipkaRight === "true" && 
+            selected.dataset.pizdaLeft === "true" && 
+            !hasRightChild && 
+            !isSpaceRightTaken)  // 
+        {
+            const snapX = bx + bBox.width - 10;
+            const snapY = by;
+            
             selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
             
             connections.push({
                 parent: block.id,
                 child: selected.id,
-                direction: 'horizontal'
+                position: 'right'
             });
-
         }
-        //  (block.dataset.pipkaRight === "true" && selected.dataset.pizdaLeft === "true")
-
-        else if (dxVer < 40 && dyVer < 40 && !hasVerticalChild && selected.dataset.pizdaTop === "true" && block.dataset.pipkaBottom === "true") {
-            const snapX = bx + 10; 
-            const snapY = by + bBox.height - 11; 
-
+        
+        // 
+        else if (dxLeft < 40 && dy < 40 && 
+                 block.dataset.pizdaLeft === "true" && 
+                 selected.dataset.pipkaRight === "true" && 
+                 !hasLeftChild && 
+                 !isSpaceLeftTaken)  //
+        {
+            const snapX = bx - selBBox.width + 10;
+            const snapY = by;
+            
             selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
-
+            
             connections.push({
                 parent: block.id,
                 child: selected.id,
-                direction: 'vertical'
+                position: 'left'
             });
         }
     });
+
     selected.style.cursor = 'grab';
     selected = null;
-}); 
+});
+
+// 
+function getBlockPos(block) {
+    const matrix = block.transform.baseVal.consolidate().matrix;
+    return { x: matrix.e, y: matrix.f };
+}
 
 // e - типо event  
 
@@ -225,10 +260,6 @@ canvas.addEventListener('mousedown', e => {
     e.preventDefault(); // чтобы тект не выделялся(крч стандарт браузере убераем)
 
     selected = e.target; // устанавливаем selected на нащ выбранный блок 
-
-    if (selected.data_type === "varuable_block") {
-        selected.dataset.topFree = "true"; 
-    }
 
     const rect = canvas.getBoundingClientRect(); // получаем данные чреез rect(1000000 раз писал)
 
@@ -259,29 +290,13 @@ function addLine (text, type = "output"){
 setTimeout(()=> addLine("Programm is finished", "output"), 1500);
 
 
-//Очистка воркспейса
-const clearButton = document.getElementById("clearContentButton");
 
-clearButton.addEventListener("click", () =>{ 
-    const blocks = canvas.querySelectorAll(".block");
 
-    blocks.forEach(block => {
 
-        const matrix = block.transform.baseVal.consolidate().matrix;
 
-        const x = matrix.e;
-        const y = matrix.f;
 
-        block.setAttribute(
-            "transform",
-            `translate(${x}, ${y}) scale(0.8)`
-        );
 
-        block.classList.add("clear");
-    });
 
-    setTimeout(() => {
-        canvas.replaceChild();
-        selected = null;
-    }, 300);
- });
+
+
+
