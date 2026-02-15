@@ -7,7 +7,15 @@ let connections = [];
 //DONE!!!!!!!!!!!
 function createBlock(x, y, color, id, data_type) {
     const ns = "http://www.w3.org/2000/svg";
-    const path = document.createElementNS(ns, "path"); // обтект svg 
+    const group = document.createElementNS(ns, "g"); // обтект svg 
+    const path = document.createElementNS(ns, "path");
+
+    group.classList.add("block"); 
+    group.setAttribute("fill", color); // заливка color как параметр
+    group.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
+    group.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
+    group.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
+    group.dataset.data_type = data_type;
 
     // исходя из переданного типа блока присваеваем ему стили 
     if (data_type === "varuable_block") {    //прямоугольник h100 v60 h -100 Z
@@ -31,79 +39,115 @@ function createBlock(x, y, color, id, data_type) {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
+    group.appendChild(path);
+    
+    if (data_type === "varuable_block" || data_type === "assignment_block") {
+        // вроде как создание формы для двух блоков приписали 
+        const foreign = document.createElementNS(ns, "foreignObject"); 
 
-    path.setAttribute("fill", color); // заливка color как параметр
-    path.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
-    path.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
-    path.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
-    path.dataset.data_type = data_type;
+        foreign.setAttribute("x", 15);
+        foreign.setAttribute("y", 20);
+        foreign.setAttribute("width", 70);
+        foreign.setAttribute("height", 25 );
+
+        const input = document.createElement("input");
+        
+        input.style.wight = "100%";
+        input.style.height = "100%"; 
+        input.style.border = "none"; 
+        input.style.outline = "none";
+        input.style.background = "white";
+        input.style.color = "black";
+        input.style.fontSize = "12px";
+        input.style.textAlign = "left";
+        input.style.fontFamily = consoles, monospace;  
+        
+        if (data_type === "varuable_block") {
+            input.placeholder = "перменная";
+        }
+
+        else if (data_type === "assignment_block") {
+            input.placelorder = "занч";
+        }
+
+        input.addEventListener("mousedown", e => {
+            e.stopPropagation();
+        });
+
+        foreign.appendChild(input); 
+        group.appendChild(foreign);
+    }
+
+    // 
 
 
     if (data_type === "assignment_block") {
-        path.dataset.pizdaTop = "true";
-        path.dataset.pizdaLeft = "false";
-        path.dataset.pizdaRight = "fasle";
-        path.dataset.pizdaBottom = "false"; 
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "fasle";
+        group.dataset.pizdaBottom = "false"; 
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "false";
-        path.dataset.pipkaBottom = "false"; 
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "false";
+        group.dataset.pipkaBottom = "false"; 
     }
 
     else if (data_type === "varuable_block") {
-        path.dataset.pizdaTop = "false";
-        path.dataset.pizdaLeft = "true";
-        path.dataset.pizdaRight = "false";
-        path.dataset.pizdaBottom = "false";
+        group.dataset.pizdaTop = "false";
+        group.dataset.pizdaLeft = "true";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false";
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "true";
-        path.dataset.pipkaBottom = "true"; 
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "true";
+        group.dataset.pipkaBottom = "true"; 
     }
 
+
+    // 
     else if (data_type === "if_block")
     {
-        path.dataset.pizdaTop = "true";
-        path.dataset.pizdaLeft = "false";
-        path.dataset.pizdaRight = "false";
-        path.dataset.pizdaBottom = "false";
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false";
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "false";
-        path.dataset.pipkaBottom = "true"; 
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "false";
+        group.dataset.pipkaBottom = "true"; 
     }
     
     else if (data_type === "output_block")
     {
-        path.dataset.pizdaTop = "true";
-        path.dataset.pizdaLeft = "false";
-        path.dataset.pizdaRight = "false";
-        path.dataset.pizdaBottom = "false";
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false";
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "false";
-        path.dataset.pipkaBottom = "true"; 
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "false";
+        group.dataset.pipkaBottom = "true"; 
     }
 
     else {
-        path.dataset.pizdaTop = "true";
-        path.dataset.pizdaLeft = "false";
-        path.dataset.pizdaRight = "fasle";
-        path.dataset.pizdaBottom = "false"; 
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "fasle";
+        group.dataset.pizdaBottom = "false"; 
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "false";
-        path.dataset.pipkaBottom = "false";
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "false";
+        group.dataset.pipkaBottom = "false";
     }
 
-    canvas.appendChild(path); // добавляет path в svg html
+    canvas.appendChild(group); // добавляет path в svg html
 
-    return path;
+    return group;
 }
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
@@ -114,7 +158,6 @@ const sidebarBlocks = document.querySelectorAll (
 const varuable_block_dirca = document.querySelectorAll (
     '.varuable_block'
 )
-
 
 // DONE !!!!!!!
 // для всех сайдбар блоков указываем действия для маус даун
@@ -293,7 +336,6 @@ document.addEventListener('mouseup', e => {
             });
         }
 
-
         // ВЕРТИКАЛЬНЫЙ ОБЩИЙ
         else if (dxVer< 40 && dyVer < 30 && 
             !hasVerticalChild && selected.dataset.pizdaTop === "true"
@@ -309,11 +351,6 @@ document.addEventListener('mouseup', e => {
                 direction: 'vertical'
             });
         }
-
-
-
-
-
     });
 
     selected.style.cursor = 'grab';
@@ -330,19 +367,22 @@ function getBlockPos(block) {
 
 // тут у нас обращение к canvas то есть это рабаотет только для самох блоков типо когда moseup 
 canvas.addEventListener('mousedown', e => {
-    if (!e.target.classList.contains('block')) // проверка что мы кликнули не просто на canvas облатсь, а неа canvas c
-    //class block(который присваиватеся про создании блока ) 
-        return;
+    // if (!e.target.classList.contains('block')) // проверка что мы кликнули не просто на canvas облатсь, а неа canvas c
+    // //class block(который присваиватеся про создании блока ) 
+    //     return;
 
-    const blockId = e.target.id; 
+    const block = e.target.closest('.block'); 
+    if (!block) return; 
+
+    const blockId = block.id; 
 
     connections = connections.filter(conn => 
-        conn.parent != blockId && conn.child != blockId
+        conn.parent !== blockId && conn.child !== blockId
     );
 
     e.preventDefault(); // чтобы тект не выделялся(крч стандарт браузере убераем)
 
-    selected = e.target; // устанавливаем selected на нащ выбранный блок 
+    selected = block; // устанавливаем selected на нащ выбранный блок 
 
     const rect = canvas.getBoundingClientRect(); // получаем данные чреез rect(1000000 раз писал)
 
@@ -393,9 +433,9 @@ clearButton.addEventListener("click", () =>{
         block.classList.add("clear");
     });
 
-    setTimeout(() => {
-        canvas.replaceChild();
-        selected = null;
-    }, 300);
+    // setTimeout(() => {
+    //     canvas.replaceChild();
+    //     selected = null;
+    // }, 300);
  });
 
