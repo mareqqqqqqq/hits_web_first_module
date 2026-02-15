@@ -414,7 +414,7 @@ function addLine (text, type = "output"){
 
 setTimeout(()=> addLine("Programm is finished", "output"), 1500);
 
-//Очистка воркспейса
+//Очистка воркспейса sdfsdf
 const clearButton = document.getElementById("clearContentButton");
 
 clearButton.addEventListener("click", () =>{ 
