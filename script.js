@@ -21,12 +21,22 @@ function createBlock(x, y, color, id, data_type) {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v50 h-65 Z");
     }
     
-    if (data_type === "if_block")
+    if (data_type === "if_block") //прямоугольник h100 v60 h -100 Z
     {
           path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
+
+    if (data_type === "else_block")
+    {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    if (data_type === "then_block")
+    {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
     
-    if (data_type === "output_block")
+    if (data_type === "output_block") //прямоугольник h100 v60 h -100 Z
     {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
@@ -75,6 +85,19 @@ function createBlock(x, y, color, id, data_type) {
         path.dataset.pipkaRight = "false";
         path.dataset.pipkaBottom = "true"; 
     }
+
+       else if (data_type === "else_block")
+    {
+        path.dataset.pizdaTop = "true";
+        path.dataset.pizdaLeft = "false";
+        path.dataset.pizdaRight = "false";
+        path.dataset.pizdaBottom = "false";
+
+        path.dataset.pipkaTop = "false";
+        path.dataset.pipkaLeft = "false";
+        path.dataset.pipkaRight = "true";
+        path.dataset.pipkaBottom = "true"; 
+    }
     
     else if (data_type === "output_block")
     {
@@ -86,6 +109,19 @@ function createBlock(x, y, color, id, data_type) {
         path.dataset.pipkaTop = "false";
         path.dataset.pipkaLeft = "false";
         path.dataset.pipkaRight = "false";
+        path.dataset.pipkaBottom = "true"; 
+    }
+
+    else if (data_type === "then_block")
+    {
+        path.dataset.pizdaTop = "true";
+        path.dataset.pizdaLeft = "false";
+        path.dataset.pizdaRight = "false";
+        path.dataset.pizdaBottom = "false";
+
+        path.dataset.pipkaTop = "false";
+        path.dataset.pipkaLeft = "false";
+        path.dataset.pipkaRight = "true";
         path.dataset.pipkaBottom = "true"; 
     }
 
@@ -108,7 +144,7 @@ function createBlock(x, y, color, id, data_type) {
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .for_cycle_block, .if_block, .assignment_block, .output_block' 
+    '.varuable_block, .then_block, .if_block, .assignment_block, .output_block , .else_block' 
 );
 
 const varuable_block_dirca = document.querySelectorAll (
@@ -124,8 +160,9 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
 
         // задаём цвета для дивов, свг блоков, на самом деле
         const color = 
-            el.classList.contains('for_cycle_block') ? '#2196f3' :
+            el.classList.contains('then_block') ? '#336431' :
             el.classList.contains('if_block') ? '#998b39cc' :
+            el.classList.contains('else_block') ? '#9f0404' :
             el.classList.contains('assignment_block') ? '#494bd4' :
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             el.classList.contains('output_block') ? '#7e7676' :
@@ -153,6 +190,17 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             {
                 path = createBlock(x, y, color, 'block_' + Date.now(), "if_block");
             }
+
+            else if (el.classList.contains("else_block"))
+            {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "else_block");
+            }
+            
+            else if (el.classList.contains("then_block"))
+            {
+                 path = createBlock(x, y, color, 'block_' + Date.now(), "then_block");
+            }
+
             else if (el.classList.contains("output_block"))
             {
                 path = createBlock(x, y, color, 'block_' + Date.now(), "output_block");
@@ -295,7 +343,7 @@ document.addEventListener('mouseup', e => {
 
 
         // ВЕРТИКАЛЬНЫЙ ОБЩИЙ
-        else if (dxVer< 40 && dyVer < 30 && 
+        else if (dxVer< 40 && dyVer < 40 && 
             !hasVerticalChild && selected.dataset.pizdaTop === "true"
              && block.dataset.pipkaBottom === "true") {
             const snapX = bx; 
