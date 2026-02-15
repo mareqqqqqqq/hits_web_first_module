@@ -23,12 +23,12 @@ function createBlock(x, y, color, id, data_type) {
     
     if (data_type === "if_block")
     {
-          path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h50 v50 Z");
+          path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
     
     if (data_type === "output_block")
     {
-        path.setAttribute("d", "M0,0 h-10 v60 h20 l10,10 h20 l10,-10     h70      v-60   h-80 l-10,10 h-20 l-10,-10 Z");
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
 
@@ -255,142 +255,7 @@ document.addEventListener('mouseup', e => {
 
 
         
-
-        // ОУТПУТ НА ОУТПУТ
-        if (dxVer < 40 && dyVer < 40 && 
-            !hasVerticalChild && selected.dataset.pizdaTop === "true"
-            && block.dataset.pipkaBottom === "true" && 
-            block.dataset.data_type === "output_block" && 
-            selected.dataset.data_type === "output_block") {
-                
-            const snapX = bx ; 
-            const snapY = by + bBox.height - 11; 
-
-            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
-
-            connections.push({
-                parent: block.id,
-                child: selected.id,
-                direction: 'vertical'
-            });
-        }
-
-        // ОУТБУТ НА IF
-        else if (dxVer < 40 && dyVer < 40 && 
-            !hasVerticalChild && selected.dataset.pizdaTop === "true"
-            && block.dataset.pipkaBottom === "true" && 
-            block.dataset.data_type === "if_block" && 
-            selected.dataset.data_type === "output_block") {
-                
-            const snapX = bx -10 ; 
-            const snapY = by + bBox.height - 11; 
-
-            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
-
-            connections.push({
-                parent: block.id,
-                child: selected.id,
-                direction: 'vertical'
-            });
-        }
-
-
-        // IF НА ОУТПУТ
-        else if (dxVer < 40 && dyVer < 40 && 
-            !hasVerticalChild && selected.dataset.pizdaTop === "true"
-            && block.dataset.pipkaBottom === "true" && 
-            block.dataset.data_type === "output_block" && 
-            selected.dataset.data_type === "if_block") {
-                
-            const snapX = bx ; 
-            const snapY = by + bBox.height - 11; 
-
-            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
-
-            connections.push({
-                parent: block.id,
-                child: selected.id,
-                direction: 'vertical'
-            });
-        }
-
-
-
-        // ПРИСВАИВАНИЕ НА ОУТПУТ
-        else if (dxVer < 40 && dyVer < 40 && 
-            !hasVerticalChild && selected.dataset.pizdaTop === "true"
-            && block.dataset.pipkaBottom === "true" && 
-            block.dataset.data_type === "output_block" && 
-            selected.dataset.data_type === "assignment_block") {
-                
-            const snapX = bx ;
-            const snapY = by + bBox.height - 11; 
-
-            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
-
-            connections.push({
-                parent: block.id,
-                child: selected.id,
-                direction: 'vertical'
-            });
-        }
-
-        // ПРИСВАИВАНИЕ НА IF
-        else if (dxVer < 40 && dyVer < 40 && 
-            !hasVerticalChild && selected.dataset.pizdaTop === "true"
-            && block.dataset.pipkaBottom === "true" && 
-            block.dataset.data_type === "if_block" && 
-            selected.dataset.data_type === "assignment_block") {
-                
-            const snapX = bx ;
-            const snapY = by + bBox.height - 11; 
-
-            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
-
-            connections.push({
-                parent: block.id,
-                child: selected.id,
-                direction: 'vertical'
-            });
-        }
-
-
-
-        // IF НА IF
-        else if (dxVer < 40 && dyVer < 40 && 
-            !hasVerticalChild && selected.dataset.pizdaTop === "true"
-            && block.dataset.pipkaBottom === "true" && 
-            block.dataset.data_type === "if_block" && 
-            selected.dataset.data_type === "if_block") {
-                
-            const snapX = bx ;
-            const snapY = by + bBox.height - 11; 
-
-            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
-
-            connections.push({
-                parent: block.id,
-                child: selected.id,
-                direction: 'vertical'
-            });
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // ОБЩИЙ СЛУЧАЙ ПРАВО
-        else if (dxRight < 40 && dy < 40 && 
+        if (dxRight < 40 && dy < 40 && 
             block.dataset.pipkaRight === "true" && 
             selected.dataset.pizdaLeft === "true" && 
             !hasRightChild && 
