@@ -2,64 +2,301 @@ const canvas = document.getElementById('canvas');
 let selected = null; // текущий выбранный блок 
 let offsetX = 0; 
 let offsetY = 0; 
+let connections = [];
 
 //DONE!!!!!!!!!!!
-function createBlock(x, y, color, id) {
+function createBlock(x, y, color, id, data_type) {
     const ns = "http://www.w3.org/2000/svg";
-    const path = document.createElementNS(ns, "path"); // обтект svg 
+    const group = document.createElementNS(ns, "g"); // обтект svg 
+    const path = document.createElementNS(ns, "path");
 
-    path.setAttribute("d", "M0,0 H80 v30 h-40 v10 h40 v30 h-80 Z"); // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
-    path.setAttribute("fill", color); // заливка color как параметр
-    path.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
-    path.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
-    path.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
+    group.classList.add("block"); 
+    group.setAttribute("fill", color); // заливка color как параметр
+    group.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
+    group.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
+    group.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
+    group.dataset.data_type = data_type;
 
-    canvas.appendChild(path); // добавляет path в svg html
+    // исходя из переданного типа блока присваеваем ему стили eee
+    if (data_type === "varuable_block") {    //прямоугольник h100 v60 h -100 Z
+        // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
+        path.setAttribute("d", "M0,0 h100         v10 l10,10 v25 l-10,10 v10       h-45  l-10,10 h-25 l-10,-10 h-10     v-10 l10,-10 v-25 l-10,-10 v-10 Z");
 
-    return path;
+        //path.setAttribute("d", "M0,0 v15 l10,10 v15 l-10,10 v10 h20 l10,10 h20 l10,-10     h40      v-10 l10,-10 v-15 l-10,-10  v-15 Z");
+    }
+
+    if (data_type === "assignment_block") { //прямоульник h65 v50 h-65 Z
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v50 h-65 Z");
+        }
+    
+    if (data_type === "if_block")
+    {
+          path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+    
+    if (data_type === "output_block")
+    {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    group.appendChild(path);
+    
+    if (data_type === "varuable_block") {
+        // вроде как создание формы для двух блоков приписали sdfsdfsdffsdsfdsfdsdfsdfsdfsdf
+        const foreign = document.createElementNS(ns, "foreignObject"); 
+
+        foreign.setAttribute("x", 15);
+        foreign.setAttribute("y", 20);
+        foreign.setAttribute("width", 70);
+        foreign.setAttribute("height", 25 );
+
+        const input = document.createElement("input");
+        
+        input.style.wight = "100%";
+        input.style.height = "100%"; 
+        input.style.border = "none"; 
+        input.style.outline = "none";
+        input.style.background = "white";
+        input.style.color = "black";
+        input.style.fontSize = "12px";
+        input.style.textAlign = "left";
+        
+        if (data_type === "varuable_block") {
+            input.placeholder = "перменная";
+        }
+
+        input.addEventListener("mousedown", e => {
+            e.stopPropagation();
+        });
+
+        foreign.appendChild(input); 
+        group.appendChild(foreign);
+    }
+
+        if (data_type === "assignment_block") {
+       //добавляем стили для норомального скрола
+       if (!document.getElementById('custom-scroll-style')){
+        const style = document.createElement('style');
+        style.id = 'custom-scroll-style';
+        style.textContent = `
+            div[contenteditable = "true"]::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+            }
+             div[contenteditable = "true"]::-webkit-scrollbar-track {
+             background: #F1F1F1;
+             border-radius: 10px;
+             }
+              div[contenteditable = "true"]::-webkit-scrollbar-thumb {
+              background: #c1c1c1;
+              border-radius: 10px;
+              }
+               div[contenteditable = "true"]::-webkit-scrollbar-thumb:hover {
+               background: #a8a8a8;
+               }
+                div[contenteditable = "true"] {
+                scrollbar-width: thin;
+                scrollbar-color: #c1c1c1 #f1f1f1;
+                }
+                `;
+                document.head.appendChild(style);
+       }
+       
+            // вроде как создание формы для двух блоков приписали 
+        const foreign = document.createElementNS(ns, "foreignObject"); 
+
+        foreign.setAttribute("x", 8);
+        foreign.setAttribute("y", 20);
+        foreign.setAttribute("width", 50);
+        foreign.setAttribute("height", 25 );
+
+        const div = document.createElement("div");
+        div.setAttribute("contenteditable", "true");
+        
+        div.style.width = "100%";
+        div.style.height = "100%"; 
+        div.style.border = "none"; 
+        div.style.outline = "none";
+        div.style.background = "rgba(255, 255, 255, 0.9)";
+        div.style.color = "black";
+        div.style.fontFamily = "Inter";
+        div.style.fontSize = "12px";
+        div.style.textAlign = "left";
+        div.style.overflowX = "auto";
+        div.style.overflowY = "hidden";
+        div.style.whiteSpace = "nowrap";
+        div.style.padding = "2px 4px";
+        div.style.boxSizing = "border-box";
+
+
+        
+
+        div.style.color = "#aaa";
+        div.textContent = "Присвоить:";
+
+
+        div.addEventListener("focus", function() {
+            if (this.textContent === "Присвоить:") {
+                this.textContent = "";
+                this.style.color = "black";
+            }
+        });
+
+        div.addEventListener("input", function(e) {
+            if (e.target.textContent.trim() !== "") {
+                e.target.style.color = "black";
+            }
+        });
+
+
+        div.addEventListener("mousedown", e => {
+            e.stopPropagation();
+        });
+
+        foreign.appendChild(div); 
+        group.appendChild(foreign);
+    }
+    // крафывафываasdf
+
+
+    if (data_type === "assignment_block") {
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "fasle";
+        group.dataset.pizdaBottom = "false"; 
+
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "false";
+        group.dataset.pipkaBottom = "false"; 
+    }
+
+    else if (data_type === "varuable_block") {
+        group.dataset.pizdaTop = "false";
+        group.dataset.pizdaLeft = "true";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false";
+
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "true";
+        group.dataset.pipkaBottom = "true"; 
+    }
+
+
+    // 
+    else if (data_type === "if_block")
+    {
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false";
+
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "false";
+        group.dataset.pipkaBottom = "true"; 
+    }
+    
+    else if (data_type === "output_block")
+    {
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false";
+
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "false";
+        group.dataset.pipkaBottom = "true"; 
+    }
+
+    else {
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "fasle";
+        group.dataset.pizdaBottom = "false"; 
+
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "false";
+        group.dataset.pipkaBottom = "false";
+    }
+
+    canvas.appendChild(group); // добавляет path в svg html
+
+    return group;
 }
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .for_cycle_block, .other_block'
+    '.varuable_block, .for_cycle_block, .if_block, .assignment_block, .output_block' 
 );
 
+const varuable_block_dirca = document.querySelectorAll (
+    '.varuable_block'
+)
 
 // DONE !!!!!!!
 // для всех сайдбар блоков указываем действия для маус даун
-sidebarBlocks.forEach(el => { // e - типо event  
+sidebarBlocks.forEach(el => { // el - это элемент по которому кликнули   
     el.addEventListener('mousedown', e => { // когда событие маусдаун
         e.preventDefault(); 
 
         // задаём цвета для дивов, свг блоков, на самом деле
         const color = 
             el.classList.contains('for_cycle_block') ? '#2196f3' :
-            el.classList.contains('other_block') ? '#ff9800' :
+            el.classList.contains('if_block') ? '#998b39cc' :
+            el.classList.contains('assignment_block') ? '#494bd4' :
+            el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
+            el.classList.contains('output_block') ? '#7e7676' :
             '#4caf50';
 
     
-    // получится обьект с полями: left top wigth height 
-    const rect = canvas.getBoundingClientRect(); // возвращает позицию и размеры элемента на стринцу в px
-    const x = e.clientX - rect.left; 
-    const y = e.clientY - rect.top;
+            // получится обьект с полями: left top wigth height  sdfsdfsdf
+            const rect = canvas.getBoundingClientRect(); // возвращает позицию и размеры элемента на стринцу в px
+            const x = e.clientX - rect.left; 
+            const y = e.clientY - rect.top;
 
-    // вызвали функцю(создался блок) также сохранили path(сам блок) чтобы дальше юзадть
-    const path = createBlock(x, y, color, 'block_' + Date.now());
- 
-    //  этот болок выбран для перетасиквания 
-    selected = path; 
+            let path = null; 
 
-    // вычисляем смещение 
-    offsetX = e.clientX - rect.left - x; 
-    offsetY = e.clientY - rect.top - y; 
+            if (el.classList.contains("assignment_block")) {
+                // вызвали функцю(создался блок) также сохранили path(сам блок) чтобы дальше юзадть
+                path = createBlock(x, y, color, 'block_' + Date.now(), "assignment_block");    
+            }
 
-    // сменили тип курсора на руку когда навелись 
-    selected.style.cursor = 'grabbing';
+            else if (el.classList.contains("varuable_block")) {
+                // вызвали функцю(создался блок) также сохранили path(сам блок) чтобы дальше юзадть
+                path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");    
+            }
+
+            else if (el.classList.contains("if_block"))
+            {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "if_block");
+            }
+            else if (el.classList.contains("output_block"))
+            {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "output_block");
+            }
+
+            else {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");
+            }
+
+            //  этот болок выбран для перетасиквания 
+            selected = path; 
+
+            // вычисляем смещение 
+            offsetX = e.clientX - rect.left - x; 
+            offsetY = e.clientY - rect.top - y; 
+
+            // сменили тип курсора на руку когда навелись 
+            selected.style.cursor = 'grabbing';
     });
 });
 
 //DONE !!!!!!!!!
-// gперетаскивание блока 
+// перетаскивание блока 
 document.addEventListener('mousemove',e => {
     if (!selected) // если не выбюран блок то пока  
         return;
@@ -75,56 +312,155 @@ document.addEventListener('mousemove',e => {
 
 // слушаем на всём документе чтобы мы могли отпутить даже вне сanvas
 document.addEventListener('mouseup', e => {
-    if (!selected) return; // база)
+    if (!selected) return;
 
-    const selMatrix = selected.transform.baseVal.consolidate().matrix; // текущие коорды блока так же в матрице 
-    const selBBox = selected.getBBox(); // границы выбранного блока 
+    const selMatrix = selected.transform.baseVal.consolidate().matrix;
+    const selBBox = selected.getBBox();
 
-    const selX = selMatrix.e; // получили коорды с матрицы 
-    const selY = selMatrix.f; 
+    const selX = selMatrix.e;
+    const selY = selMatrix.f;
 
-    const blocks = Array.from(document.querySelectorAll('.block')) // выбираем все блоки с нужным классом чтобы чекнуть к чему можно прилепить 
-        .filter(b => b !== selected); // todo 
+    const blocks = Array.from(document.querySelectorAll('.block'))
+        .filter(b => b !== selected);
 
     blocks.forEach(block => {
-        const m = block.transform.baseVal.consolidate().matrix;// берём коорды каждого блка (consolidate = упорядочивание)
-        const bBox = block.getBBox(); // получаем коорды блока 
+        const m = block.transform.baseVal.consolidate().matrix;
+        const bBox = block.getBBox();
 
-        const bx = m.e; 
+        const bx = m.e;
         const by = m.f;
 
-        // расстояние между правым краем одного и левым краем другого
-        const dx = Math.abs((selX + selBBox.width) - bx); // расстояние между правым краем выбранного блока и левым краем др блока 
-        const dy = Math.abs((selY + selBBox.height / 2) - (by + bBox.height / 2)); // расстояние по вертикали между центрими блоков 
+       
+        const dxRight = Math.abs((selX + selBBox.width) - bx - selBBox.width - selBBox.width);
+        
+        // selected слева от блок
+        const dxLeft = Math.abs((selX + selBBox.width) - bx);
 
-        // если достаточно близко — прилипает
-        if (dx < 100 && dy < 100) { // если блоки достаточно близко то липнут 
-            const snapX = bx - selBBox.width; // от bx минус кооды стенок блока 
-            const snapY = by; // same 
- 
-            selected.setAttribute(
-                'transform',
-                `translate(${snapX}, ${snapY})`
-            ); // перемещаем 
+        // расстояние по вертикали (центры)
+
+        const dy = Math.abs((selY - selBBox.height / 2) - (by - bBox.height / 2));
+
+        const dxVer = Math.abs((selX - selBBox.width / 2) - (bx - bBox.width / 2));
+        const dyVer = Math.abs(selY - (by + bBox.height));
+
+        const hasRightChild = connections.some(conn => 
+            conn.parent === block.id && conn.position === 'right'
+        );
+        
+        // есть ли у блока ребенок СЛЕВА
+        const hasLeftChild = connections.some(conn => 
+            conn.parent === block.id && conn.position === 'left'
+        );
+
+        const hasVerticalChild = connections.some(conn =>
+           conn.parent === block.id && conn.direction === 'vertical'
+        );
+
+        // есть ли блок в том месте, куда хотим встать
+        const wouldSnapXRight = bx + bBox.width - 10;
+        const wouldSnapXLeft = bx - selBBox.width + 10;
+        
+        // поверяем, не занято ли место справа
+        const isSpaceRightTaken = blocks.some(otherBlock => {
+            const otherPos = getBlockPos(otherBlock);
+            return Math.abs(otherPos.x - wouldSnapXRight) < 5 && 
+                   Math.abs(otherPos.y - by) < 5;
+        });
+        
+        // проверяем, не занято ли место слева
+        const isSpaceLeftTaken = blocks.some(otherBlock => {
+            const otherPos = getBlockPos(otherBlock);
+            return Math.abs(otherPos.x - wouldSnapXLeft) < 5 && 
+                   Math.abs(otherPos.y - by) < 5;
+        });
+
+
+        
+        if (dxRight < 40 && dy < 40 && 
+            block.dataset.pipkaRight === "true" && 
+            selected.dataset.pizdaLeft === "true" && 
+            !hasRightChild && 
+            !isSpaceRightTaken)  
+        {
+            const snapX = bx + bBox.width - 10;
+            const snapY = by;
+            
+            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+            
+            connections.push({
+                parent: block.id,
+                child: selected.id,
+                position: 'right'
+            });
+        }
+        
+
+        //  ОБЩИЙ СЛУЧАЙ ЛЕВО
+        else if (dxLeft < 40 && dy < 40 && 
+                 block.dataset.pizdaLeft === "true" && 
+                 selected.dataset.pipkaRight === "true" && 
+                 !hasLeftChild && 
+                 !isSpaceLeftTaken)  
+        {
+            const snapX = bx - selBBox.width + 10;
+            const snapY = by;
+            
+            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+            
+            connections.push({
+                parent: block.id,
+                child: selected.id,
+                position: 'left'
+            });
+        }
+
+        // ВЕРТИКАЛЬНЫЙ ОБЩИЙ
+        else if (dxVer< 40 && dyVer < 30 && 
+            !hasVerticalChild && selected.dataset.pizdaTop === "true"
+             && block.dataset.pipkaBottom === "true") {
+            const snapX = bx; 
+            const snapY = by + bBox.height - 11; 
+
+            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+
+            connections.push({
+                parent: block.id,
+                child: selected.id,
+                direction: 'vertical'
+            });
         }
     });
 
-    // база 
     selected.style.cursor = 'grab';
     selected = null;
 });
+
+// 
+function getBlockPos(block) {
+    const matrix = block.transform.baseVal.consolidate().matrix;
+    return { x: matrix.e, y: matrix.f };
+}
 
 // e - типо event  
 
 // тут у нас обращение к canvas то есть это рабаотет только для самох блоков типо когда moseup 
 canvas.addEventListener('mousedown', e => {
-    if (!e.target.classList.contains('block')) // проверка что мы кликнули не просто на canvas облатсь, а неа canvas c
-    //class block(который присваиватеся про создании блока ) 
-        return;
+    // if (!e.target.classList.contains('block')) // проверка что мы кликнули не просто на canvas облатсь, а неа canvas c
+    // //class block(который присваиватеся про создании блока ) 
+    //     return;
+
+    const block = e.target.closest('.block'); 
+    if (!block) return; 
+
+    const blockId = block.id; 
+
+    connections = connections.filter(conn => 
+        conn.parent !== blockId && conn.child !== blockId
+    );
 
     e.preventDefault(); // чтобы тект не выделялся(крч стандарт браузере убераем)
 
-    selected = e.target; // устанавливаем selected на нащ выбранный блок 
+    selected = block; // устанавливаем selected на нащ выбранный блок 
 
     const rect = canvas.getBoundingClientRect(); // получаем данные чреез rect(1000000 раз писал)
 
@@ -154,7 +490,6 @@ function addLine (text, type = "output"){
 
 setTimeout(()=> addLine("Programm is finished", "output"), 1500);
 
-
 //Очистка воркспейса
 const clearButton = document.getElementById("clearContentButton");
 
@@ -176,8 +511,9 @@ clearButton.addEventListener("click", () =>{
         block.classList.add("clear");
     });
 
-    setTimeout(() => {
-        canvas.replaceChild();
-        selected = null;
-    }, 300);
+    // setTimeout(() => {
+    //     canvas.replaceChild();
+    //     selected = null;
+    // }, 300);
  });
+
