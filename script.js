@@ -10,19 +10,42 @@ function createBlock(x, y, color, id, data_type) {
     const path = document.createElementNS(ns, "path"); // обтект svg 
 
     // исходя из переданного типа блока присваеваем ему стили 
-    if (data_type === "varuable_block") {
+    if (data_type === "varuable_block") {    //прямоугольник h100 v60 h -100 Z
         // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
-        path.setAttribute("d", "M0,0 v15 l10,10 v15 l-10,10 v10 h20 l10,10 h20 l10,-10     h40      v-10 l10,-10 v-15 l-10,-10  v-15 Z");
+        path.setAttribute("d", "M0,0 h100         v10 l10,10 v25 l-10,10 v10       h-45  l-10,10 h-25 l-10,-10 h-10     v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
-    if (data_type === "assignment_block") {
-        path.setAttribute("d", "M0,0 v50 h60 v-50 h-10 l-10,10 h-20 l-10,-10 Z");
+    if (data_type === "assignment_block") { //прямоульник h65 v50 h-65 Z
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v50 h-65 Z");
     }
+    
+    if (data_type === "if_block") //прямоугольник h100 v60 h -100 Z
+    {
+          path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    if (data_type === "else_block")
+    {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    if (data_type === "then_block")
+    {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+    
+    if (data_type === "output_block") //прямоугольник h100 v60 h -100 Z
+    {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
 
     path.setAttribute("fill", color); // заливка color как параметр
     path.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
     path.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
     path.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
+    path.dataset.data_type = data_type;
+
 
     if (data_type === "assignment_block") {
         path.dataset.pizdaTop = "true";
@@ -39,6 +62,58 @@ function createBlock(x, y, color, id, data_type) {
     else if (data_type === "varuable_block") {
         path.dataset.pizdaTop = "false";
         path.dataset.pizdaLeft = "true";
+        path.dataset.pizdaRight = "false";
+        path.dataset.pizdaBottom = "false";
+
+        path.dataset.pipkaTop = "false";
+        path.dataset.pipkaLeft = "false";
+        path.dataset.pipkaRight = "true";
+        path.dataset.pipkaBottom = "true"; 
+    }
+
+    else if (data_type === "if_block")
+    {
+        path.dataset.pizdaTop = "true";
+        path.dataset.pizdaLeft = "false";
+        path.dataset.pizdaRight = "false";
+        path.dataset.pizdaBottom = "false";
+
+        path.dataset.pipkaTop = "false";
+        path.dataset.pipkaLeft = "false";
+        path.dataset.pipkaRight = "false";
+        path.dataset.pipkaBottom = "true"; 
+    }
+
+       else if (data_type === "else_block")
+    {
+        path.dataset.pizdaTop = "true";
+        path.dataset.pizdaLeft = "false";
+        path.dataset.pizdaRight = "false";
+        path.dataset.pizdaBottom = "false";
+
+        path.dataset.pipkaTop = "false";
+        path.dataset.pipkaLeft = "false";
+        path.dataset.pipkaRight = "true";
+        path.dataset.pipkaBottom = "true"; 
+    }
+    
+    else if (data_type === "output_block")
+    {
+        path.dataset.pizdaTop = "true";
+        path.dataset.pizdaLeft = "false";
+        path.dataset.pizdaRight = "false";
+        path.dataset.pizdaBottom = "false";
+
+        path.dataset.pipkaTop = "false";
+        path.dataset.pipkaLeft = "false";
+        path.dataset.pipkaRight = "false";
+        path.dataset.pipkaBottom = "true"; 
+    }
+
+    else if (data_type === "then_block")
+    {
+        path.dataset.pizdaTop = "true";
+        path.dataset.pizdaLeft = "false";
         path.dataset.pizdaRight = "false";
         path.dataset.pizdaBottom = "false";
 
@@ -67,12 +142,15 @@ function createBlock(x, y, color, id, data_type) {
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .for_cycle_block, .other_block, .assignment_block' 
+    '.varuable_block, .then_block, .if_block, .assignment_block, .output_block , .else_block' 
 );
 
 const varuable_block_dirca = document.querySelectorAll (
     '.varuable_block'
 )
+
+//sadsad
+
 
 
 // DONE !!!!!!!
@@ -83,10 +161,12 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
 
         // задаём цвета для дивов, свг блоков, на самом деле
         const color = 
-            el.classList.contains('for_cycle_block') ? '#2196f3' :
-            el.classList.contains('other_block') ? '#ff9800' :
+            el.classList.contains('then_block') ? '#336431' :
+            el.classList.contains('if_block') ? '#998b39cc' :
+            el.classList.contains('else_block') ? '#9f0404' :
             el.classList.contains('assignment_block') ? '#494bd4' :
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
+            el.classList.contains('output_block') ? '#7e7676' :
             '#4caf50';
 
     
@@ -105,6 +185,26 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             else if (el.classList.contains("varuable_block")) {
                 // вызвали функцю(создался блок) также сохранили path(сам блок) чтобы дальше юзадть
                 path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");    
+            }
+
+            else if (el.classList.contains("if_block"))
+            {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "if_block");
+            }
+
+            else if (el.classList.contains("else_block"))
+            {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "else_block");
+            }
+            
+            else if (el.classList.contains("then_block"))
+            {
+                 path = createBlock(x, y, color, 'block_' + Date.now(), "then_block");
+            }
+
+            else if (el.classList.contains("output_block"))
+            {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "output_block");
             }
 
             else {
@@ -168,6 +268,9 @@ document.addEventListener('mouseup', e => {
 
         const dy = Math.abs((selY - selBBox.height / 2) - (by - bBox.height / 2));
 
+        const dxVer = Math.abs((selX - selBBox.width / 2) - (bx - bBox.width / 2));
+        const dyVer = Math.abs(selY - (by + bBox.height));
+
         const hasRightChild = connections.some(conn => 
             conn.parent === block.id && conn.position === 'right'
         );
@@ -175,6 +278,10 @@ document.addEventListener('mouseup', e => {
         // есть ли у блока ребенок СЛЕВА
         const hasLeftChild = connections.some(conn => 
             conn.parent === block.id && conn.position === 'left'
+        );
+
+        const hasVerticalChild = connections.some(conn =>
+           conn.parent === block.id && conn.direction === 'vertical'
         );
 
         // есть ли блок в том месте, куда хотим встать
@@ -195,12 +302,13 @@ document.addEventListener('mouseup', e => {
                    Math.abs(otherPos.y - by) < 5;
         });
 
-        // 
+
+        
         if (dxRight < 40 && dy < 40 && 
             block.dataset.pipkaRight === "true" && 
             selected.dataset.pizdaLeft === "true" && 
             !hasRightChild && 
-            !isSpaceRightTaken)  // 
+            !isSpaceRightTaken)  
         {
             const snapX = bx + bBox.width - 10;
             const snapY = by;
@@ -214,12 +322,13 @@ document.addEventListener('mouseup', e => {
             });
         }
         
-        // 
+
+        //  ОБЩИЙ СЛУЧАЙ ЛЕВО
         else if (dxLeft < 40 && dy < 40 && 
                  block.dataset.pizdaLeft === "true" && 
                  selected.dataset.pipkaRight === "true" && 
                  !hasLeftChild && 
-                 !isSpaceLeftTaken)  //
+                 !isSpaceLeftTaken)  
         {
             const snapX = bx - selBBox.width + 10;
             const snapY = by;
@@ -232,6 +341,28 @@ document.addEventListener('mouseup', e => {
                 position: 'left'
             });
         }
+
+
+        // ВЕРТИКАЛЬНЫЙ ОБЩИЙ
+        else if (dxVer< 40 && dyVer < 40 && 
+            !hasVerticalChild && selected.dataset.pizdaTop === "true"
+             && block.dataset.pipkaBottom === "true") {
+            const snapX = bx; 
+            const snapY = by + bBox.height - 11; 
+
+            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+
+            connections.push({
+                parent: block.id,
+                child: selected.id,
+                direction: 'vertical'
+            });
+        }
+
+
+
+
+
     });
 
     selected.style.cursor = 'grab';
@@ -290,4 +421,30 @@ function addLine (text, type = "output"){
 
 setTimeout(()=> addLine("Programm is finished", "output"), 1500);
 
+//Очистка воркспейса
+const clearButton = document.getElementById("clearContentButton");
+
+clearButton.addEventListener("click", () =>{ 
+    const blocks = canvas.querySelectorAll(".block");
+
+    blocks.forEach(block => {
+
+        const matrix = block.transform.baseVal.consolidate().matrix;
+
+        const x = matrix.e;
+        const y = matrix.f;
+
+        block.setAttribute(
+            "transform",
+            `translate(${x}, ${y}) scale(0.8)`
+        );
+
+        block.classList.add("clear");
+    });
+
+    setTimeout(() => {
+        canvas.replaceChild();
+        selected = null;
+    }, 300);
+ });
 
