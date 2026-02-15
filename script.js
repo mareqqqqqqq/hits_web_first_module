@@ -78,7 +78,7 @@ function createBlock(x, y, color, id, data_type) {
         group.appendChild(foreign);
     }
 
-    // крафывафыва
+    // крафывафываasdf
 
 
     if (data_type === "assignment_block") {
