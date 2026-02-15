@@ -259,13 +259,29 @@ function addLine (text, type = "output"){
 setTimeout(()=> addLine("Programm is finished", "output"), 1500);
 
 
+//Очистка воркспейса
+const clearButton = document.getElementById("clearContentButton");
 
+clearButton.addEventListener("click", () =>{ 
+    const blocks = canvas.querySelectorAll(".block");
 
+    blocks.forEach(block => {
 
+        const matrix = block.transform.baseVal.consolidate().matrix;
 
+        const x = matrix.e;
+        const y = matrix.f;
 
+        block.setAttribute(
+            "transform",
+            `translate(${x}, ${y}) scale(0.8)`
+        );
 
+        block.classList.add("clear");
+    });
 
-
-
-
+    setTimeout(() => {
+        canvas.replaceChild();
+        selected = null;
+    }, 300);
+ });

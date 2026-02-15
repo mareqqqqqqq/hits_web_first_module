@@ -72,6 +72,37 @@
     /*добавляет точечки */
 }
 
+.top-content {
+    position: absolute;
+    top: 90px;
+    right: 30px;
+    display: flex;
+    gap: 10px;
+}
+
+.button {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    font-family: Consolas, monospace;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.start_button {
+    background: #00c14a;
+    color: white;
+}
+
+.clear_button {
+    background: rgb(187 0 0);
+    color: white;
+}
+
+.clear_button:hover {
+    transform: translateY(-2px);
+}
+
 .output {
     position: relative;
 
@@ -179,6 +210,12 @@
 
 .block {
     cursor: grab;
+
+    transition: opacity 0.3s ease;
+}
+
+.block.clear {
+    opacity: 0;
 }
 
 .varuable_block, .for_cycle_block, .other_block, .assignment_block {
