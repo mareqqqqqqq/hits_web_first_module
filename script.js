@@ -44,7 +44,7 @@ function createBlock(x, y, color, id, data_type) {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
-    // sdfsdfsd
+    // sdfsdfsdsdfsdf
     group.appendChild(path);
     
     if (data_type === "varuable_block" || data_type === "assignment_block") {
