@@ -4,12 +4,13 @@ let offsetX = 0;
 let offsetY = 0; 
 let connections = [];
 
-// запушилась моя версия 
+// мы поменяли path обьекты на g
 function createBlock(x, y, color, id, data_type) {
     const ns = "http://www.w3.org/2000/svg";
     const group = document.createElementNS(ns, "g"); // обтект svg 
     const path = document.createElementNS(ns, "path");
 
+    // вот тут поменяли 
     group.classList.add("block"); 
     group.setAttribute("fill", color); // заливка color как параметр
     group.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
@@ -17,7 +18,7 @@ function createBlock(x, y, color, id, data_type) {
     group.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
     group.dataset.data_type = data_type;
 
-    // исходя из переданного типа блока присваеваем ему стили 
+    // устиановл стили для блоков от лёхи 
     if (data_type === "varuable_block") {    //прямоугольник h100 v60 h -100 Z
         // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
         path.setAttribute("d", "M0,0 h100         v10 l10,10 v25 l-10,10 v10       h-45  l-10,10 h-25 l-10,-10 h-10     v-10 l10,-10 v-25 l-10,-10 v-10 Z");
@@ -27,24 +28,21 @@ function createBlock(x, y, color, id, data_type) {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v50 h-65 Z");
     }
     
-    if (data_type === "if_block")
-    {
+    if (data_type === "if_block") { //прямоугольник h100 v60 h -100 Z 
           path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
-    }
-    
-    if (data_type === "output_block") {
-        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "else_block") {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
-    if (data_type === "then_block") {
+    if (data_type === "then_block"){
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
-
-
+    
+    if (data_type === "output_block") { //прямоугольник h100 v60 h -100 Z
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
 
     group.appendChild(path);
     
@@ -84,9 +82,7 @@ function createBlock(x, y, color, id, data_type) {
         group.appendChild(foreign);
     }
 
-    // крафывафываasdf
-
-
+    
     if (data_type === "assignment_block") {
         group.dataset.pizdaTop = "true";
         group.dataset.pizdaLeft = "false";
@@ -112,7 +108,7 @@ function createBlock(x, y, color, id, data_type) {
     }
 
 
-    else if (data_type === "if_block")
+    else if (data_type === "if_block" || data_type === "then_block" || data_type === "else_block")
     {
         group.dataset.pizdaTop = "true";
         group.dataset.pizdaLeft = "false";
@@ -138,18 +134,6 @@ function createBlock(x, y, color, id, data_type) {
         group.dataset.pipkaBottom = "true"; 
     }
 
-    else {
-        group.dataset.pizdaTop = "true";
-        group.dataset.pizdaLeft = "false";
-        group.dataset.pizdaRight = "fasle";
-        group.dataset.pizdaBottom = "false"; 
-
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "false";
-        group.dataset.pipkaBottom = "false";
-    }
-
     canvas.appendChild(group); // добавляет path в svg html
 
     return group;
@@ -172,8 +156,9 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
 
         // задаём цвета для дивов, свг блоков, на самом деле
         const color = 
-            el.classList.contains('for_cycle_block') ? '#2196f3' :
+            el.classList.contains('then_block') ? '#336431' :
             el.classList.contains('if_block') ? '#998b39cc' :
+            el.classList.contains('else_block') ? '#9f0404' :
             el.classList.contains('assignment_block') ? '#494bd4' :
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             el.classList.contains('output_block') ? '#7e7676' :
@@ -202,17 +187,23 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
                 path = createBlock(x, y, color, 'block_' + Date.now(), "if_block");
             }
 
+            else if (el.classList.contains("else_block"))
+            {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "else_block");
+            }
+            
+            else if (el.classList.contains("then_block"))
+            {
+                 path = createBlock(x, y, color, 'block_' + Date.now(), "then_block");
+            }
+
             else if (el.classList.contains("output_block"))
             {
                 path = createBlock(x, y, color, 'block_' + Date.now(), "output_block");
             }
 
-            else if (el.classList.contains("then_block")) {
-                path = createBlock(x, y, color, 'block_' + Date.now(), "then_block");
-            }
-
-            else if (el.classList.contains("else_block")) {
-                path = createBlock(x, y, color, 'block_' + Date.now(), "else_block");
+            else {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");
             }
 
             //  этот болок выбран для перетасиквания 
@@ -443,9 +434,9 @@ clearButton.addEventListener("click", () =>{
         block.classList.add("clear");
     });
 
-    // setTimeout(() => {
-    //     canvas.replaceChild();
-    //     selected = null;
-    // }, 300);
+    setTimeout(() => {
+        canvas.replaceChild();
+        selected = null;
+    }, 300);
  });
 
