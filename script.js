@@ -4,7 +4,7 @@ let offsetX = 0;
 let offsetY = 0; 
 let connections = [];
 
-//DONE!!!!!!!!!!!
+// запушилась моя версия 
 function createBlock(x, y, color, id, data_type) {
     const ns = "http://www.w3.org/2000/svg";
     const group = document.createElementNS(ns, "g"); // обтект svg 
@@ -21,8 +21,6 @@ function createBlock(x, y, color, id, data_type) {
     if (data_type === "varuable_block") {    //прямоугольник h100 v60 h -100 Z
         // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
         path.setAttribute("d", "M0,0 h100         v10 l10,10 v25 l-10,10 v10       h-45  l-10,10 h-25 l-10,-10 h-10     v-10 l10,-10 v-25 l-10,-10 v-10 Z");
-
-        //path.setAttribute("d", "M0,0 v15 l10,10 v15 l-10,10 v10 h20 l10,10 h20 l10,-10     h40      v-10 l10,-10 v-15 l-10,-10  v-15 Z");
     }
 
     if (data_type === "assignment_block") { //прямоульник h65 v50 h-65 Z
@@ -34,10 +32,19 @@ function createBlock(x, y, color, id, data_type) {
           path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
     
-    if (data_type === "output_block")
-    {
+    if (data_type === "output_block") {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
+
+    if (data_type === "else_block") {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    if (data_type === "then_block") {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+
 
     group.appendChild(path);
     
@@ -57,10 +64,9 @@ function createBlock(x, y, color, id, data_type) {
         input.style.border = "none"; 
         input.style.outline = "none";
         input.style.background = "white";
-        input.style.color = "black";
+        input.style.color = "rgba(255, 255, 255, 0.9)";
         input.style.fontSize = "12px";
         input.style.textAlign = "left";
-        input.style.fontFamily = consoles, monospace;  
         
         if (data_type === "varuable_block") {
             input.placeholder = "перменная";
@@ -106,7 +112,6 @@ function createBlock(x, y, color, id, data_type) {
     }
 
 
-    // 
     else if (data_type === "if_block")
     {
         group.dataset.pizdaTop = "true";
@@ -152,7 +157,7 @@ function createBlock(x, y, color, id, data_type) {
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .for_cycle_block, .if_block, .assignment_block, .output_block' 
+    '.varuable_block, .if_block, .assignment_block, .output_block, .then_block, .else_block' 
 );
 
 const varuable_block_dirca = document.querySelectorAll (
@@ -196,13 +201,18 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             {
                 path = createBlock(x, y, color, 'block_' + Date.now(), "if_block");
             }
+
             else if (el.classList.contains("output_block"))
             {
                 path = createBlock(x, y, color, 'block_' + Date.now(), "output_block");
             }
 
-            else {
-                path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");
+            else if (el.classList.contains("then_block")) {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "then_block");
+            }
+
+            else if (el.classList.contains("else_block")) {
+                path = createBlock(x, y, color, 'block_' + Date.now(), "else_block");
             }
 
             //  этот болок выбран для перетасиквания 
