@@ -17,7 +17,7 @@ function createBlock(x, y, color, id, data_type) {
     group.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
     group.dataset.data_type = data_type;
 
-    // исходя из переданного типа блока присваеваем ему стили 
+    // исходя из переданного типа блока присваеваем ему стили eee
     if (data_type === "varuable_block") {    //прямоугольник h100 v60 h -100 Z
         // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
         path.setAttribute("d", "M0,0 h100         v10 l10,10 v25 l-10,10 v10       h-45  l-10,10 h-25 l-10,-10 h-10     v-10 l10,-10 v-25 l-10,-10 v-10 Z");
@@ -27,7 +27,7 @@ function createBlock(x, y, color, id, data_type) {
 
     if (data_type === "assignment_block") { //прямоульник h65 v50 h-65 Z
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v50 h-65 Z");
-    }
+        }
     
     if (data_type === "if_block")
     {
@@ -41,7 +41,7 @@ function createBlock(x, y, color, id, data_type) {
 
     group.appendChild(path);
     
-    if (data_type === "varuable_block" || data_type === "assignment_block") {
+    if (data_type === "varuable_block") {
         // вроде как создание формы для двух блоков приписали 
         const foreign = document.createElementNS(ns, "foreignObject"); 
 
@@ -60,14 +60,9 @@ function createBlock(x, y, color, id, data_type) {
         input.style.color = "black";
         input.style.fontSize = "12px";
         input.style.textAlign = "left";
-        input.style.fontFamily = consoles, monospace;  
         
         if (data_type === "varuable_block") {
             input.placeholder = "перменная";
-        }
-
-        else if (data_type === "assignment_block") {
-            input.placelorder = "занч";
         }
 
         input.addEventListener("mousedown", e => {
@@ -78,6 +73,89 @@ function createBlock(x, y, color, id, data_type) {
         group.appendChild(foreign);
     }
 
+        if (data_type === "assignment_block") {
+       //добавляем стили для норомального скрола
+       if (!document.getElementById('custom-scroll-style')){
+        const style = document.createElement('style');
+        style.id = 'custom-scroll-style';
+        style.textContent = `
+            div[contenteditable = "true"]::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+            }
+             div[contenteditable = "true"]::-webkit-scrollbar-track {
+             background: #F1F1F1;
+             border-radius: 10px;
+             }
+              div[contenteditable = "true"]::-webkit-scrollbar-thumb {
+              background: #c1c1c1;
+              border-radius: 10px;
+              }
+               div[contenteditable = "true"]::-webkit-scrollbar-thumb:hover {
+               background: #a8a8a8;
+               }
+                div[contenteditable = "true"] {
+                scrollbar-width: thin;
+                scrollbar-color: #c1c1c1 #f1f1f1;
+                }
+                `;
+                document.head.appendChild(style);
+       }
+       
+            // вроде как создание формы для двух блоков приписали 
+        const foreign = document.createElementNS(ns, "foreignObject"); 
+
+        foreign.setAttribute("x", 8);
+        foreign.setAttribute("y", 20);
+        foreign.setAttribute("width", 50);
+        foreign.setAttribute("height", 25 );
+
+        const div = document.createElement("div");
+        div.setAttribute("contenteditable", "true");
+        
+        div.style.width = "100%";
+        div.style.height = "100%"; 
+        div.style.border = "none"; 
+        div.style.outline = "none";
+        div.style.background = "rgba(255, 255, 255, 0.9)";
+        div.style.color = "black";
+        div.style.fontFamily = "Inter";
+        div.style.fontSize = "12px";
+        div.style.textAlign = "left";
+        div.style.overflowX = "auto";
+        div.style.overflowY = "hidden";
+        div.style.whiteSpace = "nowrap";
+        div.style.padding = "2px 4px";
+        div.style.boxSizing = "border-box";
+
+
+        
+
+        div.style.color = "#aaa";
+        div.textContent = "Присвоить:";
+
+
+        div.addEventListener("focus", function() {
+            if (this.textContent === "Присвоить:") {
+                this.textContent = "";
+                this.style.color = "black";
+            }
+        });
+
+        div.addEventListener("input", function(e) {
+            if (e.target.textContent.trim() !== "") {
+                e.target.style.color = "black";
+            }
+        });
+
+
+        div.addEventListener("mousedown", e => {
+            e.stopPropagation();
+        });
+
+        foreign.appendChild(div); 
+        group.appendChild(foreign);
+    }
     // крафывафываasdf
 
 
