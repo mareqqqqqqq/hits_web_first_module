@@ -26,7 +26,7 @@ function createBlock(x, y, color, id, data_type) {
 
     if (data_type === "assignment_block") { //прямоульник h65 v50 h-65 Z
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v50 h-65 Z");
-    }
+        }
     
     if (data_type === "if_block") { //прямоугольник h100 v60 h -100 Z 
           path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
@@ -49,43 +49,199 @@ function createBlock(x, y, color, id, data_type) {
         path.setAttribute("d", "M0,0 v230 h10 l10,10 h25 l10,-10 h10 h130 v-65 h-125  v-100 h115  v-10 l10,-10 v-25 l-10,-10 v-10  Z");
     }
 
+
+    if (data_type === "else_block") {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    if (data_type === "then_block"){
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+    
+    if (data_type === "output_block") { //прямоугольник h100 v60 h -100 Z
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    // sdfsdfsdsdfsdf
     group.appendChild(path);
     
-    if (data_type === "varuable_block" || data_type === "assignment_block") {
+    if (data_type === "varuable_block") {
+
+               //добавляем стили для норомального скрола
+       if (!document.getElementById('custom-scroll-style')){
+        const style = document.createElement('style');
+        style.id = 'custom-scroll-style';
+        style.textContent = `
+            div[contenteditable = "true"]::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+            }
+             div[contenteditable = "true"]::-webkit-scrollbar-track {
+             background: #F1F1F1;
+             border-radius: 10px;
+             }
+              div[contenteditable = "true"]::-webkit-scrollbar-thumb {
+              background: #c1c1c1;
+              border-radius: 10px;
+              }
+               div[contenteditable = "true"]::-webkit-scrollbar-thumb:hover {
+               background: #a8a8a8;
+               }
+                div[contenteditable = "true"] {
+                scrollbar-width: thin;
+                scrollbar-color: #c1c1c1 #f1f1f1;
+                }
+                `;
+                document.head.appendChild(style);
+       }
+
         // вроде как создание формы для двух блоков приписали 
         const foreign = document.createElementNS(ns, "foreignObject"); 
 
-        foreign.setAttribute("x", 15);
+        foreign.setAttribute("x", 20);
         foreign.setAttribute("y", 20);
         foreign.setAttribute("width", 70);
         foreign.setAttribute("height", 25 );
 
-        const input = document.createElement("input");
+        const div = document.createElement("div");
+        div.setAttribute("contenteditable", "true");
         
-        input.style.wight = "100%";
-        input.style.height = "100%"; 
-        input.style.border = "none"; 
-        input.style.outline = "none";
-        input.style.background = "white";
-        input.style.color = "rgba(255, 255, 255, 0.9)";
-        input.style.fontSize = "12px";
-        input.style.textAlign = "left";
-        
-        if (data_type === "varuable_block") {
-            input.placeholder = "перменная";
-        }
+        div.style.width = "100%";
+        div.style.height = "100%"; 
+        div.style.border = "none"; 
+        div.style.outline = "none";
+        div.style.background = "rgba(255, 255, 255, 0.9)";
+        div.style.color = "black";
+        div.style.fontFamily = "Inter";
+        div.style.fontSize = "12px";
+        div.style.textAlign = "left";
+        div.style.overflowX = "auto";
+        div.style.overflowY = "hidden";
+        div.style.whiteSpace = "nowrap";
+        div.style.padding = "2px 4px";
+        div.style.boxSizing = "border-box";
 
-        else if (data_type === "assignment_block") {
-            input.placelorder = "занч";
-        }
+        div.style.color = "#aaa";
+        div.textContent = "Переменная";
 
-        input.addEventListener("mousedown", e => {
+
+        div.addEventListener("focus", function() {
+            if (this.textContent === "Переменная") {
+                this.textContent = "";
+                this.style.color = "black";
+            }
+        });
+
+        div.addEventListener("input", function(e) {
+            if (e.target.textContent.trim() !== "") {
+                e.target.style.color = "black";
+            }
+        });
+
+        div.addEventListener("blur", function() {
+            if (this.textContent.trim() === "") {
+                this.textContent = "Переменная";
+                this.style.color = "#aaa";
+            }
+        });
+
+
+        div.addEventListener("mousedown", e => {
             e.stopPropagation();
         });
 
-        foreign.appendChild(input); 
+        foreign.appendChild(div); 
         group.appendChild(foreign);
     }
+
+        if (data_type === "assignment_block") {
+       //добавляем стили для норомального скрола
+       if (!document.getElementById('custom-scroll-style')){
+        const style = document.createElement('style');
+        style.id = 'custom-scroll-style';
+        style.textContent = `
+            div[contenteditable = "true"]::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+            }
+             div[contenteditable = "true"]::-webkit-scrollbar-track {
+             background: #F1F1F1;
+             border-radius: 10px;
+             }
+              div[contenteditable = "true"]::-webkit-scrollbar-thumb {
+              background: #c1c1c1;
+              border-radius: 10px;
+              }
+               div[contenteditable = "true"]::-webkit-scrollbar-thumb:hover {
+               background: #a8a8a8;
+               }
+                div[contenteditable = "true"] {
+                scrollbar-width: thin;
+                scrollbar-color: #c1c1c1 #f1f1f1;
+                }
+                `;
+                document.head.appendChild(style);
+       }
+       
+            // вроде как создание формы для двух блоков приписали 
+        const foreign = document.createElementNS(ns, "foreignObject"); 
+
+        foreign.setAttribute("x", 8);
+        foreign.setAttribute("y", 20);
+        foreign.setAttribute("width", 50);
+        foreign.setAttribute("height", 25 );
+
+        const div = document.createElement("div");
+        div.setAttribute("contenteditable", "true");
+        
+        div.style.width = "100%";
+        div.style.height = "100%"; 
+        div.style.border = "none"; 
+        div.style.outline = "none";
+        div.style.background = "rgba(255, 255, 255, 0.9)";
+        div.style.color = "black";
+        div.style.fontFamily = "Inter";
+        div.style.fontSize = "12px";
+        div.style.textAlign = "left";
+        div.style.overflowX = "auto";
+        div.style.overflowY = "hidden";
+        div.style.whiteSpace = "nowrap";
+        div.style.padding = "2px 4px";
+        div.style.boxSizing = "border-box";
+
+        div.style.color = "#aaa";
+        div.textContent = "Присвоить:";
+
+
+        div.addEventListener("focus", function() {
+            if (this.textContent === "Присвоить:") {
+                this.textContent = "";
+                this.style.color = "black";
+            }
+        });
+
+        div.addEventListener("input", function(e) {
+            if (e.target.textContent.trim() !== "") {
+                e.target.style.color = "black";
+            }
+        });
+
+        div.addEventListener("blur", function() {
+            if (this.textContent.trim() === "") {
+                this.textContent = "Присвоить:";
+                this.style.color = "#aaa";
+            }
+        });
+
+
+        div.addEventListener("mousedown", e => {
+            e.stopPropagation();
+        });
+
+        foreign.appendChild(div); 
+        group.appendChild(foreign);
+    }
+
 
     
     if (data_type === "assignment_block") {
