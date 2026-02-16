@@ -4,153 +4,323 @@ let offsetX = 0;
 let offsetY = 0; 
 let connections = [];
 
-//DONE!!!!!!!!!!!
+// мы поменяли path обьекты на g
 function createBlock(x, y, color, id, data_type) {
     const ns = "http://www.w3.org/2000/svg";
-    const path = document.createElementNS(ns, "path"); // обтект svg 
+    const group = document.createElementNS(ns, "g"); // обтект svg 
+    const path = document.createElementNS(ns, "path");
 
-    // исходя из переданного типа блока присваеваем ему стили 
+    // вот тут поменяли 
+    group.classList.add("block"); 
+    group.setAttribute("fill", color); // заливка color как параметр
+    group.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
+    group.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
+    group.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
+    group.dataset.data_type = data_type;
+
+    // устиановл стили для блоков от лёхи 
     if (data_type === "varuable_block") {    //прямоугольник h100 v60 h -100 Z
         // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
         path.setAttribute("d", "M0,0 h100         v10 l10,10 v25 l-10,10 v10       h-45  l-10,10 h-25 l-10,-10 h-10     v-10 l10,-10 v-25 l-10,-10 v-10 Z");
-
-        //path.setAttribute("d", "M0,0 v15 l10,10 v15 l-10,10 v10 h20 l10,10 h20 l10,-10     h40      v-10 l10,-10 v-15 l-10,-10  v-15 Z");
     }
 
     if (data_type === "assignment_block") { //прямоульник h65 v50 h-65 Z
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v50 h-65 Z");
-    }
+        }
     
-    if (data_type === "if_block") //прямоугольник h100 v60 h -100 Z
-    {
-          path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    if (data_type === "if_block") { //прямоугольник h100 v60 h -100 Z 
+          path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h100    v60 h-100 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
-    if (data_type === "else_block")
-    {
+    if (data_type === "else_block") {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
-    if (data_type === "then_block")
-    {
+    if (data_type === "then_block"){
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
     
-    if (data_type === "output_block") //прямоугольник h100 v60 h -100 Z
-    {
+    if (data_type === "output_block") { //прямоугольник h100 v60 h -100 Z
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
-
-    path.setAttribute("fill", color); // заливка color как параметр
-    path.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
-    path.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
-    path.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
-    path.dataset.data_type = data_type;
+    if (data_type === "connector_block")
+    {
+        path.setAttribute("d", "M0,0 v230 h10 l10,10 h25 l10,-10 h10 h130 v-65 h-125  v-100 h115  v-10 l10,-10 v-25 l-10,-10 v-10  Z");
+    }
 
 
+    if (data_type === "else_block") {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    if (data_type === "then_block"){
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+    
+    if (data_type === "output_block") { //прямоугольник h100 v60 h -100 Z
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    // sdfsdfsdsdfsdf
+    group.appendChild(path);
+    
+    if (data_type === "varuable_block") {
+
+               //добавляем стили для норомального скрола
+       if (!document.getElementById('custom-scroll-style')){
+        const style = document.createElement('style');
+        style.id = 'custom-scroll-style';
+        style.textContent = `
+            div[contenteditable = "true"]::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+            }
+             div[contenteditable = "true"]::-webkit-scrollbar-track {
+             background: #F1F1F1;
+             border-radius: 10px;
+             }
+              div[contenteditable = "true"]::-webkit-scrollbar-thumb {
+              background: #c1c1c1;
+              border-radius: 10px;
+              }
+               div[contenteditable = "true"]::-webkit-scrollbar-thumb:hover {
+               background: #a8a8a8;
+               }
+                div[contenteditable = "true"] {
+                scrollbar-width: thin;
+                scrollbar-color: #c1c1c1 #f1f1f1;
+                }
+                `;
+                document.head.appendChild(style);
+       }
+
+        // вроде как создание формы для двух блоков приписали 
+        const foreign = document.createElementNS(ns, "foreignObject"); 
+
+        foreign.setAttribute("x", 20);
+        foreign.setAttribute("y", 20);
+        foreign.setAttribute("width", 70);
+        foreign.setAttribute("height", 25 );
+
+        const div = document.createElement("div");
+        div.setAttribute("contenteditable", "true");
+        
+        div.style.width = "100%";
+        div.style.height = "100%"; 
+        div.style.border = "none"; 
+        div.style.outline = "none";
+        div.style.background = "rgba(255, 255, 255, 0.9)";
+        div.style.color = "black";
+        div.style.fontFamily = "Inter";
+        div.style.fontSize = "12px";
+        div.style.textAlign = "left";
+        div.style.overflowX = "auto";
+        div.style.overflowY = "hidden";
+        div.style.whiteSpace = "nowrap";
+        div.style.padding = "2px 4px";
+        div.style.boxSizing = "border-box";
+
+        div.style.color = "#aaa";
+        div.textContent = "Переменная";
+
+
+        div.addEventListener("focus", function() {
+            if (this.textContent === "Переменная") {
+                this.textContent = "";
+                this.style.color = "black";
+            }
+        });
+
+        div.addEventListener("input", function(e) {
+            if (e.target.textContent.trim() !== "") {
+                e.target.style.color = "black";
+            }
+        });
+
+        div.addEventListener("blur", function() {
+            if (this.textContent.trim() === "") {
+                this.textContent = "Переменная";
+                this.style.color = "#aaa";
+            }
+        });
+
+
+        div.addEventListener("mousedown", e => {
+            e.stopPropagation();
+        });
+
+        foreign.appendChild(div); 
+        group.appendChild(foreign);
+    }
+
+        if (data_type === "assignment_block") {
+       //добавляем стили для норомального скрола
+       if (!document.getElementById('custom-scroll-style')){
+        const style = document.createElement('style');
+        style.id = 'custom-scroll-style';
+        style.textContent = `
+            div[contenteditable = "true"]::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+            }
+             div[contenteditable = "true"]::-webkit-scrollbar-track {
+             background: #F1F1F1;
+             border-radius: 10px;
+             }
+              div[contenteditable = "true"]::-webkit-scrollbar-thumb {
+              background: #c1c1c1;
+              border-radius: 10px;
+              }
+               div[contenteditable = "true"]::-webkit-scrollbar-thumb:hover {
+               background: #a8a8a8;
+               }
+                div[contenteditable = "true"] {
+                scrollbar-width: thin;
+                scrollbar-color: #c1c1c1 #f1f1f1;
+                }
+                `;
+                document.head.appendChild(style);
+       }
+       
+            // вроде как создание формы для двух блоков приписали 
+        const foreign = document.createElementNS(ns, "foreignObject"); 
+
+        foreign.setAttribute("x", 8);
+        foreign.setAttribute("y", 20);
+        foreign.setAttribute("width", 50);
+        foreign.setAttribute("height", 25 );
+
+        const div = document.createElement("div");
+        div.setAttribute("contenteditable", "true");
+        
+        div.style.width = "100%";
+        div.style.height = "100%"; 
+        div.style.border = "none"; 
+        div.style.outline = "none";
+        div.style.background = "rgba(255, 255, 255, 0.9)";
+        div.style.color = "black";
+        div.style.fontFamily = "Inter";
+        div.style.fontSize = "12px";
+        div.style.textAlign = "left";
+        div.style.overflowX = "auto";
+        div.style.overflowY = "hidden";
+        div.style.whiteSpace = "nowrap";
+        div.style.padding = "2px 4px";
+        div.style.boxSizing = "border-box";
+
+        div.style.color = "#aaa";
+        div.textContent = "Присвоить:";
+
+
+        div.addEventListener("focus", function() {
+            if (this.textContent === "Присвоить:") {
+                this.textContent = "";
+                this.style.color = "black";
+            }
+        });
+
+        div.addEventListener("input", function(e) {
+            if (e.target.textContent.trim() !== "") {
+                e.target.style.color = "black";
+            }
+        });
+
+        div.addEventListener("blur", function() {
+            if (this.textContent.trim() === "") {
+                this.textContent = "Присвоить:";
+                this.style.color = "#aaa";
+            }
+        });
+
+
+        div.addEventListener("mousedown", e => {
+            e.stopPropagation();
+        });
+
+        foreign.appendChild(div); 
+        group.appendChild(foreign);
+    }
+
+
+    
     if (data_type === "assignment_block") {
-        path.dataset.pizdaTop = "true";
-        path.dataset.pizdaLeft = "false";
-        path.dataset.pizdaRight = "fasle";
-        path.dataset.pizdaBottom = "false"; 
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false"; 
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "false";
-        path.dataset.pipkaBottom = "false"; 
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "false";
+        group.dataset.pipkaBottom = "false"; 
     }
 
     else if (data_type === "varuable_block") {
-        path.dataset.pizdaTop = "false";
-        path.dataset.pizdaLeft = "true";
-        path.dataset.pizdaRight = "false";
-        path.dataset.pizdaBottom = "false";
+        group.dataset.pizdaTop = "false";
+        group.dataset.pizdaLeft = "true";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false";
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "true";
-        path.dataset.pipkaBottom = "true"; 
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "true";
+        group.dataset.pipkaBottom = "true"; 
     }
 
-    else if (data_type === "if_block")
+
+    else if (data_type === "then_block" || data_type === "else_block")
     {
-        path.dataset.pizdaTop = "true";
-        path.dataset.pizdaLeft = "false";
-        path.dataset.pizdaRight = "false";
-        path.dataset.pizdaBottom = "false";
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false";
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "false";
-        path.dataset.pipkaBottom = "true"; 
-    }
-
-       else if (data_type === "else_block")
-    {
-        path.dataset.pizdaTop = "true";
-        path.dataset.pizdaLeft = "false";
-        path.dataset.pizdaRight = "false";
-        path.dataset.pizdaBottom = "false";
-
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "true";
-        path.dataset.pipkaBottom = "true"; 
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "true";
+        group.dataset.pipkaBottom = "true"; 
     }
     
-    else if (data_type === "output_block")
+    else if (data_type === "output_block" || data_type === "if_block" )
     {
-        path.dataset.pizdaTop = "true";
-        path.dataset.pizdaLeft = "false";
-        path.dataset.pizdaRight = "false";
-        path.dataset.pizdaBottom = "false";
+        group.dataset.pizdaTop = "true";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false";
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "false";
-        path.dataset.pipkaBottom = "true"; 
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "false";
+        group.dataset.pipkaBottom = "true"; 
     }
 
-    else if (data_type === "then_block")
+    else if (data_type === "connector_block")
     {
-        path.dataset.pizdaTop = "true";
-        path.dataset.pizdaLeft = "false";
-        path.dataset.pizdaRight = "false";
-        path.dataset.pizdaBottom = "false";
+        group.dataset.pizdaTop = "false";
+        group.dataset.pizdaLeft = "false";
+        group.dataset.pizdaRight = "false";
+        group.dataset.pizdaBottom = "false";
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "true";
-        path.dataset.pipkaBottom = "true"; 
+        group.dataset.pipkaTop = "false";
+        group.dataset.pipkaLeft = "false";
+        group.dataset.pipkaRight = "true";
+        group.dataset.pipkaBottom = "true";
     }
 
-    else {
-        path.dataset.pizdaTop = "true";
-        path.dataset.pizdaLeft = "false";
-        path.dataset.pizdaRight = "fasle";
-        path.dataset.pizdaBottom = "false"; 
+    canvas.appendChild(group); // добавляет path в svg html
 
-        path.dataset.pipkaTop = "false";
-        path.dataset.pipkaLeft = "false";
-        path.dataset.pipkaRight = "false";
-        path.dataset.pipkaBottom = "false";
-    }
-
-    canvas.appendChild(path); // добавляет path в svg html
-
-    return path;
+    return group;
 }
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .then_block, .if_block, .assignment_block, .output_block , .else_block' 
+    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .connector_block, .then_block' 
 );
 
 const varuable_block_dirca = document.querySelectorAll (
     '.varuable_block'
 )
-
 
 // DONE !!!!!!!
 // для всех сайдбар блоков указываем действия для маус даун
@@ -166,6 +336,7 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             el.classList.contains('assignment_block') ? '#494bd4' :
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             el.classList.contains('output_block') ? '#7e7676' :
+            el.classList.contains('connector_block') ? '#492cc9' :
             '#4caf50';
 
     
@@ -206,8 +377,8 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
                 path = createBlock(x, y, color, 'block_' + Date.now(), "output_block");
             }
 
-            else {
-                path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");
+            else if (el.classList.contains("connector_block")){
+                path = createBlock(x, y, color, 'block_' + Date.now(), "connector_block");
             }
 
             //  этот болок выбран для перетасиквания 
@@ -258,7 +429,7 @@ document.addEventListener('mouseup', e => {
         const by = m.f;
 
        
-        const dxRight = Math.abs((selX + selBBox.width) - bx - selBBox.width - selBBox.width);
+        const dxRight = Math.abs((selX + selBBox.width) - bx - selBBox.width - selBBox.width) ;
         
         // selected слева от блок
         const dxLeft = Math.abs((selX + selBBox.width) - bx);
@@ -290,20 +461,20 @@ document.addEventListener('mouseup', e => {
         // поверяем, не занято ли место справа
         const isSpaceRightTaken = blocks.some(otherBlock => {
             const otherPos = getBlockPos(otherBlock);
-            return Math.abs(otherPos.x - wouldSnapXRight) < 5 && 
-                   Math.abs(otherPos.y - by) < 5;
+            return Math.abs(otherPos.x - wouldSnapXRight) < 100 && 
+                   Math.abs(otherPos.y - by) < 100;
         });
         
         // проверяем, не занято ли место слева
         const isSpaceLeftTaken = blocks.some(otherBlock => {
             const otherPos = getBlockPos(otherBlock);
-            return Math.abs(otherPos.x - wouldSnapXLeft) < 5 && 
-                   Math.abs(otherPos.y - by) < 5;
+            return Math.abs(otherPos.x - wouldSnapXLeft) < 100 && 
+                   Math.abs(otherPos.y - by) < 100;
         });
 
 
         
-        if (dxRight < 40 && dy < 40 && 
+        if (dxRight < 100 && dy < 100 && 
             block.dataset.pipkaRight === "true" && 
             selected.dataset.pizdaLeft === "true" && 
             !hasRightChild && 
@@ -323,9 +494,9 @@ document.addEventListener('mouseup', e => {
         
 
         //  ОБЩИЙ СЛУЧАЙ ЛЕВО
-        else if (dxLeft < 40 && dy < 40 && 
-                 block.dataset.pizdaLeft === "true" && 
-                 selected.dataset.pipkaRight === "true" && 
+        else if (dxLeft < 100 && dy < 100 && 
+                 (block.dataset.pizdaLeft === "true" && 
+                 selected.dataset.pipkaRight === "true")  && 
                  !hasLeftChild && 
                  !isSpaceLeftTaken)  
         {
@@ -341,9 +512,8 @@ document.addEventListener('mouseup', e => {
             });
         }
 
-
         // ВЕРТИКАЛЬНЫЙ ОБЩИЙ
-        else if (dxVer< 40 && dyVer < 40 && 
+        else if (dxVer< 70 && dyVer < 70 && 
             !hasVerticalChild && selected.dataset.pizdaTop === "true"
              && block.dataset.pipkaBottom === "true") {
             const snapX = bx; 
@@ -357,11 +527,6 @@ document.addEventListener('mouseup', e => {
                 direction: 'vertical'
             });
         }
-
-
-
-
-
     });
 
     selected.style.cursor = 'grab';
@@ -378,19 +543,22 @@ function getBlockPos(block) {
 
 // тут у нас обращение к canvas то есть это рабаотет только для самох блоков типо когда moseup 
 canvas.addEventListener('mousedown', e => {
-    if (!e.target.classList.contains('block')) // проверка что мы кликнули не просто на canvas облатсь, а неа canvas c
-    //class block(который присваиватеся про создании блока ) 
-        return;
+    // if (!e.target.classList.contains('block')) // проверка что мы кликнули не просто на canvas облатсь, а неа canvas c
+    // //class block(который присваиватеся про создании блока ) 
+    //     return;
 
-    const blockId = e.target.id; 
+    const block = e.target.closest('.block'); 
+    if (!block) return; 
+
+    const blockId = block.id; 
 
     connections = connections.filter(conn => 
-        conn.parent != blockId && conn.child != blockId
+        conn.parent !== blockId && conn.child !== blockId
     );
 
     e.preventDefault(); // чтобы тект не выделялся(крч стандарт браузере убераем)
 
-    selected = e.target; // устанавливаем selected на нащ выбранный блок 
+    selected = block; // устанавливаем selected на нащ выбранный блок 
 
     const rect = canvas.getBoundingClientRect(); // получаем данные чреез rect(1000000 раз писал)
 
@@ -420,7 +588,7 @@ function addLine (text, type = "output"){
 
 setTimeout(()=> addLine("Programm is finished", "output"), 1500);
 
-//Очистка воркспейса
+//Очистка воркспейса sdfsdf
 const clearButton = document.getElementById("clearContentButton");
 
 clearButton.addEventListener("click", () =>{ 
