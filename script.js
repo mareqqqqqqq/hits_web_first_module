@@ -176,8 +176,6 @@ document.addEventListener('mouseup', e => {
                    Math.abs(otherPos.y - by) < 100;
         });
 
-
-        
         if (dxRight < 100 && dy < 100 && 
             block.dataset.pipkaRight === "true" && 
             selected.dataset.pizdaLeft === "true" && 
@@ -314,10 +312,6 @@ clearButton.addEventListener("click", () =>{
         block.classList.add("clear");
     });
 
-    setTimeout(() => {
-        canvas.replaceChild();
-        selected = null;
-    }, 300);
     setTimeout(() => {
         canvas.replaceChild();
         selected = null;
