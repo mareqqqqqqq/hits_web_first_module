@@ -239,67 +239,67 @@ function createBlock(x, y, color, id, data_type) {
 
     
     if (data_type === "assignment_block") {
-        group.dataset.pizdaTop = "true";
-        group.dataset.pizdaLeft = "false";
-        group.dataset.pizdaRight = "false";
-        group.dataset.pizdaBottom = "false"; 
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false"; 
 
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "false";
-        group.dataset.pipkaBottom = "false"; 
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "false"; 
     }
 
     else if (data_type === "varuable_block") {
-        group.dataset.pizdaTop = "false";
-        group.dataset.pizdaLeft = "true";
-        group.dataset.pizdaRight = "false";
-        group.dataset.pizdaBottom = "false";
+        group.dataset.connectionTop = "false";
+        group.dataset.connectionLeft = "true";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
 
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "true";
-        group.dataset.pipkaBottom = "true"; 
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true"; 
     }
 
 
     else if (data_type === "then_block" || data_type === "else_block")
     {
-        group.dataset.pizdaTop = "true";
-        group.dataset.pizdaLeft = "false";
-        group.dataset.pizdaRight = "false";
-        group.dataset.pizdaBottom = "false";
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
 
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "true";
-        group.dataset.pipkaBottom = "true"; 
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true"; 
     }
     
     else if (data_type === "output_block" || data_type === "if_block" )
     {
-        group.dataset.pizdaTop = "true";
-        group.dataset.pizdaLeft = "false";
-        group.dataset.pizdaRight = "false";
-        group.dataset.pizdaBottom = "false";
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
 
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "false";
-        group.dataset.pipkaBottom = "true"; 
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
     }
 
     else if (data_type === "connector_block")
     {
-        group.dataset.pizdaTop = "false";
-        group.dataset.pizdaLeft = "false";
-        group.dataset.pizdaRight = "false";
-        group.dataset.pizdaBottom = "false";
+        group.dataset.connectionTop = "false";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
 
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "true";
-        group.dataset.pipkaBottom = "true";
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true";
     }
 
     canvas.appendChild(group); // добавляет path в svg html
