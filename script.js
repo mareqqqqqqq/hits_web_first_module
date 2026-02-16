@@ -158,11 +158,16 @@ document.addEventListener('mouseup', e => {
            conn.parent === block.id && conn.direction === 'vertical'
         );
 
+        
+
         // есть ли блок в том месте, куда хотим встать
         const wouldSnapXRight = bx + bBox.width - 10;
         const wouldSnapXLeft = bx - selBBox.width + 10;
-        
+        const wouldSnapY = by + bBox.height - 11; 
+        const wouldSnapX = bx;   
         // поверяем, не занято ли место справа
+
+
         const isSpaceRightTaken = blocks.some(otherBlock => {
             const otherPos = getBlockPos(otherBlock);
             return Math.abs(otherPos.x - wouldSnapXRight) < 100 && 
@@ -175,6 +180,14 @@ document.addEventListener('mouseup', e => {
             return Math.abs(otherPos.x - wouldSnapXLeft) < 100 && 
                    Math.abs(otherPos.y - by) < 100;
         });
+
+        const isSpaceVerticalTaken = blocks.some(otherBlock => {
+            const otherPos = getBlockPos(otherBlock);
+            return Math.abs(otherPos.x - wouldSnapX) < 40 && 
+                   Math.abs(otherPos.y - wouldSnapY) < 40;
+        });
+
+
 
         if (dxRight < 100 && dy < 100 && 
             block.dataset.connectorRight === "true" && 
@@ -190,7 +203,9 @@ document.addEventListener('mouseup', e => {
             connections.push({
                 parent: block.id,
                 child: selected.id,
-                position: 'right'
+                position: 'right',
+                parent_block_type: block.dataset.data_type,
+                child_block_type: selected.dataset.data_type
             });
         }
         
@@ -210,14 +225,16 @@ document.addEventListener('mouseup', e => {
             connections.push({
                 parent: block.id,
                 child: selected.id,
-                position: 'left'
+                position: 'left',
+                parent_block_type: block.dataset.data_type,
+                child_block_type: selected.dataset.data_type
             });
         }
 
         // ВЕРТИКАЛЬНЫЙ ОБЩИЙ
         else if (dxVer< 70 && dyVer < 70 && 
             !hasVerticalChild && selected.dataset.connectionTop === "true"
-             && block.dataset.connectorBottom === "true") {
+             && block.dataset.connectorBottom === "true" && !isSpaceVerticalTaken) {
             const snapX = bx; 
             const snapY = by + bBox.height - 11; 
 
@@ -226,7 +243,9 @@ document.addEventListener('mouseup', e => {
             connections.push({
                 parent: block.id,
                 child: selected.id,
-                direction: 'vertical'
+                position: 'vertical',
+                parent_block_type: block.dataset.data_type,
+                child_block_type: selected.dataset.data_type
             });
         }
     });
@@ -276,6 +295,44 @@ canvas.addEventListener('mousedown', e => {
 })
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// дбавил trash_bin(для css-ера)
+const trash_bin = document.getElementById('trash_bin');
+
+trash_bin.addEventListener('mouseup', e => {
+    if (!selected) return; 
+
+    const block_id = selected.id; 
+     
+    // фильтруем и удаляем 
+    connections = connections.filter(conn => // conn - каждый отдельный обьект в масииве 
+        conn.parent !== block_id && conn.child !== block_id // крч это как фильтр он оставляет только те где прокатывает условие 
+    );
+
+    selected.remove(); 
+    selected = null; 
+})
+
+
 // класс для ввода в output
 function addLine (text, type = "output"){
     const body = document.getElementById("outputBody");
@@ -291,30 +348,31 @@ function addLine (text, type = "output"){
 setTimeout(()=> addLine("Programm is finished", "output"), 1500);
 
 //Очистка воркспейса sdfsdf
-//Очистка воркспейса sdfsdf
 const clearButton = document.getElementById("clearContentButton");
 
-clearButton.addEventListener("click", () =>{ 
+clearButton.addEventListener("click", () => { 
     const blocks = canvas.querySelectorAll(".block");
+    
+    if (blocks.length === 0) return;
 
     blocks.forEach(block => {
-
         const matrix = block.transform.baseVal.consolidate().matrix;
-
         const x = matrix.e;
         const y = matrix.f;
 
-        block.setAttribute(
-            "transform",
-            `translate(${x}, ${y}) scale(0.8)`
-        );
-
+        block.setAttribute("transform", `translate(${x}, ${y}) scale(0.8)`);
         block.classList.add("clear");
     });
 
     setTimeout(() => {
-        canvas.replaceChild();
-        selected = null;
+        blocks.forEach(block => {
+            if (block.parentNode) {
+                block.remove(); 
+            }
+        });
+        
+        connections = []; 
+        selected = null; 
     }, 300);
- });
+});
 
