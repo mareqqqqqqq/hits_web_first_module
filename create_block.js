@@ -295,7 +295,7 @@ function createBlock(x, y, color, id, data_type) {
                     input.focus();
                 }
             });
-
+    //при потере фокуса отрабаотывается
             input.addEventListener("blur", () => {
                 if (input.value.trim() === "") {
                     input.style.display = "none";
