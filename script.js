@@ -177,8 +177,8 @@ document.addEventListener('mouseup', e => {
         });
 
         if (dxRight < 100 && dy < 100 && 
-            block.dataset.pipkaRight === "true" && 
-            selected.dataset.pizdaLeft === "true" && 
+            block.dataset.connectorRight === "true" && 
+            selected.dataset.connectionLeft === "true" && 
             !hasRightChild && 
             !isSpaceRightTaken)  
         {
@@ -197,8 +197,8 @@ document.addEventListener('mouseup', e => {
 
         //  ОБЩИЙ СЛУЧАЙ ЛЕВО
         else if (dxLeft < 100 && dy < 100 && 
-                 (block.dataset.pizdaLeft === "true" && 
-                 selected.dataset.pipkaRight === "true")  && 
+                 (block.dataset.connectionLeft === "true" && 
+                 selected.dataset.connectorRight === "true")  && 
                  !hasLeftChild && 
                  !isSpaceLeftTaken)  
         {
@@ -216,8 +216,8 @@ document.addEventListener('mouseup', e => {
 
         // ВЕРТИКАЛЬНЫЙ ОБЩИЙ
         else if (dxVer< 70 && dyVer < 70 && 
-            !hasVerticalChild && selected.dataset.pizdaTop === "true"
-             && block.dataset.pipkaBottom === "true") {
+            !hasVerticalChild && selected.dataset.connectionTop === "true"
+             && block.dataset.connectorBottom === "true") {
             const snapX = bx; 
             const snapY = by + bBox.height - 11; 
 

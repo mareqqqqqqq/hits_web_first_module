@@ -24,7 +24,7 @@ function createBlock(x, y, color, id, data_type) {
         }
     
     if (data_type === "if_block") { //прямоугольник h100 v60 h -100 Z 
-          path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h100    v60 h-100 l-10,10 h-25 l-10,-10 h-10 Z");
+          path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v60 h-165 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "else_block") {
@@ -237,69 +237,184 @@ function createBlock(x, y, color, id, data_type) {
     }
 
 
+    //Доработка блока if чтобы было 3 вариативных менюшек
+    if (data_type === "if_block") {
+
+        const operators = [">", "<", "=", "!=", ">=", "<="];
+        const mockVariables = ["1", "2", "3"];
+
+        function createValueSelector (x) {
+            const foreign = document.createElementNS(ns, "foreignObject");
+            foreign.setAttribute("x", x);
+            foreign.setAttribute("y", 20);
+            foreign.setAttribute("width", 70);
+            foreign.setAttribute("height", 25);
+
+            const container = document.createElement("div");
+            container.style.width = "100%";
+            container.style.height = "100%";
+            container.style.display = "flex";
+
+            const select = document.createElement("select");
+            select.style.width = "100%";
+            select.style.height = "100%";
+            select.style.fontSize = "12px";
+            select.style.fontFamily = "Inter";
+            select.style.background = "rgba(255, 255, 255, 0.9)";
+            select.style.border = "none";
+            select.style.outline = "none";
+
+            mockVariables.forEach(v => {
+                const option = document.createElement("option");
+                option.value = v;
+                option.textContent = v;
+                select.appendChild(option);
+            });
+
+            const customOption = document.createElement("option");
+            customOption.value = "custom";
+            customOption.textContent = "Другое";
+            select.appendChild(customOption);
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.style.display = "none";
+            input.style.width = "100%";
+            input.style.height = "100%";
+            input.style.fontSize = "12px";
+            input.style.fontFamily = "Inter";
+            input.style.border = "none";
+            input.style.outline = "none";
+            input.style.background = "rgba(255, 255, 255, 0.9)";
+            input.placeholder = "Введите:";
+
+            select.addEventListener("change", () => {
+                if (select.value === "custom") {
+                    select.style.display = "none";
+                    input.style.display = "block";
+                    input.focus();
+                }
+            });
+
+            input.addEventListener("blur", () => {
+                if (input.value.trim() === "") {
+                    input.style.display = "none";
+                    select.style.display = "block";
+                    select.value = mockVariables[0];
+                }
+            });
+
+            select.addEventListener("mousedown", e => e.stopPropagation());
+            input.addEventListener("mousedown", e => e.stopPropagation());
+            foreign.addEventListener("mousedown", e => e.stopPropagation());
+
+            container.appendChild(select);
+            container.appendChild(input);
+            foreign.appendChild(container);
+
+            return foreign;
+        }
+
+        function createOperatorSelect(x) {
+            const foreign = document.createElementNS(ns, "foreignObject");
+            foreign.setAttribute("x", x);
+            foreign.setAttribute("y", 20);
+            foreign.setAttribute("width", 50);
+            foreign.setAttribute("height", 25);
+
+            const select = document.createElement("select");
+
+            select.style.width = "100%";
+            select.style.height = "100%";
+            select.fontSize = "12px";
+            select.style.fontFamily = "Inter";
+            select.style.background = "rgba(255, 255, 255, 0.9)";
+            select.style.border = "none";
+            select.style.outline = "none";
+
+            operators.forEach(op => {
+                const option = document.createElement("option");
+                option.value = op;
+                option.textContent = op;
+                select.appendChild(option);
+            });
+
+            select.addEventListener("mousedown", e => e.stopPropagation());
+
+            foreign.appendChild(select);
+            return foreign;
+        }
+
+        group.appendChild(createValueSelector(5, "Левое"));
+
+        group.appendChild(createOperatorSelect(85));
+
+        group.appendChild(createValueSelector(145, "Правое"));
+    }
+
     
     if (data_type === "assignment_block") {
-        group.dataset.pizdaTop = "true";
-        group.dataset.pizdaLeft = "false";
-        group.dataset.pizdaRight = "false";
-        group.dataset.pizdaBottom = "false"; 
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false"; 
 
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "false";
-        group.dataset.pipkaBottom = "false"; 
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "false"; 
     }
 
     else if (data_type === "varuable_block") {
-        group.dataset.pizdaTop = "false";
-        group.dataset.pizdaLeft = "true";
-        group.dataset.pizdaRight = "false";
-        group.dataset.pizdaBottom = "false";
+        group.dataset.connectionTop = "false";
+        group.dataset.connectionLeft = "true";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
 
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "true";
-        group.dataset.pipkaBottom = "true"; 
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true"; 
     }
 
 
     else if (data_type === "then_block" || data_type === "else_block")
     {
-        group.dataset.pizdaTop = "true";
-        group.dataset.pizdaLeft = "false";
-        group.dataset.pizdaRight = "false";
-        group.dataset.pizdaBottom = "false";
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
 
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "true";
-        group.dataset.pipkaBottom = "true"; 
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true"; 
     }
     
     else if (data_type === "output_block" || data_type === "if_block" )
     {
-        group.dataset.pizdaTop = "true";
-        group.dataset.pizdaLeft = "false";
-        group.dataset.pizdaRight = "false";
-        group.dataset.pizdaBottom = "false";
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
 
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "false";
-        group.dataset.pipkaBottom = "true"; 
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
     }
 
     else if (data_type === "connector_block")
     {
-        group.dataset.pizdaTop = "false";
-        group.dataset.pizdaLeft = "false";
-        group.dataset.pizdaRight = "false";
-        group.dataset.pizdaBottom = "false";
+        group.dataset.connectionTop = "false";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
 
-        group.dataset.pipkaTop = "false";
-        group.dataset.pipkaLeft = "false";
-        group.dataset.pipkaRight = "true";
-        group.dataset.pipkaBottom = "true";
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true";
     }
 
     canvas.appendChild(group); // добавляет path в svg html
