@@ -58,15 +58,66 @@ function LeftPartOfCodeBlock() {
 
     let block_id = connection_array_element_with_start_block.child; 
     let block = document.getElementById(block_id);
-    let block_type = block.dataset.data_type; 
+    let block_type = block.dataset.data_type;
+    
+    const allowed_blocks = ["if_block", "output_block"]; 
 
+    if (allowed_blocks.includes(block_type))
     switch (block_type) {
         case "if_block":
+            HandleIfBlock(block_id); 
+
+        case "else_block":
             break;
+
+        case "then_block":
+            break; 
+
+        case "output_block": 
+            break;
+    }
+
+    else { 
+
     }
 }
 
-    
+function HandleIfBlock(block_id) {
+    let block = document.getElementById(block_id);
+    if (!block) {
+        InvalidSyntacsisError();
+    }
+
+    return null; 
+}
+
+function HandleElseBlock(block_id) {
+    let block = document.getElementById(block_id);
+    if (!block) {
+        InvalidSyntacsisError();
+    }
+
+    return null; 
+}
+
+function HandleThenBlockBlock(block_id) {
+    let block = document.getElementById(block_id);
+    if (!block) {
+        InvalidSyntacsisError();
+    }
+
+    return null; 
+}
+
+function HandleOutputBlock(block_id) {
+    let block = document.getElementById(block_id);
+    if (!block) {
+        InvalidSyntacsisError();
+    }
+
+    return null; 
+}
+
 function getVaruableBlockValue(blockId) {
     const block = document.getElementById(blockId); 
     if (!block) return null; 
@@ -99,11 +150,21 @@ function getAssignmentBlockValue(blockId) {
     return null;
 }
 
+function getIfBlockValue(block_id) {
+    const block = document.getElementById(blockId); 
+    if (!block) return null;
+
+    const foreignObjects = block.querySelectorAll('foreignObject'); 
+
+    
+
+
+}
+
 start_button.addEventListener('click', e => {
     varuable_list.length = 0;
     GetAllVaruables(); 
 })
-
 
 window.script = this; 
 
