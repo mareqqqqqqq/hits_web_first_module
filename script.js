@@ -6,7 +6,7 @@ let connections = [];
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .connector_block, .then_block' 
+    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .then_block , .start_block' 
 );
 
 const varuable_block_dirca = document.querySelectorAll (
@@ -22,14 +22,12 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
         // задаём цвета для дивов, свг блоков, на самом деле
         const color = 
             el.classList.contains('then_block') ? '#336431' :
-            el.classList.contains('then_block') ? '#336431' :
             el.classList.contains('if_block') ? '#998b39cc' :
-            el.classList.contains('else_block') ? '#9f0404' :
             el.classList.contains('else_block') ? '#9f0404' :
             el.classList.contains('assignment_block') ? '#494bd4' :
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             el.classList.contains('output_block') ? '#7e7676' :
-            el.classList.contains('connector_block') ? '#492cc9' :
+            el.classList.contains('start_block') ? '#21da5e' :
             '#4caf50';
 
     
@@ -50,39 +48,25 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
                 path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");    
             }
 
-            else if (el.classList.contains("if_block"))
-            {
+            else if (el.classList.contains("if_block")){
                 path = createBlock(x, y, color, 'block_' + Date.now(), "if_block");
             }
 
-            else if (el.classList.contains("else_block"))
-            {
+            else if (el.classList.contains("else_block")){
                 path = createBlock(x, y, color, 'block_' + Date.now(), "else_block");
             }
             
-            else if (el.classList.contains("then_block"))
-            {
+            else if (el.classList.contains("then_block")){
                  path = createBlock(x, y, color, 'block_' + Date.now(), "then_block");
             }
 
-
-            else if (el.classList.contains("else_block"))
-            {
-                path = createBlock(x, y, color, 'block_' + Date.now(), "else_block");
-            }
-            
-            else if (el.classList.contains("then_block"))
-            {
-                 path = createBlock(x, y, color, 'block_' + Date.now(), "then_block");
-            }
-
-            else if (el.classList.contains("output_block"))
-            {
+            else if (el.classList.contains("output_block")){
                 path = createBlock(x, y, color, 'block_' + Date.now(), "output_block");
             }
 
-            else if (el.classList.contains("connector_block")){
-                path = createBlock(x, y, color, 'block_' + Date.now(), "connector_block");
+
+            else if (el.classList.contains("start_block")){
+                path = createBlock(x, y, color, 'block_' + Date.now(), "start_block");
             }
 
             //  этот болок выбран для перетасиквания 
@@ -158,8 +142,6 @@ document.addEventListener('mouseup', e => {
            conn.parent === block.id && conn.direction === 'vertical'
         );
 
-        
-
         // есть ли блок в том месте, куда хотим встать
         const wouldSnapXRight = bx + bBox.width - 10;
         const wouldSnapXLeft = bx - selBBox.width + 10;
@@ -186,8 +168,6 @@ document.addEventListener('mouseup', e => {
             return Math.abs(otherPos.x - wouldSnapX) < 40 && 
                    Math.abs(otherPos.y - wouldSnapY) < 40;
         });
-
-
 
         if (dxRight < 100 && dy < 100 && 
             block.dataset.connectorRight === "true" && 
@@ -295,26 +275,6 @@ canvas.addEventListener('mousedown', e => {
 })
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // дбавил trash_bin(для css-ера)
 const trash_bin = document.getElementById('trash_bin');
 
@@ -376,3 +336,5 @@ clearButton.addEventListener("click", () => {
     }, 300);
 });
 
+
+window.script = this; 
