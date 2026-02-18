@@ -22,9 +22,7 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
         // задаём цвета для дивов, свг блоков, на самом деле
         const color = 
             el.classList.contains('then_block') ? '#336431' :
-            el.classList.contains('then_block') ? '#336431' :
             el.classList.contains('if_block') ? '#998b39cc' :
-            el.classList.contains('else_block') ? '#9f0404' :
             el.classList.contains('else_block') ? '#9f0404' :
             el.classList.contains('assignment_block') ? '#494bd4' :
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
@@ -52,8 +50,7 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
                 path = createBlock(x, y, color, 'block_' + Date.now(), "varuable_block");    
             }
 
-            else if (el.classList.contains("if_block"))
-            {
+            else if (el.classList.contains("if_block")){
                 path = createBlock(x, y, color, 'block_' + Date.now(), "if_block");
             }
 
@@ -246,26 +243,6 @@ canvas.addEventListener('mousedown', e => {
 })
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // дбавил trash_bin(для css-ера)
 const trash_bin = document.getElementById('trash_bin');
 
@@ -327,3 +304,5 @@ clearButton.addEventListener("click", () => {
     }, 300);
 });
 
+
+window.script = this; 
