@@ -6,7 +6,7 @@ let connections = [];
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .connector_block, .then_block' 
+    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .connector_block, .then_block, .arif_block, .cycle_block' 
 );
 
 const varuable_block_dirca = document.querySelectorAll (
@@ -30,6 +30,8 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             el.classList.contains('output_block') ? '#7e7676' :
             el.classList.contains('connector_block') ? '#492cc9' :
+            el.classList.contains('arif_block') ? '#77ceda' :
+            el.classList.contains('cycle_block') ? '#1e2464' :
             '#4caf50';
 
     
@@ -55,16 +57,6 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
                 path = createBlock(x, y, color, 'block_' + Date.now(), "if_block");
             }
 
-            else if (el.classList.contains("else_block"))
-            {
-                path = createBlock(x, y, color, 'block_' + Date.now(), "else_block");
-            }
-            
-            else if (el.classList.contains("then_block"))
-            {
-                 path = createBlock(x, y, color, 'block_' + Date.now(), "then_block");
-            }
-
 
             else if (el.classList.contains("else_block"))
             {
@@ -83,6 +75,14 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
 
             else if (el.classList.contains("connector_block")){
                 path = createBlock(x, y, color, 'block_' + Date.now(), "connector_block");
+            }
+
+            else if (el.classList.contains("arif_block")){
+                path = createBlock(x, y, color, 'block_' + Date.now(), "arif_block");
+            }
+
+            else if (el.classList.contains("cycle_block")){
+                path = createBlock(x, y, color, 'block_' + Date.now(), "cycle_block");
             }
 
             //  этот болок выбран для перетасиквания 
@@ -112,149 +112,113 @@ document.addEventListener('mousemove',e => {
     selected.setAttribute('transform', `translate(${x},${y})`);
 });
 
-// слушаем на всём документе чтобы мы могли отпутить даже вне сanvas
-document.addEventListener('mouseup', e => {
-    if (!selected) return;
+const SNAP_OVERLAP = 10; 
 
-    const selMatrix = selected.transform.baseVal.consolidate().matrix;
-    const selBBox = selected.getBBox();
+function addConnection(parentId, childId, pos, parentType, childType) {
+    if (!connections.some(c => c.parent === parentId && c.child === childId)) {
+        connections.push({ parent: parentId, child: childId, position: pos, parent_type: parentType, child_type: childType});
+    }
+}
 
-    const selX = selMatrix.e;
-    const selY = selMatrix.f;
+canvas.addEventListener('mouseup', () => {
+    if (!selected) 
+        return;
 
-    const blocks = Array.from(document.querySelectorAll('.block'))
-        .filter(b => b !== selected);
+    const selBox = selected.getBBox(); 
+    const selPos = getBlockPos(selected); // позиция на поле
+    const allBlocks = Array.from(canvas.querySelectorAll('.block')); 
 
-    blocks.forEach(block => {
-        const m = block.transform.baseVal.consolidate().matrix;
+    // проверка: свободен ли конкретный "выход" (порт) у блока
+    const isConnectorFree = (blockId, position) => {
+        return !connections.some(c => 
+            (c.parent === blockId && c.position === position)
+        );
+    };
+
+    // свободен ли вход у блока 
+    const isInputFree = (blockId, position) => {
+        return !connections.some(c => 
+            (c.child === blockId && c.position === position)
+        );
+    };
+
+    let snapped = false;
+
+    for (let block of allBlocks) {
+        if (block === selected || snapped) 
+            continue;
+
         const bBox = block.getBBox();
+        const bPos = getBlockPos(block);
 
-        const bx = m.e;
-        const by = m.f;
-
-       
-        const dxRight = Math.abs((selX + selBBox.width) - bx - selBBox.width - selBBox.width) ;
+        const dxVer = Math.abs(selPos.x - bPos.x); 
         
-        // selected слева от блок
-        const dxLeft = Math.abs((selX + selBBox.width) - bx);
+        if (dxVer < 50) {
+            const targetYBottom = bPos.y + bBox.height - SNAP_OVERLAP; 
+            const targetYTop = bPos.y - selBox.height + SNAP_OVERLAP;
 
-        // расстояние по вертикали (центры)
-
-        const dy = Math.abs((selY - selBBox.height / 2) - (by - bBox.height / 2));
-
-        const dxVer = Math.abs((selX - selBBox.width / 2) - (bx - bBox.width / 2));
-        const dyVer = Math.abs(selY - (by + bBox.height));
-
-        const hasRightChild = connections.some(conn => 
-            conn.parent === block.id && conn.position === 'right'
-        );
-        
-        // есть ли у блока ребенок СЛЕВА
-        const hasLeftChild = connections.some(conn => 
-            conn.parent === block.id && conn.position === 'left'
-        );
-
-        const hasVerticalChild = connections.some(conn =>
-           conn.parent === block.id && conn.direction === 'vertical'
-        );
-
-        
-
-        // есть ли блок в том месте, куда хотим встать
-        const wouldSnapXRight = bx + bBox.width - 10;
-        const wouldSnapXLeft = bx - selBBox.width + 10;
-        const wouldSnapY = by + bBox.height - 11; 
-        const wouldSnapX = bx;   
-        // поверяем, не занято ли место справа
-
-
-        const isSpaceRightTaken = blocks.some(otherBlock => {
-            const otherPos = getBlockPos(otherBlock);
-            return Math.abs(otherPos.x - wouldSnapXRight) < 100 && 
-                   Math.abs(otherPos.y - by) < 100;
-        });
-        
-        // проверяем, не занято ли место слева
-        const isSpaceLeftTaken = blocks.some(otherBlock => {
-            const otherPos = getBlockPos(otherBlock);
-            return Math.abs(otherPos.x - wouldSnapXLeft) < 100 && 
-                   Math.abs(otherPos.y - by) < 100;
-        });
-
-        const isSpaceVerticalTaken = blocks.some(otherBlock => {
-            const otherPos = getBlockPos(otherBlock);
-            return Math.abs(otherPos.x - wouldSnapX) < 40 && 
-                   Math.abs(otherPos.y - wouldSnapY) < 40;
-        });
-
-
-
-        if (dxRight < 100 && dy < 100 && 
-            block.dataset.connectorRight === "true" && 
-            selected.dataset.connectionLeft === "true" && 
-            !hasRightChild && 
-            !isSpaceRightTaken)  
-        {
-            const snapX = bx + bBox.width - 10;
-            const snapY = by;
-            
-            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
-            
-            connections.push({
-                parent: block.id,
-                child: selected.id,
-                position: 'right',
-                parent_block_type: block.dataset.data_type,
-                child_block_type: selected.dataset.data_type
-            });
-        }
-        
-
-        //  ОБЩИЙ СЛУЧАЙ ЛЕВО
-        else if (dxLeft < 100 && dy < 100 && 
-                 (block.dataset.connectionLeft === "true" && 
-                 selected.dataset.connectorRight === "true")  && 
-                 !hasLeftChild && 
-                 !isSpaceLeftTaken)  
-        {
-            const snapX = bx - selBBox.width + 10;
-            const snapY = by;
-            
-            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
-            
-            connections.push({
-                parent: block.id,
-                child: selected.id,
-                position: 'left',
-                parent_block_type: block.dataset.data_type,
-                child_block_type: selected.dataset.data_type
-            });
+            // магнитим ПОД блок 
+            if (Math.abs(selPos.y - targetYBottom) < 50 && 
+                selected.dataset.connectionTop === "true" && 
+                block.dataset.connectorBottom === "true" &&
+                isConnectorFree(block.id, "vertical") && // выход родителя свободен
+                isInputFree(selected.id, "vertical")) { // вход ребенка свободен
+                
+                selected.setAttribute('transform', `translate(${bPos.x}, ${targetYBottom})`);
+                addConnection(selected.id, block.id, 'vertical', block.dataset.data_type, selected.dataset.data_type); 
+                snapped = true;
+            } 
+            // магнитим НАД блоком 
+            else if (Math.abs(selPos.y - targetYTop) < 50 && 
+                     selected.dataset.connectorBottom === "true" && 
+                     block.dataset.connectionTop === "true" &&
+                     isConnectorFree(selected.id, "vertical") && // наш выход свободен
+                     isInputFree(block.id, "vertical")) { // вход нижнего свободен
+                
+                selected.setAttribute('transform', `translate(${bPos.x}, ${targetYTop})`);
+                addConnection(selected.id, block.id, 'vertical', block.dataset.data_type, selected.dataset.data_type);
+                snapped = true;
+            }
         }
 
-        // ВЕРТИКАЛЬНЫЙ ОБЩИЙ
-        else if (dxVer< 70 && dyVer < 70 && 
-            !hasVerticalChild && selected.dataset.connectionTop === "true"
-             && block.dataset.connectorBottom === "true" && !isSpaceVerticalTaken) {
-            const snapX = bx; 
-            const snapY = by + bBox.height - 11; 
+        if (snapped) break;
 
-            selected.setAttribute('transform', `translate(${snapX}, ${snapY})`);
+        const dyHor = Math.abs(selPos.y - bPos.y);
+        
+        if (dyHor < 50) {
+            const targetXRight = bPos.x + bBox.width - SNAP_OVERLAP;
+            const targetXLeft = bPos.x - selBox.width + SNAP_OVERLAP;
 
-            connections.push({
-                parent: block.id,
-                child: selected.id,
-                position: 'vertical',
-                parent_block_type: block.dataset.data_type,
-                child_block_type: selected.dataset.data_type
-            });
+            // магнитим СПРАВА 
+            if (Math.abs(selPos.x - targetXRight) < 50 && 
+                selected.dataset.connectionLeft === "true" && 
+                block.dataset.connectorRight === "true" &&
+                isConnectorFree(block.id, 'right') &&
+                isInputFree(selected.id, 'right')) {
+                
+                selected.setAttribute('transform', `translate(${targetXRight}, ${bPos.y})`);
+                addConnection(selected.id, block.id, 'right', block.dataset.data_type, selected.dataset.data_type);
+                snapped = true;
+            }
+            // магнитим СЛЕВА 
+            else if (Math.abs(selPos.x - targetXLeft) < 50 && 
+                     selected.dataset.connectorRight === "true" && 
+                     block.dataset.connectionLeft === "true" &&
+                     isConnectorFree(selected.id, 'left') &&
+                     isInputFree(block.id, 'left')) {
+                
+                selected.setAttribute('transform', `translate(${targetXLeft}, ${bPos.y})`);
+                addConnection(selected.id, block.id, 'left', block.dataset.data_type, selected.dataset.data_type);
+                snapped = true;
+            }
         }
-    });
+    }
 
     selected.style.cursor = 'grab';
     selected = null;
 });
 
-// 
+
 function getBlockPos(block) {
     const matrix = block.transform.baseVal.consolidate().matrix;
     return { x: matrix.e, y: matrix.f };
