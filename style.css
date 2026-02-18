@@ -224,7 +224,7 @@
     opacity: 0;
 }
 
-.varuable_block, .then_block, .if_block, .assignment_block, .output_block, .else_block, .connector_block, .arif_block, .cycle_block {
+.varuable_block, .then_block, .if_block, .assignment_block, .output_block, .else_block, .arif_block, .cycle_block, .start_block {
     background-color:rgba(90, 85, 100, 0.822); 
     padding: 5px 10px; /*отступы внутри блока*/
     border-radius: 5px; 

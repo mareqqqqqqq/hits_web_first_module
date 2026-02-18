@@ -6,7 +6,7 @@ let connections = [];
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .connector_block, .then_block, .arif_block, .cycle_block' 
+    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .then_block, .arif_block, .cycle_block, .start_block' 
 );
 
 const varuable_block_dirca = document.querySelectorAll (
@@ -29,9 +29,9 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             el.classList.contains('assignment_block') ? '#494bd4' :
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             el.classList.contains('output_block') ? '#7e7676' :
-            el.classList.contains('connector_block') ? '#492cc9' :
             el.classList.contains('arif_block') ? '#77ceda' :
             el.classList.contains('cycle_block') ? '#1e2464' :
+            el.classList.contains('start_block') ? '#25c733' :
             '#4caf50';
 
     
@@ -73,16 +73,16 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
                 path = createBlock(x, y, color, 'block_' + Date.now(), "output_block");
             }
 
-            else if (el.classList.contains("connector_block")){
-                path = createBlock(x, y, color, 'block_' + Date.now(), "connector_block");
-            }
-
             else if (el.classList.contains("arif_block")){
                 path = createBlock(x, y, color, 'block_' + Date.now(), "arif_block");
             }
 
             else if (el.classList.contains("cycle_block")){
                 path = createBlock(x, y, color, 'block_' + Date.now(), "cycle_block");
+            }
+
+            else if (el.classList.contains("start_block")){
+                path = createBlock(x, y, color, 'block_' + Date.now(), "start_block");
             }
 
             //  этот болок выбран для перетасиквания 
@@ -121,62 +121,49 @@ function addConnection(parentId, childId, pos, parentType, childType) {
 }
 
 canvas.addEventListener('mouseup', () => {
-    if (!selected) 
-        return;
+    if (!selected) return;
 
     const selBox = selected.getBBox(); 
-    const selPos = getBlockPos(selected); // позиция на поле
+    const selPos = getBlockPos(selected); 
     const allBlocks = Array.from(canvas.querySelectorAll('.block')); 
 
-    // проверка: свободен ли конкретный "выход" (порт) у блока
-    const isConnectorFree = (blockId, position) => {
-        return !connections.some(c => 
-            (c.parent === blockId && c.position === position)
-        );
-    };
-
-    // свободен ли вход у блока 
-    const isInputFree = (blockId, position) => {
-        return !connections.some(c => 
-            (c.child === blockId && c.position === position)
-        );
-    };
+    const isConnectorFree = (blockId, position) => !connections.some(c => c.parent === blockId && c.position === position);
+    const isInputFree = (blockId, position) => !connections.some(c => c.child === blockId && c.position === position);
 
     let snapped = false;
 
     for (let block of allBlocks) {
-        if (block === selected || snapped) 
-            continue;
+        if (block === selected || snapped) continue;
 
         const bBox = block.getBBox();
         const bPos = getBlockPos(block);
 
+
         const dxVer = Math.abs(selPos.x - bPos.x); 
-        
         if (dxVer < 50) {
             const targetYBottom = bPos.y + bBox.height - SNAP_OVERLAP; 
             const targetYTop = bPos.y - selBox.height + SNAP_OVERLAP;
 
-            // магнитим ПОД блок 
+            // магнитим СНИЗУ 
             if (Math.abs(selPos.y - targetYBottom) < 50 && 
                 selected.dataset.connectionTop === "true" && 
                 block.dataset.connectorBottom === "true" &&
-                isConnectorFree(block.id, "vertical") && // выход родителя свободен
-                isInputFree(selected.id, "vertical")) { // вход ребенка свободен
+                isConnectorFree(block.id, "vertical") && 
+                isInputFree(selected.id, "vertical")) {
                 
                 selected.setAttribute('transform', `translate(${bPos.x}, ${targetYBottom})`);
-                addConnection(selected.id, block.id, 'vertical', block.dataset.data_type, selected.dataset.data_type); 
+                addConnection(block.id, selected.id, 'vertical', block.dataset.data_type, selected.dataset.data_type); 
                 snapped = true;
             } 
-            // магнитим НАД блоком 
+
             else if (Math.abs(selPos.y - targetYTop) < 50 && 
                      selected.dataset.connectorBottom === "true" && 
                      block.dataset.connectionTop === "true" &&
-                     isConnectorFree(selected.id, "vertical") && // наш выход свободен
-                     isInputFree(block.id, "vertical")) { // вход нижнего свободен
+                     isConnectorFree(selected.id, "vertical") && 
+                     isInputFree(block.id, "vertical")) {
                 
                 selected.setAttribute('transform', `translate(${bPos.x}, ${targetYTop})`);
-                addConnection(selected.id, block.id, 'vertical', block.dataset.data_type, selected.dataset.data_type);
+                addConnection(selected.id, block.id, 'vertical', selected.dataset.data_type, block.dataset.data_type);
                 snapped = true;
             }
         }
@@ -184,31 +171,30 @@ canvas.addEventListener('mouseup', () => {
         if (snapped) break;
 
         const dyHor = Math.abs(selPos.y - bPos.y);
-        
         if (dyHor < 50) {
             const targetXRight = bPos.x + bBox.width - SNAP_OVERLAP;
             const targetXLeft = bPos.x - selBox.width + SNAP_OVERLAP;
 
-            // магнитим СПРАВА 
+
             if (Math.abs(selPos.x - targetXRight) < 50 && 
                 selected.dataset.connectionLeft === "true" && 
                 block.dataset.connectorRight === "true" &&
-                isConnectorFree(block.id, 'right') &&
-                isInputFree(selected.id, 'right')) {
+                isConnectorFree(block.id, 'horizontal') && 
+                isInputFree(selected.id, 'horizontal')) {
                 
                 selected.setAttribute('transform', `translate(${targetXRight}, ${bPos.y})`);
-                addConnection(selected.id, block.id, 'right', block.dataset.data_type, selected.dataset.data_type);
+                addConnection(block.id, selected.id, 'horizontal', block.dataset.data_type, selected.dataset.data_type);
                 snapped = true;
             }
-            // магнитим СЛЕВА 
+
             else if (Math.abs(selPos.x - targetXLeft) < 50 && 
                      selected.dataset.connectorRight === "true" && 
                      block.dataset.connectionLeft === "true" &&
-                     isConnectorFree(selected.id, 'left') &&
-                     isInputFree(block.id, 'left')) {
+                     isConnectorFree(selected.id, 'horizontal') && 
+                     isInputFree(block.id, 'horizontal')) {
                 
                 selected.setAttribute('transform', `translate(${targetXLeft}, ${bPos.y})`);
-                addConnection(selected.id, block.id, 'left', block.dataset.data_type, selected.dataset.data_type);
+                addConnection(selected.id, block.id, 'horizontal', selected.dataset.data_type, block.dataset.data_type);
                 snapped = true;
             }
         }
@@ -217,6 +203,7 @@ canvas.addEventListener('mouseup', () => {
     selected.style.cursor = 'grab';
     selected = null;
 });
+
 
 
 function getBlockPos(block) {

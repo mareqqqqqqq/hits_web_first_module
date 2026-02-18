@@ -27,10 +27,6 @@ function createBlock(x, y, color, id, data_type) {
           path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v60 h-165 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
-    if (data_type === "connector_block")
-    {
-        path.setAttribute("d", "M0,0 v230 h10 l10,10 h25 l10,-10 h10 h130 v-65 h-125  v-100 h115  v-10 l10,-10 v-25 l-10,-10 v-10  Z");
-    }
 
     if (data_type === "else_block") {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
@@ -52,7 +48,9 @@ function createBlock(x, y, color, id, data_type) {
        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v60 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
     
-
+    if (data_type === "start_block") {
+            path.setAttribute("d", "M0,0 h220 v10  l10,10 v25 l-10,10 v10 h-165 l-10,10 h-25 l-10,-10 h-10   Z");
+    }
 
     group.appendChild(path);
     
@@ -401,19 +399,6 @@ function createBlock(x, y, color, id, data_type) {
         group.dataset.connectorBottom = "true"; 
     }
 
-    else if (data_type === "connector_block")
-    {
-        group.dataset.connectionTop = "false";
-        group.dataset.connectionLeft = "false";
-        group.dataset.connectionRight = "false";
-        group.dataset.connectionBottom = "false";
-
-        group.dataset.connectorTop = "false";
-        group.dataset.connectorLeft = "false";
-        group.dataset.connectorRight = "true";
-        group.dataset.connectorBottom = "true";
-    }
-
     else if (data_type === "arif_block")
     {
         group.dataset.connectionTop = "false";
@@ -437,6 +422,19 @@ function createBlock(x, y, color, id, data_type) {
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
         group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
+    }
+
+    else if (data_type === "start_block")
+    {
+        group.dataset.connectionTop = "false";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
         group.dataset.connectorBottom = "true"; 
     }
 
