@@ -155,10 +155,6 @@ function getIfBlockValue(block_id) {
     if (!block) return null;
 
     const foreignObjects = block.querySelectorAll('foreignObject'); 
-
-    
-
-
 }
 
 start_button.addEventListener('click', e => {
