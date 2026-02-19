@@ -50,6 +50,39 @@ function GetAllVaruables() {
     console.table(varuable_list);
 }
 
+function HandleAnyBlock(block_type) {
+    switch (block_type) {
+        case "if_block":
+            HandleIfBlock(block_id);
+
+        case "then_block": 
+            HandleThenBlock(block_id);
+
+        case "else_block": 
+            HandleElseBlock(block_id);
+
+        case "cycle_block": 
+            HandleCycleBlock(block_id);
+
+        case "output_block": 
+            HandleOutputBlock(block_id);
+
+        case "arif_block": 
+            HandleOutputBlock(block_id);
+
+        case "varuable_blcok": 
+            HandleVaruableBlock(block_id);
+
+        case "assignment_block": 
+            HandleAssignmentBlock(block_id);
+
+        case "arif_block": 
+            HandleArifBlock(block_id); 
+    }
+}
+
+
+
 function LeftPartOfCodeBlock() {
     const connection_array_element_with_start_block = connections.find(conn => // нашли соеденение где старт где: родитель - старт, а сын - переменная  
             conn.parent_block_type === "start_block" && conn.child_block_type !== "varuable_block");
@@ -59,26 +92,56 @@ function LeftPartOfCodeBlock() {
     let block_id = connection_array_element_with_start_block.child; 
     let block = document.getElementById(block_id);
     let block_type = block.dataset.data_type;
+
+    console.log(block_id); 
+    console.log(block_type);
     
-    const allowed_blocks = ["if_block", "output_block"]; 
+    const allowed_blocks = ["if_block", "output_block", "arif_block", "cycle_block"]; 
 
-    if (allowed_blocks.includes(block_type))
-    switch (block_type) {
-        case "if_block":
-            HandleIfBlock(block_id); 
+    if (allowed_blocks.includes(block_type)) {
+        switch (block_type) {
 
-        case "else_block":
-            break;
+            case "if_block":
+                let result = HandleIfBlock(block_id);
 
-        case "then_block":
-            break; 
+                if (result == true) {
+                    // нашли current соединение с нашим блоком
+                    const find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                        conn.parent_block_type === "if_block" && conn.parent === block_id);
 
-        case "output_block": 
-            break;
+                    let next_block_id = find_next_block.child;
+                    let next_block_type = find_next_block.child_block_type; 
+                    let next_block = document.getElementById(next_block_id);
+
+                    console.table(find_next_block); 
+                    console.log(next_block_type); 
+
+                    HandleAnyBlock(next_block_id); 
+                }
+
+                // надо проскакать до else и обрабатывать его, если его нет то дальше скачем то что после явл сыно then блока 
+                else {
+                    
+                }
+
+                
+
+
+
+
+
+            case "else_block":
+                HandleElseBlock(block_id);
+
+            case "then_block":
+                HandleThenBlock(block_id);
+            case "output_block": 
+                HandleOutputBlock(block_id);
+        }
     }
 
     else { 
-
+        InvalidSyntacsisError();
     }
 }
 
@@ -86,9 +149,38 @@ function HandleIfBlock(block_id) {
     let block = document.getElementById(block_id);
     if (!block) {
         InvalidSyntacsisError();
+        return null; 
+
     }
 
-    return null; 
+    let forms_data = getIfBlockValue(block.id); 
+
+    let operator = forms_data.operator; 
+    let right_str = forms_data.right; 
+    let left_str = forms_data.left; 
+
+    let bool_result; 
+
+    let right = Number(right_str);
+    let left = Number(left_str);
+
+    switch(operator) {
+        case ">": bool_result = left > right;
+            break; 
+        case "<": bool_result = left < right;
+            break; 
+        case "=": bool_result = left == right;
+            break; 
+        case "!=": bool_result = left != right;
+            break; 
+        case ">=": bool_result = left >= right;
+            break;  
+        case "<=": bool_result = left <= right;
+            break; 
+    }
+
+    console.log(bool_result);
+    return bool_result; 
 }
 
 function HandleElseBlock(block_id) {
@@ -100,7 +192,7 @@ function HandleElseBlock(block_id) {
     return null; 
 }
 
-function HandleThenBlockBlock(block_id) {
+function HandleThenBlock(block_id) {
     let block = document.getElementById(block_id);
     if (!block) {
         InvalidSyntacsisError();
@@ -117,6 +209,25 @@ function HandleOutputBlock(block_id) {
 
     return null; 
 }
+
+function HandleVaruableBlock(block_id) {
+
+}
+
+function HandleAssignmentBlock(block_id){
+
+}
+
+function HandleArifBlock(block_id) {
+
+}
+
+
+
+
+
+
+
 
 function getVaruableBlockValue(blockId) {
     const block = document.getElementById(blockId); 
@@ -151,15 +262,52 @@ function getAssignmentBlockValue(blockId) {
 }
 
 function getIfBlockValue(block_id) {
-    const block = document.getElementById(blockId); 
+    const block = document.getElementById(block_id); 
     if (!block) return null;
 
-    const foreignObjects = block.querySelectorAll('foreignObject'); 
+    // получаем обььект с этими кака их формами
+    const foreign_objects = block.querySelectorAll('foreignObject');
+
+    // в функцию и будем передать формы из обьекта, в нём как в масисве 
+    function GetForeignObjectsValue(foreign_object) {
+        // одна из кентов будет скрыта 
+        let select = foreign_object.querySelector('select'); 
+        let input = foreign_object.querySelector('input');
+
+        // если есть селект 
+        if (select && select.style.display !== "none") {
+            // console.log("считано селект форма");
+            return select.value; 
+        }
+
+        else if (input && input.style.display !== "none") {
+            // console.log("считано инпут форма");
+            return input.value;
+        }
+    }
+
+    let operatorSelect = foreign_objects[1].querySelector('select');
+    let operator = operatorSelect ? operatorSelect.value : null; 
+
+    let left_num_form_value = GetForeignObjectsValue(foreign_objects[0]); 
+    let right_num_form_value = GetForeignObjectsValue(foreign_objects[2]); 
+
+    return {
+        left: left_num_form_value, 
+        operator:  operator, 
+        right: right_num_form_value
+    }
 }
+
+
+
+
+
 
 start_button.addEventListener('click', e => {
     varuable_list.length = 0;
     GetAllVaruables(); 
+    LeftPartOfCodeBlock()
 })
 
 window.script = this; 

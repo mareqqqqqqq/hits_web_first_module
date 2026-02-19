@@ -27,10 +27,9 @@
           path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v60 h-165 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
-
-        if (data_type === "else_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
-        }
+    if (data_type === "else_block") {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
 
     if (data_type === "then_block"){
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
@@ -121,11 +120,28 @@
                 }
             });
 
-            div.addEventListener("input", function(e) {
-                if (e.target.textContent.trim() !== "") {
-                    e.target.style.color = "black";
-                }
-            });
+        //Фильтрация ввода от некорректных названий
+        div.addEventListener("input", function() {
+            
+            let text = div.textContent;
+
+            text = text.replace(/\s/g, "");
+
+            text = text.replace(/[^a-zA-Z0-9_]/g, "");
+
+            if (/^[0-9]/.test(text)) {
+                text = text.substring(1);
+            }
+
+            div.textContent = text;
+
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.selectNodeContents(div);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        });
 
             div.addEventListener("blur", function() {
                 if (this.textContent.trim() === "") {
@@ -209,11 +225,39 @@
                 }
             });
 
-            div.addEventListener("input", function(e) {
-                if (e.target.textContent.trim() !== "") {
-                    e.target.style.color = "black";
+        div.addEventListener("input", function() {
+
+            let value = this.textContent;
+
+            value = value.replace(/[^0-9\-]/g, "");
+
+            if(value.includes("-")) {
+                value = "-" + value.replace(/-/g, "");
+            }
+
+            this.textContent = value;
+
+            if (this.textContent.trim() !== "") {
+                this.style.color = "black";
+            }
+
+            const selection = window.getSelection();
+            const range = document.createRange();
+
+            range.selectNodeContents(this);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        });
+
+        div.addEventListener("keypress", function(e) {
+            if (!/[0-9]/.test(e.key)) {
+                if (e.key === "-" && this.textContent.length === 0) {
+                    return;
                 }
-            });
+                e.preventDefault();
+            }
+        });
 
             div.addEventListener("blur", function() {
                 if (this.textContent.trim() === "") {
@@ -283,21 +327,21 @@
                 input.style.background = "rgba(255, 255, 255, 0.9)";
                 input.placeholder = "Введите:";
 
-                select.addEventListener("change", () => {
-                    if (select.value === "custom") {
-                        select.style.display = "none";
-                        input.style.display = "block";
-                        input.focus();
-                    }
-                });
-        //при потере фокуса отрабаотывается
-                input.addEventListener("blur", () => {
-                    if (input.value.trim() === "") {
-                        input.style.display = "none";
-                        select.style.display = "block";
-                        select.value = mockVariables[0];
-                    }
-                });
+            select.addEventListener("change", () => {
+                if (select.value === "custom") {
+                    select.style.display = "none";
+                    input.style.display = "block";
+                    input.focus();
+                }
+            });
+//при потере фокуса отрабаотывается
+            input.addEventListener("blur", () => {
+                if (input.value.trim() === "") {
+                    input.style.display = "none";
+                    select.style.display = "block";
+                    select.value = mockVariables[0];
+                }
+            });
 
                 select.addEventListener("mousedown", e => e.stopPropagation());
                 input.addEventListener("mousedown", e => e.stopPropagation());
@@ -347,12 +391,94 @@
             group.appendChild(createValueSelector(145, "Правое"));
         }
 
-        
-        if (data_type === "assignment_block") {
-            group.dataset.connectionTop = "true";
-            group.dataset.connectionLeft = "false";
-            group.dataset.connectionRight = "false";
-            group.dataset.connectionBottom = "false"; 
+
+    //Для вариативного меню в аутпут блок
+
+    if (data_type === "output_block") {
+        const mockVariables = ["1", "2", "3"];
+
+        function createOutputSelect(x) {
+
+            const foreign = document.createElementNS(ns, "foreignObject");
+            foreign.setAttribute("x", x);
+            foreign.setAttribute("y", 20);
+            foreign.setAttribute("width", 70);
+            foreign.setAttribute("height", 25);
+
+            const container = document.createElement("div");
+            container.style.width = "100%";
+            container.style.height = "100%";
+            container.style.display = "flex";
+
+            const select = document.createElement("select");
+            select.style.width = "100%";
+            select.style.height = "100%";
+            select.style.fontSize = "12px";
+            select.style.fontFamily = "Inter";
+            select.style.background = "rgba(255, 255, 255, 0.9)";
+            select.style.color = "black"
+            select.style.border = "none";
+            select.style.outline = "none";
+
+            mockVariables.forEach(v => {
+                const option = document.createElement("option");
+                option.value = v;
+                option.textContent = v;
+                select.appendChild(option);
+            });
+
+            const customOption = document.createElement("option");
+            customOption.value = "custom";
+            customOption.textContent = "Другое";
+            select.appendChild(customOption);
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.style.display = "none";
+            input.style.width = "100%";
+            input.style.height = "100%";
+            input.style.fontSize = "12px";
+            input.style.fontFamily = "Inter";
+            input.style.border = "none";
+            input.style.outline = "none";
+            input.style.background = "rgba(255, 255, 255, 0.9)";
+            input.placeholder = "Введите:";
+
+            select.addEventListener("change", () => {
+                if (select.value === "custom") {
+                    select.style.display = "none";
+                    input.style.display = "block";
+                    input.focus();
+                }
+            });
+
+            input.addEventListener ("blur", () => {
+                if (input.value.trim() === "") {
+                    input.style.display = "none";
+                    select.style.display = "block";
+                    select.value = mockValues[0];
+                }
+            });
+
+            select.addEventListener("mousedown", e => e.stopPropagation());
+            input.addEventListener("mousedown", e => e.stopPropagation());
+            foreign.addEventListener("mousedown, e", e => e.stopPropagation());
+
+            container.appendChild(select);
+            container.appendChild(input);
+            foreign.appendChild(container);
+
+            return foreign;
+        }
+
+        group.appendChild(createOutputSelect(15));
+    }
+    
+    if (data_type === "assignment_block") {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false"; 
 
             group.dataset.connectorTop = "false";
             group.dataset.connectorLeft = "false";

@@ -245,6 +245,14 @@ canvas.addEventListener('mousedown', e => {
 
 // дбавил trash_bin(для css-ера)
 const trash_bin = document.getElementById('trash_bin');
+// анимация тряски
+trash_bin.addEventListener("mouseenter", () => {
+    trash_bin.classList.add("shaking");
+});
+
+trash_bin.addEventListener("mouseleave", () => {
+    trash_bin.classList.remove("shaking");
+});
 
 trash_bin.addEventListener('mouseup', e => {
     if (!selected) return; 
