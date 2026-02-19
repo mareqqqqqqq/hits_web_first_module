@@ -18,7 +18,7 @@ const varuable_block_dirca = document.querySelectorAll (
 sidebarBlocks.forEach(el => { // el - это элемент по которому кликнули   
     el.addEventListener('mousedown', e => { // когда событие маусдаун
         e.preventDefault(); 
-
+        
         // задаём цвета для дивов, свг блоков, на самом деле
         const color = 
             el.classList.contains('then_block') ? '#336431' :

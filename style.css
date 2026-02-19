@@ -224,14 +224,31 @@
 .block.clear {
     opacity: 0;
 }
+/* Контейнеры в сайдбаре теперь просто держат SVG */
+.varuable_block, .assignment_block, .if_block, .then_block, 
+.else_block, .arif_block, .cycle_block, .start_block {
+    background-color: transparent; /* Убираем серый фон */
+    padding: 0;
+    margin: 5px 0;
+    cursor: grab;
+    width: fit-content; /* Чтобы контейнер не растягивался */
+    display: block;
+}
 
-.varuable_block, .then_block, .if_block, .assignment_block, .output_block, .else_block, .arif_block, .cycle_block, .start_block {
-    background-color:rgba(90, 85, 100, 0.822); 
-    padding: 5px 10px; /*отступы внутри блока*/
-    border-radius: 5px; 
-    cursor: grab; 
-    color: #fff; 
-    user-select: none; /*нельзя выделить текст*/
+/* Убираем обрезку, чтобы "хвостики" блоков были видны */
+.sidebar {
+    overflow: visible; 
+}
+
+/* Настройка самих SVG внутри кнопок */
+.sidebar svg {
+    display: block;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); /* Добавим объем */
+    transition: transform 0.1s;
+}
+
+.sidebar svg:hover {
+    transform: translateY(-100px); /* Эффект "подъема" при наведении */
 }
 
 .content svg {
