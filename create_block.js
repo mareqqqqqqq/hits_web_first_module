@@ -27,10 +27,9 @@
           path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v60 h-165 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
-
-        if (data_type === "else_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
-        }
+    if (data_type === "else_block") {
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
 
     if (data_type === "then_block"){
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");

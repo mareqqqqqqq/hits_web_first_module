@@ -113,7 +113,7 @@ const SNAP_OVERLAP = 10;
 
 function addConnection(parentId, childId, pos, parentType, childType) {
     if (!connections.some(c => c.parent === parentId && c.child === childId)) {
-        connections.push({ parent: parentId, child: childId, position: pos, parent_type: parentType, child_type: childType});
+        connections.push({ parent: parentId, child: childId, position: pos, parent_block_type: parentType, child_block_type: childType});
     }
 }
 
