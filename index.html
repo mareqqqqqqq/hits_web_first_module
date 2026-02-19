@@ -22,13 +22,23 @@
                     <div class="varuable_block" draggable="true">переменная</div>
                     <div class="assignment_block" draggable="true">присваивание</div>
                 </div>
+                <div class="arif_block" draggable="true">arif</div>
 
-                <div class="if_block" draggable="true">условие if</div>
-                <div class="then_block" draggable="true">then</div>
-                <div class="else_block" draggable="true">else</div>
+                <div class="row1_blocks">
+                    <div class="if_block" draggable="true">условие if</div>
+                    <div class="then_block" draggable="true">then</div>
+                    <div class="else_block" draggable="true">else</div>
+                </div>
+                
+                
+
+            
+                <div class="start_block" draggable="true">start_block</div>
+                <div class="cycle_block" draggable="true">цикл</div>
                 <div class="output_block" draggable="true">output</div>
-                <div class="connector_block" draggable="true">connector</div>
             </div>
+
+            
 
 
 
@@ -43,7 +53,7 @@
                 <svg id="canvas" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"></svg>
                 
                 <div class="top-content">
-                    <button class="button start_button">Start</button>
+                    <button class="button start_button" id="start_button">Start</button>
                     <button class="button clear_button" id="clearContentButton">Clear</button>
                     <div class="trash" id="trash_bin"><img src="trashBin.png"></div>
                 </div>
@@ -69,6 +79,7 @@
 
         </div>
         <script src="create_block.js"></script>
+        <script src="interpritator.js"></script>
         <script src="script.js"></script>
     </div>
 </body>
