@@ -21,14 +21,14 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
         
         // задаём цвета для дивов, свг блоков, на самом деле
         const color = 
-            el.classList.contains('then_block') ? '#336431' :
-            el.classList.contains('if_block') ? '#998b39cc' :
-            el.classList.contains('else_block') ? '#9f0404' :
-            el.classList.contains('assignment_block') ? '#494bd4' :
+            el.classList.contains('then_block') ? '#70b80e' :
+            el.classList.contains('if_block') ? '#ffac3e' :
+            el.classList.contains('else_block') ? '#fd4a4a' :
+            el.classList.contains('assignment_block') ? '#4e4fbe' :
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
-            el.classList.contains('output_block') ? '#7e7676' :
-            el.classList.contains('arif_block') ? '#77ceda' :
-            el.classList.contains('cycle_block') ? '#1e2464' :
+            el.classList.contains('output_block') ? '#a3a669' :
+            el.classList.contains('arif_block') ? '#5caeb9' :
+            el.classList.contains('cycle_block') ? '#0066ff' :
             el.classList.contains('start_block') ? '#25c733' :
             '#4caf50';
 
@@ -113,7 +113,7 @@ const SNAP_OVERLAP = 10;
 
 function addConnection(parentId, childId, pos, parentType, childType) {
     if (!connections.some(c => c.parent === parentId && c.child === childId)) {
-        connections.push({ parent: parentId, child: childId, position: pos, parent_type: parentType, child_type: childType});
+        connections.push({ parent: parentId, child: childId, position: pos, parent_block_type: parentType, child_block_type: childType});
     }
 }
 
@@ -218,6 +218,8 @@ canvas.addEventListener('mousedown', e => {
 
     const block = e.target.closest('.block'); 
     if (!block) return; 
+
+    canvas.appendChild(block);
 
     const blockId = block.id; 
 

@@ -1,5 +1,5 @@
 function InvalidSyntacsisError() {
-    console.log("!!!Invalid syntacsys!!!")
+    console.log("🤯⚠️🚫!Invalid syntacsys!💀💀💀")
 }
 
 window.script = this; 
