@@ -1,6 +1,12 @@
 const start_button = document.getElementById('start_button');
 const varuable_list = [];
 
+function getAllVaruableName() {
+    return varuable_list
+    .map(v => v.varuable_name)
+    .filter(name => name && name.trim() !== "");
+}
+
 function GetAllVaruables() {
     const connection_array_element_with_start_block = connections.find(conn => // нашли соеденение где старт где: родитель - старт, а сын - переменная  
         conn.parent_block_type === "start_block" && conn.child_block_type === "varuable_block");

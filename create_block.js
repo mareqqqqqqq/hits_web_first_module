@@ -41,7 +41,7 @@
     }
 
     if (data_type === "arif_block") { 
-        path.setAttribute("d", "M0,0 h100   v10 l10,10 v25 l-10,10 v10 h-100 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+        path.setAttribute("d", "M0,0 h235   v10 l10,10 v25 l-10,10 v10 h-235 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     if (data_type === "cycle_block") { 
@@ -281,9 +281,9 @@
         if (data_type === "if_block") {
 
             const operators = [">", "<", "=", "!=", ">=", "<="];
-            const mockVariables = ["1", "2", "3"];
 
             function createValueSelector (x) {
+                
                 const foreign = document.createElementNS(ns, "foreignObject");
                 foreign.setAttribute("x", x);
                 foreign.setAttribute("y", 20);
@@ -304,12 +304,23 @@
                 select.style.border = "none";
                 select.style.outline = "none";
 
-                mockVariables.forEach(v => {
+                const variableName = getAllVaruableName();
+
+                if (variableName.length === 0) {
                     const option = document.createElement("option");
-                    option.value = v;
-                    option.textContent = v;
+                    option.value = "";
+                    option.textContent = "Нет переменных";
                     select.appendChild(option);
-                });
+                }
+
+                else {
+                    variableName.forEach (v => {
+                        const option = document.createElement("option");
+                        option.value = v;
+                        option.textContent = v;
+                        select.appendChild(option);
+                    });
+                }
 
                 const customOption = document.createElement("option");
                 customOption.value = "custom";
@@ -340,7 +351,6 @@
                 if (input.value.trim() === "") {
                     input.style.display = "none";
                     select.style.display = "block";
-                    select.value = mockVariables[0];
                 }
             });
 
@@ -385,11 +395,11 @@
                 return foreign;
             }
 
-            group.appendChild(createValueSelector(5, "Левое"));
+            group.appendChild(createValueSelector(5));
 
             group.appendChild(createOperatorSelect(85));
 
-            group.appendChild(createValueSelector(145, "Правое"));
+            group.appendChild(createValueSelector(145));
         }
 
 
@@ -473,6 +483,136 @@
         }
 
         group.appendChild(createOutputSelect(15));
+    }
+
+    if (data_type === "arif_block") {
+        const operators = ["+", "-", "*", "//", "%"];
+
+        function createValueSelector(x) {
+            
+            const foreign = document.createElementNS(ns, "foreignObject");
+            foreign.setAttribute("x", x);
+            foreign.setAttribute("y", 20);
+            foreign.setAttribute("width", 70);
+            foreign.setAttribute("height", 25);
+
+            const container = document.createElement("div");
+            container.style.width = "100%";
+            container.style.height = "100%";
+            container.style.display = "flex";
+            container.style.overflowY = "hidden"
+
+            const select = document.createElement("select");
+            select.style.width = "100%";
+            select.style.height = "100%";
+            select.style.fontSize = "12px";
+            select.style.fontFamily = "Inter";
+            select.style.background = "rgba(255, 255, 255, 0.9)";
+            select.style.border = "none";
+            select.style.outline = "none";
+
+            const variableNames = getAllVaruableName();
+
+            if (variableNames.length === 0) {
+                const option = document.createElement("option");
+                option.value = "";
+                option.textContent = "Нет переменных";
+                select.appendChild(option);
+            }
+            else {
+                variableNames.forEach (v => {
+                    const option = document.createElement("option");
+                    option.value = v;
+                    option.textContent = v;
+                    select.appendChild(option);
+                });
+            }
+
+            const customOption = document.createElement("option");
+            customOption.value = "custom";
+            customOption.textContent = "Число";
+            select.appendChild(customOption);
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.style.display = "none";
+            input.style.width = "100%";
+            input.style.height = "100%";
+            input.style.fontSize = "12px";
+            input.style.fontFamily = "Inter";
+            input.style.background = "rgba(255, 255, 255, 0.9)";
+            input.placeholder = "Введите число";
+
+            input.addEventListener("input", function() {
+                let value = this.value;
+                value = value.replace(/[^0-9\-]/g, "");
+
+                if (value.includes("-")) {
+                    value = "-" + value.replace(/-/g, "");
+                }
+
+                this.value = value;
+            });
+
+            select.addEventListener("change", () => {
+                if (select.value === "custom") {
+                    select.style.display = "none";
+                    input.style.display = "block";
+                    input.focus();
+                }
+            });
+
+            input.addEventListener("blur", () => {
+                if (input.value.trim() === "") {
+                    input.style.display = "none";
+                    select.style.display = "block";
+                }
+            });
+
+            select.addEventListener("mousedown", e => e.stopPropagation());
+            input.addEventListener("mousedown", e => e.stopPropagation());
+            foreign.addEventListener("mousedown", e => e.stopPropagation());
+
+            container.appendChild(select);
+            container.appendChild(input);
+            foreign.appendChild(container);
+
+            return foreign;
+        }
+
+        function createOperatorSelect(x) {
+            const foreign = document.createElementNS(ns, "foreignObject");
+            foreign.setAttribute("x", x);
+            foreign.setAttribute("y", 20);
+            foreign.setAttribute("width", 60);
+            foreign.setAttribute("height", 25);
+
+            const select = document.createElement("select");
+            select.style.width = "100%";
+            select.style.height = "100%";
+            select.style.fontSize = "12px";
+            select.style.fontFamily = "Inter";
+            select.style.background = "rgba(255, 255, 255, 0.9)";
+            select.style.border = "none";
+            select.style.outline = "none";
+
+            operators.forEach(op => {
+                const option = document.createElement("option");
+                option.value = op;
+                option.textContent = op;
+                select.appendChild(option);
+            });
+
+            select.addEventListener("mousedown", e => e.stopPropagation());
+            foreign.addEventListener("mousedown", e => e.stopPropagation());
+
+            foreign.appendChild(select);
+            return foreign;
+        }
+
+        group.appendChild(createValueSelector(15));
+        group.appendChild(createOperatorSelect(95));
+        group.appendChild(createValueSelector(165));
     }
     
     if (data_type === "assignment_block") {
