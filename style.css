@@ -226,8 +226,8 @@
 }
 
 
-.varuable_block, .assignment_block, .if_block, .then_block, 
-.else_block, .arif_block, .cycle_block, .start_block, .endif_block, .endelse_block {
+.varuable_block, .assignment_block, .if_block, 
+.else_block, .arif_block, .cycle_block, .start_block, .endif_block, .endelse_block, .array_block {
     background-color: transparent; 
     padding: 0;
     margin: 5px 0;

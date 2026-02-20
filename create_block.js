@@ -20,7 +20,7 @@
         }
 
     if (data_type === "assignment_block") { //прямоульник h65 v50 h-65 Z
-        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v50 h-65 Z");
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v65 h-65 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
         }
     
     if (data_type === "if_block") { //прямоугольник h100 v60 h -100 Z 
@@ -44,7 +44,7 @@
     }
     
     if (data_type === "start_block") {
-            path.setAttribute("d", "M0,0 h235 v10  l10,10 v25 l-10,10 v10 h-180 l-10,10 h-25 l-10,-10 h-10   Z");
+            path.setAttribute("d", "M0,0 h235 v10  l10,10 v25 l-10,10 v10 h-170 v100 h-10 l-10,10 h-25 l-10,-10 h-10   Z");
     }
 
     if (data_type === "endif_block") {
@@ -624,7 +624,7 @@
     
     if (data_type === "assignment_block") {
         group.dataset.connectionTop = "true";
-        group.dataset.connectionLeft = "false";
+        group.dataset.connectionLeft = "true";
         group.dataset.connectionRight = "false";
         group.dataset.connectionBottom = "false"; 
 

@@ -6,7 +6,7 @@ let connections = [];
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .then_block, .arif_block, .cycle_block, .start_block, .endif_block, .endelse_block, .array_block' 
+    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_block, .start_block, .endif_block, .endelse_block, .array_block' 
 );
 
 const varuable_block_dirca = document.querySelectorAll (
@@ -21,7 +21,6 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
         
         // задаём цвета для дивов, свг блоков, на самом деле
         const color = 
-            el.classList.contains('then_block') ? '#70b80e' :
             el.classList.contains('if_block') ? '#ffac3e' :
             el.classList.contains('else_block') ? '#fd4a4a' :
             el.classList.contains('assignment_block') ? '#4e4fbe' :
@@ -30,8 +29,8 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             el.classList.contains('arif_block') ? '#5caeb9' :
             el.classList.contains('cycle_block') ? '#0066ff' :
             el.classList.contains('start_block') ? '#25c733' :
-            el.classList.contains('endif_block') ? '#265b2a' :
-            el.classList.contains('endelse_block') ? '#c30f66' :
+            el.classList.contains('endif_block') ? '#ffac3e' :
+            el.classList.contains('endelse_block') ? '#fd4a4a' :
             el.classList.contains('array_block') ? '#004af7' :
             '#4caf50';
 
@@ -61,11 +60,6 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             else if (el.classList.contains("else_block"))
             {
                 path = createBlock(x, y, color, 'block_' + Date.now(), "else_block");
-            }
-            
-            else if (el.classList.contains("then_block"))
-            {
-                 path = createBlock(x, y, color, 'block_' + Date.now(), "then_block");
             }
 
             else if (el.classList.contains("output_block"))
