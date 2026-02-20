@@ -508,7 +508,7 @@
         //     container
         // }
 
-        group.appendChild(createValueSelector(15))
+        // group.appendChild(createValueSelector(15))
         group.appendChild(createValueSelector(88));
         group.appendChild(createOperatorSelect(162, ["+", "-", "*", "//", "%"]));
         group.appendChild(createValueSelector(226));

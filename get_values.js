@@ -98,10 +98,7 @@ function getArifBlockValue(block_id) {
 
     // получаем обььект с этими кака их формами
     const foreign_objects = block.querySelectorAll('foreignObject');
-    console.log(foreign_objects[0]);
-    console.log(foreign_objects[1]); 
-    console.log(foreign_objects[2]);
-
+    
     // в функцию и будем передать формы из обьекта, в нём как в масисве 
     function GetForeignObjectsValue(foreign_object) {
         // одна из кентов будет скрыта 
@@ -122,9 +119,6 @@ function getArifBlockValue(block_id) {
 
     let left = GetForeignObjectsValue((foreign_objects[0])); 
     let right =  GetForeignObjectsValue((foreign_objects[2]));
-
-    console.log(left);
-    console.log(right);
 
     let operatorSelect = foreign_objects[1].querySelector('select');
     let operator = operatorSelect ? operatorSelect.value : null; 

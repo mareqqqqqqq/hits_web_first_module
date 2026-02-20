@@ -51,10 +51,6 @@ function GetAllVaruables() {
             current_varuable_block = null;
         }
     }
-
-
-    console.table(connections);
-    console.table(varuable_list);
 }
 
 function HandleAnyBlock(block_type, block_id) {
@@ -75,11 +71,7 @@ function HandleAnyBlock(block_type, block_id) {
             HandleOutputBlock(block_id);
             break;
 
-        case "arif_block": 
-            HandleOutputBlock(block_id);
-            break;
-
-        case "varuable_blcok": 
+        case "varuable_block": 
             HandleVaruableBlock(block_id);
             break;
 
@@ -88,7 +80,7 @@ function HandleAnyBlock(block_type, block_id) {
             break;
 
         case "arif_block": 
-            HandleArrayBlock(block_id);
+            HandleArifBlock(block_id);
             break; 
     }
 }
@@ -113,13 +105,28 @@ function LeftPartOfCodeBlock() {
 
                 if (result == true) {
                     let current_block_type = "if_block";
-                    let find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
-                        conn.parent_block_type === current_block_type);
 
-                    let next_block_id = find_next_block.child;
-                    let next_block_type = find_next_block.child_block_type; 
-                    let next_block = document.getElementById(next_block_id);
-                    current_block_type = next_block_type;
+                    let find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                        conn.parent_block_type === current_block_type && conn.parent === block_id);
+
+                    let next_block_id; 
+                    let next_block_type; 
+                    let next_block; 
+
+
+                    if (find_next_block) {
+                        next_block_id = find_next_block.child;
+                        next_block_type = find_next_block.child_block_type; 
+                        next_block = document.getElementById(next_block_id);
+                        current_block_type = next_block_type;
+                    }
+
+                    else {
+                        InvalidSyntacsisError();
+                        return;
+                    }
+
+                    
 
                     while (current_block_type) {
                         if (current_block_type == "endif_block") {
@@ -128,17 +135,30 @@ function LeftPartOfCodeBlock() {
                         }
                         else {
                             HandleAnyBlock(next_block_type, next_block_id);
+
+                            // надо добавить проверку типов 
                             find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
-                                conn.parent_block_type === current_block_type);
+                                conn.parent_block_type === current_block_type && conn.parent === next_block_id);
 
-                            next_block_id = find_next_block.child;
-                            next_block_type = find_next_block.child_block_type; 
-                            next_block = document.getElementById(next_block_id);
-                            current_block_type = next_block_type;
+                            if (find_next_block) {
+                                next_block_id = find_next_block.child;
+                                next_block_type = find_next_block.child_block_type; 
+                                next_block = document.getElementById(next_block_id);
+                                current_block_type = next_block_type;
+                            }
 
-                            console.log(next_block)
+                            else {
+                                InvalidSyntacsisError()
+                            }
+
+                            
+
                         }
                     }
+                }
+
+                else if (result == false) {
+
                 }
 
                 break;

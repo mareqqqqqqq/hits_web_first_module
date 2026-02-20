@@ -37,7 +37,6 @@ function HandleIfBlock(block_id) {
 }
 
 function HandleEndIfBlock(block_id) {
-
 }
 
 function HandleElseBlock(block_id) {
@@ -120,31 +119,25 @@ function HandleArifBlock(block_id) {
 
     let arif_block_input = getArifBlockValue(block_id);
 
-    console.log(arif_block_input);
 
     let left = Number(arif_block_input.left);  
     let right  = Number(arif_block_input.right); 
 
-    console.log(right);
-    console.log(left);
-    
     let operator = arif_block_input.operator;
-
-    console.log(operator);
 
     let arif_result; 
 
     if (arif_block_input.operator) {
         switch (operator) {
-            case "+": arif_result = right + left;
+            case "+": arif_result = left + right;
                 break; 
-            case "-": arif_result = right - left;
+            case "-": arif_result = left - right;
                 break; 
-            case "*": arif_result = right * left;
+            case "*": arif_result = left * right;
                 break; 
-            case "//": arif_result = right / left
+            case "//": arif_result = left / right;
                 break; 
-            case "%": arif_result = right % left
+            case "%": arif_result = left % right;
                 break;
         }
     }
