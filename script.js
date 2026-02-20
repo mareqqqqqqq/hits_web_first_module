@@ -6,7 +6,7 @@ let connections = [];
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .then_block, .arif_block, .cycle_block, .start_block, .endif_block, .endelse_block' 
+    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .then_block, .arif_block, .cycle_block, .start_block, .endif_block, .endelse_block, .array_block' 
 );
 
 const varuable_block_dirca = document.querySelectorAll (
@@ -32,6 +32,7 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             el.classList.contains('start_block') ? '#25c733' :
             el.classList.contains('endif_block') ? '#265b2a' :
             el.classList.contains('endelse_block') ? '#c30f66' :
+            el.classList.contains('array_block') ? '#004af7' :
             '#4caf50';
 
     
@@ -90,6 +91,10 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
 
             else if (el.classList.contains("endelse_block")){
                 path = createBlock(x, y, color, 'block_' + Date.now(), "endelse_block");
+            }
+
+            else if (el.classList.contains("array_block")){
+                path = createBlock(x, y, color, 'block_' + Date.now(), "array_block");
             }
 
             //  этот болок выбран для перетасиквания 
