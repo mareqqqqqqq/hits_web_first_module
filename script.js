@@ -6,7 +6,7 @@ let connections = [];
 
 // создалт перемнную sidebarblocks котрая включает все наши div блоки потом чтобы ко всем обращаться 
 const sidebarBlocks = document.querySelectorAll (
-    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_block, .start_block, .endif_block, .endelse_block, .array_block' 
+    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block' 
 );
 
 const varuable_block_dirca = document.querySelectorAll (
@@ -27,11 +27,12 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             el.classList.contains('output_block') ? '#a3a669' :
             el.classList.contains('arif_block') ? '#5caeb9' :
-            el.classList.contains('cycle_block') ? '#0066ff' :
+            el.classList.contains('cycle_for_block') ? '#0066ff' :
             el.classList.contains('start_block') ? '#25c733' :
             el.classList.contains('endif_block') ? '#ffac3e' :
             el.classList.contains('endelse_block') ? '#fd4a4a' :
             el.classList.contains('array_block') ? '#004af7' :
+            el.classList.contains('cycle_while_block') ? '#0066ff' :
             '#4caf50';
 
     
@@ -71,8 +72,8 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
                 path = createBlock(x, y, color, 'block_' + Date.now(), "arif_block");
             }
 
-            else if (el.classList.contains("cycle_block")){
-                path = createBlock(x, y, color, 'block_' + Date.now(), "cycle_block");
+            else if (el.classList.contains("cycle_for_block")){
+                path = createBlock(x, y, color, 'block_' + Date.now(), "cycle_for_block");
             }
 
             else if (el.classList.contains("start_block")){
@@ -90,6 +91,11 @@ sidebarBlocks.forEach(el => { // el - это элемент по котором�
             else if (el.classList.contains("array_block")){
                 path = createBlock(x, y, color, 'block_' + Date.now(), "array_block");
             }
+
+            else if (el.classList.contains("cycle_while_block")){
+                path = createBlock(x, y, color, 'block_' + Date.now(), "cycle_while_block");
+            }
+
 
             //  этот болок выбран для перетасиквания 
             selected = path; 
