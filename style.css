@@ -215,6 +215,15 @@
     gap: 33px; 
     display: flex; 
 }
+
+.row2_blocks
+{
+    flex-direction: row; 
+    gap: 33px; 
+    display: flex; 
+}
+
+
 .block {
     cursor: grab;
 
@@ -227,7 +236,7 @@
 
 
 .varuable_block, .assignment_block, .if_block, 
-.else_block, .arif_block, .cycle_block, .start_block, .endif_block, .endelse_block, .array_block {
+.else_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block {
     background-color: transparent; 
     padding: 0;
     margin: 5px 0;

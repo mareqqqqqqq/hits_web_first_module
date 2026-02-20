@@ -154,7 +154,7 @@
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h240 v10 l10,10 v25 l-10,10 v10 h-240 l-10,10 h-25 l-10,-10 h-10 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
-    if (data_type === "cycle_block") { 
+    if (data_type === "cycle_for_block") { 
        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
     
@@ -170,8 +170,12 @@
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v65 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
-     if (data_type === "array_block") {
+    if (data_type === "array_block") {
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v65 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    if (data_type === "cycle_while_block") { 
+       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     group.appendChild(path);
@@ -495,23 +499,68 @@
     }
 
     if (data_type === "arif_block") {
-        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h240 v10 l10,10 v25 l-10,10 v10 h-240 l-10,10 h-25 l-10,-10 h-10 v-10 l10,-10 v-25 l-10,-10 v-10 Z")
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h250 v10 l10,10 v25 l-10,10 v10 h-250 l-10,10 h-25 l-10,-10 h-10 v-10 l10,-10 v-25 l-10,-10 v-10 Z")
 
-        // function createVariableSelector(x) {
-        //     const foreign = document.createElementNS(ns, "foreignObject");
-        //     foreign.setAttribute("x", x);
-        //     foreign.setAttribute("y", 20);
-        //     foreign.setAttribute("width", 70);
-        //     foreign.setAttribute("height", 25);
+        function createVariableSelector(x) {
+            const foreign = document.createElementNS(ns, "foreignObject");
+            foreign.setAttribute("x", x);
+            foreign.setAttribute("y", 20);
+            foreign.setAttribute("width", 90);
+            foreign.setAttribute("height", 25);
 
-        //     const container = document.createElement("div");
-        //     container
-        // }
+            const container = document.createElement("div");
+            container.style.width = "100%";
+            container.style.height = "100%";
+            container.style.display = "flex";
+            container.style.alignItems = "center";
+            container.style.overflow = "hidden";
 
-        // group.appendChild(createValueSelector(15))
-        group.appendChild(createValueSelector(88));
-        group.appendChild(createOperatorSelect(162, ["+", "-", "*", "//", "%"]));
-        group.appendChild(createValueSelector(226));
+            const select = document.createElement("select");
+            select.style.flex = "1";
+            select.style.height = "100%";
+            select.style.fontSize = "12px";
+            select.style.fontFamily = "Inter";
+            select.style.background = "rgba(255, 255, 255, 0.9";
+            select.style.border = "none";
+            select.style.outline = "none";
+
+            const variableNames = getAllVaruableName();
+
+            if (variableNames.length === 0) {
+                const option = document.createElement("option");
+                option.value = "";
+                option.textContent = "Нет переменных";
+                select.appendChild(option);
+            }
+            else {
+                variableNames.forEach (v => {
+                    const option = document.createElement("option");
+                    option.value = v;
+                    option.textContent = v;
+                    select.appendChild(option);
+                });
+            }
+
+            const equalSign = document.createElement("span");
+            equalSign.textContent = "=";
+            equalSign.style.marginLeft = "6px";
+            equalSign.style.fontSize = "Inter";
+            equalSign.style.fontWeight = "bold";
+
+            select.addEventListener("mousedown", e => e.stopPropagation());
+            foreign.addEventListener("mousedown", e => e.stopPropagation());
+
+            container.appendChild(select);
+            container.appendChild(equalSign);
+            foreign.appendChild(container);
+
+            return foreign;
+        }
+
+        group.appendChild(createVariableSelector(15));
+        group.appendChild(createValueSelector(110));
+        group.appendChild(createOperatorSelect(185, ["+", "-", "*", "//", "%"]));
+        group.appendChild(createValueSelector(240));
     }
     
     if (data_type === "assignment_block") {
@@ -592,7 +641,20 @@
     }
 
 
-    else if (data_type === "cycle_block")
+    else if (data_type === "cycle_for_block")
+    {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "true";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true"; 
+    }
+
+    else if (data_type === "cycle_while_block")
     {
         group.dataset.connectionTop = "true";
         group.dataset.connectionLeft = "true";
