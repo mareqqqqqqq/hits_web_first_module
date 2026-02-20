@@ -158,7 +158,27 @@ canvas.addEventListener('mouseup', () => {
                 isInputFree(selected.id, "vertical")) {
                 
                 selected.setAttribute('transform', `translate(${bPos.x}, ${targetYBottom})`);
-                addConnection(block.id, selected.id, 'vertical', block.dataset.data_type, selected.dataset.data_type); 
+                addConnection(block.id, selected.id, 'vertical', block.dataset.data_type, selected.dataset.data_type);
+
+                if (selected.dataset.data_type === "assignment_block" && block.dataset.data_type === "varuable_block") {
+                        // марк добавил(добавление сразу в varuable_list когда пользователь добавил блок и присваивание к нему)
+                    let varuable_name = getVaruableBlockValue(block.id); 
+                    let varuable_value = getAssignmentBlockValue(selected.id);
+                    
+                    
+                    
+                    varuable_list.push({
+                        block_id: block.id,
+                        block_type: block.dataset.data_type,
+                        varuable_name: varuable_name, 
+                        varuable_value: varuable_value 
+                    })
+                    
+
+                    console.table(varuable_list);
+                }
+
+
                 snapped = true;
             } 
 
@@ -167,6 +187,9 @@ canvas.addEventListener('mouseup', () => {
                      block.dataset.connectionTop === "true" &&
                      isConnectorFree(selected.id, "vertical") && 
                      isInputFree(block.id, "vertical")) {
+
+                    // тут тоже присваивание можно добавить в varuable_list 
+                    
                 
                 selected.setAttribute('transform', `translate(${bPos.x}, ${targetYTop})`);
                 addConnection(selected.id, block.id, 'vertical', selected.dataset.data_type, block.dataset.data_type);
@@ -190,6 +213,26 @@ canvas.addEventListener('mouseup', () => {
                 
                 selected.setAttribute('transform', `translate(${targetXRight}, ${bPos.y})`);
                 addConnection(block.id, selected.id, 'horizontal', block.dataset.data_type, selected.dataset.data_type);
+
+                // марк добавил записывание в varuable_list 
+                if (selected.dataset.data_type === "assignment_block" && block.dataset.data_type === "varuable_block") {
+                    // марк добавил(добавление сразу в varuable_list когда пользователь добавил блок и присваивание к нему)
+                    let varuable_name = getVaruableBlockValue(block.id); 
+                    let varuable_value = getAssignmentBlockValue(selected.id);
+                    
+                    
+                    varuable_list.push({
+                        block_id: block.id,
+                        block_type: block.dataset.data_type,
+                        varuable_name: varuable_name, 
+                        varuable_value: varuable_value 
+                    })
+            
+
+                    console.table(varuable_list);
+                }
+
+
                 snapped = true;
             }
 
@@ -198,7 +241,7 @@ canvas.addEventListener('mouseup', () => {
                      block.dataset.connectionLeft === "true" &&
                      isConnectorFree(selected.id, 'horizontal') && 
                      isInputFree(block.id, 'horizontal')) {
-                
+
                 selected.setAttribute('transform', `translate(${targetXLeft}, ${bPos.y})`);
                 addConnection(selected.id, block.id, 'horizontal', selected.dataset.data_type, block.dataset.data_type);
                 snapped = true;
@@ -238,8 +281,8 @@ canvas.addEventListener('mousedown', e => {
 
     e.preventDefault(); // чтобы тект не выделялся(крч стандарт браузере убераем)
 
-    selected = block; // устанавливаем selected на нащ выбранный блок 
-
+    selected = block; // устанавливаем selected на нащ выбранный блок
+    
     const rect = canvas.getBoundingClientRect(); // получаем данные чреез rect(1000000 раз писал)
 
     const matrix = selected.transform.baseVal.consolidate().matrix; // baseVal это список всех трансформаций 

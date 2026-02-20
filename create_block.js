@@ -495,6 +495,8 @@
     if (data_type === "arif_block") {
         const operators = ["+", "-", "*", "//", "%"];
 
+        
+
         function createValueSelector(x) {
             
             const foreign = document.createElementNS(ns, "foreignObject");
