@@ -16,7 +16,7 @@
         // устиановл стили для блоков от лёхи 
         if (data_type === "varuable_block") {    //прямоугольник h100 v60 h -100 Z
             // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
-            path.setAttribute("d", "M0,0 h100         v10 l10,10 v25 l-10,10 v10       h-45  l-10,10 h-25 l-10,-10 h-10     v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45         v10 l10,10 v25 l-10,10 v10       h-45  l-10,10 h-25 l-10,-10 h-10     v-10 l10,-10 v-25 l-10,-10 v-10 Z");
         }
 
     if (data_type === "assignment_block") { //прямоульник h65 v50 h-65 Z
@@ -635,7 +635,7 @@
         }
 
         else if (data_type === "varuable_block") {
-            group.dataset.connectionTop = "false";
+            group.dataset.connectionTop = "true";
             group.dataset.connectionLeft = "true";
             group.dataset.connectionRight = "false";
             group.dataset.connectionBottom = "false";
