@@ -102,16 +102,19 @@ function LeftPartOfCodeBlock() {
         switch (block_type) {
             case "if_block":
                 let result = HandleIfBlock(block_id);
+                let current_block_type = "if_block";
+
+                let next_block_id; 
+                let next_block_type; 
+                let next_block;
+
+                let find_next_block; 
 
                 if (result == true) {
-                    let current_block_type = "if_block";
-
-                    let find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                    find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
                         conn.parent_block_type === current_block_type && conn.parent === block_id);
 
-                    let next_block_id; 
-                    let next_block_type; 
-                    let next_block; 
+                     
 
 
                     if (find_next_block) {
@@ -126,13 +129,12 @@ function LeftPartOfCodeBlock() {
                         return;
                     }
 
-                    
-
                     while (current_block_type) {
                         if (current_block_type == "endif_block") {
                             console.log("дошли до конца if");
                             break;
                         }
+
                         else {
                             HandleAnyBlock(next_block_type, next_block_id);
 
@@ -148,7 +150,8 @@ function LeftPartOfCodeBlock() {
                             }
 
                             else {
-                                InvalidSyntacsisError()
+                                InvalidSyntacsisError();
+                                break; 
                             }
 
                             
@@ -157,8 +160,70 @@ function LeftPartOfCodeBlock() {
                     }
                 }
 
-                else if (result == false) {
+                
 
+                else if (result == false) {
+                    find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                        conn.parent_block_type === current_block_type && conn.parent === block_id);
+
+                    if (find_next_block) {
+                        while (current_block_type !== "endif_block") {
+                            next_block_id = find_next_block.child;
+                            next_block_type = find_next_block.child_block_type; 
+                            next_block = document.getElementById(next_block_id);
+                            current_block_type = next_block_type;
+
+                            find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                                conn.parent_block_type === current_block_type && conn.parent === next_block_id);
+                        }
+                    }
+
+                    else {
+                        InvalidSyntacsisError(); 
+                        break;
+                    }
+
+                    find_next_block = connections.find(conn =>   
+                        conn.child_block_type === "else_block" && conn.parent_block_type === current_block_type && conn.parent === next_block_id);
+                    
+                    if (find_next_block) {
+                        next_block_id = find_next_block.child;
+                        next_block_type = find_next_block.child_block_type; 
+                        next_block = document.getElementById(next_block_id);
+                        current_block_type = next_block_type;
+                    }
+
+                    else {
+                        InvalidSyntacsisError();
+                        return;
+                    }
+
+                    while (current_block_type) {
+                        if (current_block_type == "endelse_block") {
+                            console.log("дошли до конца else");
+                            break;
+                        }
+
+                        else {
+                            HandleAnyBlock(next_block_type, next_block_id);
+
+                            // надо добавить проверку типов 
+                            find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                                conn.parent_block_type === current_block_type && conn.parent === next_block_id);
+
+                            if (find_next_block) {
+                                next_block_id = find_next_block.child;
+                                next_block_type = find_next_block.child_block_type; 
+                                next_block = document.getElementById(next_block_id);
+                                current_block_type = next_block_type;
+                            }
+
+                            else {
+                                InvalidSyntacsisError();
+                                break;  
+                            }
+                        }
+                    }
                 }
 
                 break;

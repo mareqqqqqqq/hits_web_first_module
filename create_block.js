@@ -557,7 +557,7 @@
             return foreign;
         }
 
-        group.appendChild(createVariableSelector(15));
+        // group.appendChild(createVariableSelector(15));
         group.appendChild(createValueSelector(110));
         group.appendChild(createOperatorSelect(185, ["+", "-", "*", "//", "%"]));
         group.appendChild(createValueSelector(240));
