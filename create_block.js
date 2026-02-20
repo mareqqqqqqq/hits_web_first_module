@@ -48,7 +48,7 @@
     }
     
     if (data_type === "start_block") {
-            path.setAttribute("d", "M0,0 h220 v10  l10,10 v25 l-10,10 v10 h-165 l-10,10 h-25 l-10,-10 h-10   Z");
+            path.setAttribute("d", "M0,0 h235 v10  l10,10 v25 l-10,10 v10 h-180 l-10,10 h-25 l-10,-10 h-10   Z");
     }
 
     group.appendChild(path);
