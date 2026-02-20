@@ -40,7 +40,7 @@
     }
 
     if (data_type === "arif_block") { 
-        path.setAttribute("d", "M0,0 h235   v10 l10,10 v25 l-10,10 v10 h-235 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h180 v10 l10,10 v25 l-10,10 v10 h-180 l-10,10 h-25 l-10,-10 h-10 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     if (data_type === "cycle_block") { 
@@ -667,7 +667,7 @@
 
     else if (data_type === "arif_block")
     {
-        group.dataset.connectionTop = "false";
+        group.dataset.connectionTop = "true";
         group.dataset.connectionLeft = "true";
         group.dataset.connectionRight = "false";
         group.dataset.connectionBottom = "false";
@@ -675,7 +675,7 @@
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
         group.dataset.connectorRight = "true";
-        group.dataset.connectorBottom = "false";
+        group.dataset.connectorBottom = "true";
     }
 
      else if (data_type === "output_block")
