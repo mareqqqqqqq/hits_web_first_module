@@ -1,6 +1,7 @@
 const start_button = document.getElementById('start_button');
 const varuable_list = [];
 
+// получает имена переменных для выпадающей менюшки 
 function getAllVaruableName() {
     return varuable_list
     .map(v => v.varuable_name)
@@ -50,44 +51,39 @@ function GetAllVaruables() {
             current_varuable_block = null;
         }
     }
-
-
-    console.table(connections);
-    console.table(varuable_list);
 }
 
-function HandleAnyBlock(block_type) {
+function HandleAnyBlock(block_type, block_id) {
     switch (block_type) {
         case "if_block":
             HandleIfBlock(block_id);
-
-        case "then_block": 
-            HandleThenBlock(block_id);
+            break;
 
         case "else_block": 
             HandleElseBlock(block_id);
+            break;
 
         case "cycle_block": 
             HandleCycleBlock(block_id);
+            break;
 
         case "output_block": 
             HandleOutputBlock(block_id);
+            break;
 
-        case "arif_block": 
-            HandleOutputBlock(block_id);
-
-        case "varuable_blcok": 
+        case "varuable_block": 
             HandleVaruableBlock(block_id);
+            break;
 
         case "assignment_block": 
             HandleAssignmentBlock(block_id);
+            break;
 
         case "arif_block": 
-            HandleArifBlock(block_id); 
+            HandleArifBlock(block_id);
+            break; 
     }
 }
-
-
 
 function LeftPartOfCodeBlock() {
     const connection_array_element_with_start_block = connections.find(conn => // нашли соеденение где старт где: родитель - старт, а сын - переменная  
@@ -95,54 +91,162 @@ function LeftPartOfCodeBlock() {
 
     if (!connection_array_element_with_start_block) return; 
 
+    // получаем next блок
     let block_id = connection_array_element_with_start_block.child; 
     let block = document.getElementById(block_id);
     let block_type = block.dataset.data_type;
-
-    console.log(block_id); 
-    console.log(block_type);
     
-    const allowed_blocks = ["if_block", "output_block", "arif_block", "cycle_block"]; 
+    const allowed_blocks = ["if_block", "output_block", "arif_block", "cycle_block", "array_block", "varuable_block"]; 
 
     if (allowed_blocks.includes(block_type)) {
         switch (block_type) {
-
             case "if_block":
                 let result = HandleIfBlock(block_id);
+                let current_block_type = "if_block";
+
+                let next_block_id; 
+                let next_block_type; 
+                let next_block;
+
+                let find_next_block; 
 
                 if (result == true) {
-                    // нашли current соединение с нашим блоком
-                    const find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
-                        conn.parent_block_type === "if_block" && conn.parent === block_id);
+                    find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                        conn.parent_block_type === current_block_type && conn.parent === block_id);
 
-                    let next_block_id = find_next_block.child;
-                    let next_block_type = find_next_block.child_block_type; 
-                    let next_block = document.getElementById(next_block_id);
+                     
 
-                    console.table(find_next_block); 
-                    console.log(next_block_type); 
 
-                    HandleAnyBlock(next_block_id); 
-                }
+                    if (find_next_block) {
+                        next_block_id = find_next_block.child;
+                        next_block_type = find_next_block.child_block_type; 
+                        next_block = document.getElementById(next_block_id);
+                        current_block_type = next_block_type;
+                    }
 
-                // надо проскакать до else и обрабатывать его, если его нет то дальше скачем то что после явл сыно then блока 
-                else {
-                    
+                    else {
+                        InvalidSyntacsisError();
+                        return;
+                    }
+
+                    while (current_block_type) {
+                        if (current_block_type == "endif_block") {
+                            console.log("дошли до конца if");
+                            break;
+                        }
+
+                        else {
+                            HandleAnyBlock(next_block_type, next_block_id);
+
+                            // надо добавить проверку типов 
+                            find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                                conn.parent_block_type === current_block_type && conn.parent === next_block_id);
+
+                            if (find_next_block) {
+                                next_block_id = find_next_block.child;
+                                next_block_type = find_next_block.child_block_type; 
+                                next_block = document.getElementById(next_block_id);
+                                current_block_type = next_block_type;
+                            }
+
+                            else {
+                                InvalidSyntacsisError();
+                                break; 
+                            }
+
+                            
+
+                        }
+                    }
                 }
 
                 
 
+                else if (result == false) {
+                    find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                        conn.parent_block_type === current_block_type && conn.parent === block_id);
 
+                    if (find_next_block) {
+                        while (current_block_type !== "endif_block") {
+                            next_block_id = find_next_block.child;
+                            next_block_type = find_next_block.child_block_type; 
+                            next_block = document.getElementById(next_block_id);
+                            current_block_type = next_block_type;
 
+                            find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                                conn.parent_block_type === current_block_type && conn.parent === next_block_id);
+                        }
+                    }
 
+                    else {
+                        InvalidSyntacsisError(); 
+                        break;
+                    }
 
-            case "else_block":
-                HandleElseBlock(block_id);
+                    find_next_block = connections.find(conn =>   
+                        conn.child_block_type === "else_block" && conn.parent_block_type === current_block_type && conn.parent === next_block_id);
+                    
+                    if (find_next_block) {
+                        next_block_id = find_next_block.child;
+                        next_block_type = find_next_block.child_block_type; 
+                        next_block = document.getElementById(next_block_id);
+                        current_block_type = next_block_type;
+                    }
 
-            case "then_block":
-                HandleThenBlock(block_id);
-            case "output_block": 
-                HandleOutputBlock(block_id);
+                    else {
+                        InvalidSyntacsisError();
+                        return;
+                    }
+
+                    while (current_block_type) {
+                        if (current_block_type == "endelse_block") {
+                            console.log("дошли до конца else");
+                            break;
+                        }
+
+                        else {
+                            HandleAnyBlock(next_block_type, next_block_id);
+
+                            // надо добавить проверку типов 
+                            find_next_block = connections.find(conn => // тут отец if а его сын какой то блок   
+                                conn.parent_block_type === current_block_type && conn.parent === next_block_id);
+
+                            if (find_next_block) {
+                                next_block_id = find_next_block.child;
+                                next_block_type = find_next_block.child_block_type; 
+                                next_block = document.getElementById(next_block_id);
+                                current_block_type = next_block_type;
+                            }
+
+                            else {
+                                InvalidSyntacsisError();
+                                break;  
+                            }
+                        }
+                    }
+                }
+
+                break;
+
+            case "output_block":
+                HandleOutputBlock(block_id); 
+                break;
+                
+            case "arif_block":
+                 HandleArifBlock(block_id);
+                 break;
+
+            case "cycle_block":
+                 HandleCycleBlock(block_id);
+                 break;
+
+            case "array_block":
+                HandleArrayBlock(block_id);
+                break; 
+
+            case "varuable_block": 
+                HandleVaruableBlock(block_id);
+                break; 
         }
     }
 
@@ -151,170 +255,13 @@ function LeftPartOfCodeBlock() {
     }
 }
 
-function HandleIfBlock(block_id) {
-    let block = document.getElementById(block_id);
-    if (!block) {
-        InvalidSyntacsisError();
-        return null; 
-
-    }
-
-    let forms_data = getIfBlockValue(block.id); 
-
-    let operator = forms_data.operator; 
-    let right_str = forms_data.right; 
-    let left_str = forms_data.left; 
-
-    let bool_result; 
-
-    let right = Number(right_str);
-    let left = Number(left_str);
-
-    switch(operator) {
-        case ">": bool_result = left > right;
-            break; 
-        case "<": bool_result = left < right;
-            break; 
-        case "=": bool_result = left == right;
-            break; 
-        case "!=": bool_result = left != right;
-            break; 
-        case ">=": bool_result = left >= right;
-            break;  
-        case "<=": bool_result = left <= right;
-            break; 
-    }
-
-    console.log(bool_result);
-    return bool_result; 
-}
-
-function HandleElseBlock(block_id) {
-    let block = document.getElementById(block_id);
-    if (!block) {
-        InvalidSyntacsisError();
-    }
-
-    return null; 
-}
-
-function HandleThenBlock(block_id) {
-    let block = document.getElementById(block_id);
-    if (!block) {
-        InvalidSyntacsisError();
-    }
-
-    return null; 
-}
-
-function HandleOutputBlock(block_id) {
-    let block = document.getElementById(block_id);
-    if (!block) {
-        InvalidSyntacsisError();
-    }
-
-    return null; 
-}
-
-function HandleVaruableBlock(block_id) {
-
-}
-
-function HandleAssignmentBlock(block_id){
-
-}
-
-function HandleArifBlock(block_id) {
-
-}
-
-
-
-
-
-
-
-
-function getVaruableBlockValue(blockId) {
-    const block = document.getElementById(blockId); 
-    if (!block) return null; 
-
-    const input_value = block.querySelector('div[contenteditable="true"]'); 
-    if (input_value) {
-        if (input_value.textContent.trim() != "Переменная")
-        return input_value.textContent.trim(); 
-        else {
-            return null;
-        }
-    }
-
-    return null; 
-}
-
-function getAssignmentBlockValue(blockId) {
-    const block = document.getElementById(blockId); 
-    if (!block) return null; 
-
-    const input_value = block.querySelector('div[contenteditable="true"]');
-    if (input_value) {
-        if (input_value.textContent.trim() != "Присвоить:") 
-            return input_value.textContent.trim();
-        else { 
-            return 0; 
-        }
-    }
-
-    return null;
-}
-
-function getIfBlockValue(block_id) {
-    const block = document.getElementById(block_id); 
-    if (!block) return null;
-
-    // получаем обььект с этими кака их формами
-    const foreign_objects = block.querySelectorAll('foreignObject');
-
-    // в функцию и будем передать формы из обьекта, в нём как в масисве 
-    function GetForeignObjectsValue(foreign_object) {
-        // одна из кентов будет скрыта 
-        let select = foreign_object.querySelector('select'); 
-        let input = foreign_object.querySelector('input');
-
-        // если есть селект 
-        if (select && select.style.display !== "none") {
-            // console.log("считано селект форма");
-            return select.value; 
-        }
-
-        else if (input && input.style.display !== "none") {
-            // console.log("считано инпут форма");
-            return input.value;
-        }
-    }
-
-    let operatorSelect = foreign_objects[1].querySelector('select');
-    let operator = operatorSelect ? operatorSelect.value : null; 
-
-    let left_num_form_value = GetForeignObjectsValue(foreign_objects[0]); 
-    let right_num_form_value = GetForeignObjectsValue(foreign_objects[2]); 
-
-    return {
-        left: left_num_form_value, 
-        operator:  operator, 
-        right: right_num_form_value
-    }
-}
-
-
-
 
 
 
 start_button.addEventListener('click', e => {
     varuable_list.length = 0;
     GetAllVaruables(); 
-    LeftPartOfCodeBlock()
+    LeftPartOfCodeBlock();
 })
 
-window.script = this; 
-
+window.script = this;
