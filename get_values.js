@@ -131,4 +131,61 @@ function getArifBlockValue(block_id) {
     }
 }
 
+function DownTheTree(start_block_id, start_block_type, end_block_type) {
+    let current_connection = connections.find(conn => 
+        conn.parent === start_block_id && conn.parent_block_type === start_block_type
+    );
+
+    // console.log("статр", current_connection);
+
+    if (current_connection) {
+        let next_block_id = current_connection.child;
+        let next_block = document.getElementById(next_block_id);
+        let next_block_type = next_block.dataset.data_type;
+
+        while (next_block) {
+            if (next_block_type == end_block_type) {
+
+                current_connection = connections.find(conn => 
+                     conn.parent === next_block_id && conn.parent_block_type === next_block_type
+                );
+
+                next_block_id = current_connection.child;
+                next_block = document.getElementById(next_block_id);
+                next_block_type = next_block.dataset.data_type;
+
+                current_connection = connections.find(conn => 
+                     conn.parent === next_block_id && conn.parent_block_type === next_block_type
+                );
+
+                //console.log("финал", current_connection);
+
+                return current_connection; 
+            }
+
+            current_connection = connections.find(conn => 
+                conn.parent === next_block_id && conn.parent_block_type === next_block_type
+            );
+
+            // console.log("шаг", current_connection);
+            
+            if (current_connection) {
+                next_block_id = current_connection.child;
+                next_block = document.getElementById(next_block_id);
+                next_block_type = next_block.dataset.data_type;
+            }
+
+            else {
+                InvalidSyntacsisError(); 
+                break; 
+            }
+        }
+    }
+
+    else {
+        InvalidSyntacsisError(); 
+        return null;
+    }
+}
+
 window.script = this;
