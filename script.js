@@ -8,19 +8,17 @@ let offsetX = 0;
 let offsetY = 0; 
 let connections = [];
 
-// Параметры бесконечного холста
 let isPanning = false;
 let startPoint = { x: 0, y: 0 };
 let currentTranslate = { x: 0, y: 0 };
 
 const SNAP_OVERLAP = 10; 
 
-// --- 1. ПАНОРАМИРОВАНИЕ (Движение холста) ---
+
 
 canvas.addEventListener('mousedown', (e) => {
     if (e.target === canvas) {
         isPanning = true;
-        // Используем минус, чтобы "заякорить" точку старта относительно мира
         startPoint = { x: e.clientX - currentTranslate.x, y: e.clientY - currentTranslate.y };
         canvas.style.cursor = 'grabbing';
     }
@@ -33,7 +31,7 @@ document.addEventListener('mousemove', (e) => {
         viewport.setAttribute('transform', `translate(${currentTranslate.x}, ${currentTranslate.y})`);
     } else if (selected) {
         const rect = canvas.getBoundingClientRect();
-        // Двигаем блок с учетом смещения холста
+
         const x = e.clientX - rect.left - offsetX - currentTranslate.x;
         const y = e.clientY - rect.top - offsetY - currentTranslate.y;
         selected.setAttribute('transform', `translate(${x},${y})`);
@@ -47,7 +45,7 @@ document.addEventListener('mouseup', () => {
     }
 });
 
-// --- 2. СОЗДАНИЕ БЛОКОВ ИЗ SIDEBAR ---
+
 
 const sidebarBlocks = document.querySelectorAll(
     '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_block, .start_block, .endif_block, .endelse_block, .array_block'
@@ -86,10 +84,10 @@ sidebarBlocks.forEach(el => {
     });
 });
 
-// --- 3. МАГНИТЫ (SNAPPING) ---
 
 canvas.addEventListener('mouseup', () => {
-    if (!selected || isPanning) return;
+    if (!selected || isPanning) 
+        return;
 
     const selBox = selected.getBBox(); 
     const selPos = getBlockPos(selected); 
@@ -101,6 +99,7 @@ canvas.addEventListener('mouseup', () => {
     let snappedHor = false;
 
     const isConnectorFree = (blockId, position) => !connections.some(c => c.parent === blockId && c.position === position);
+    
     const isInputFree = (blockId, position) => !connections.some(c => c.child === blockId && c.position === position);
 
     for (let block of allBlocks) {
@@ -109,7 +108,6 @@ canvas.addEventListener('mouseup', () => {
         const bBox = block.getBBox();
         const bPos = getBlockPos(block);
 
-        // ВЕРТИКАЛЬНАЯ ПРОВЕРКА
         const dxVer = Math.abs(selPos.x - bPos.x); 
         if (dxVer < 50) {
             const targetYBottom = bPos.y + bBox.height - SNAP_OVERLAP; 
@@ -124,7 +122,6 @@ canvas.addEventListener('mouseup', () => {
                 targetY = targetYBottom;
                 addConnection(block.id, selected.id, "vertical", block.dataset.data_type, selected.dataset.data_type);
                 snappedVer = true;
-                // Не выходим (break), чтобы проверить боковые магниты!
             } 
 
             if (Math.abs(selPos.y - targetYTop) < 50 && 
@@ -139,7 +136,7 @@ canvas.addEventListener('mouseup', () => {
             }
         }
 
-        // ГОРИЗОНТАЛЬНАЯ ПРОВЕРКА
+
         const dyHor = Math.abs(selPos.y - bPos.y);
         if (dyHor < 50) {
             const targetXRight = bPos.x + bBox.width - SNAP_OVERLAP;
@@ -151,7 +148,7 @@ canvas.addEventListener('mouseup', () => {
                 isConnectorFree(block.id, 'horizontal') && isInputFree(selected.id, 'horizontal')) {
                 
                 targetX = targetXRight;
-                if (!snappedVer) targetY = bPos.y; // Приоритет вертикальной стыковке
+                if (!snappedVer) targetY = bPos.y; 
                 addConnection(block.id, selected.id, "horizontal", block.dataset.data_type, selected.dataset.data_type);
                 snappedHor = true;
             }
@@ -177,7 +174,6 @@ canvas.addEventListener('mouseup', () => {
     selected = null;
 });
 
-// --- 4. ВЗАИМОДЕЙСТВИЕ С БЛОКАМИ ---
 
 canvas.addEventListener('mousedown', e => {
     const block = e.target.closest('.block'); 
@@ -187,7 +183,6 @@ canvas.addEventListener('mousedown', e => {
     viewport.appendChild(block); 
 
     const blockId = block.id; 
-    // Рвем связи ПРИ НАЖАТИИ, чтобы блок можно было переставить
     connections = connections.filter(conn => conn.parent !== blockId && conn.child !== blockId);
 
     selected = block; 
@@ -200,7 +195,6 @@ canvas.addEventListener('mousedown', e => {
     selected.style.cursor = 'grabbing';
 });
 
-// --- 5. ФУНКЦИИ-ПОМОЩНИКИ ---
 
 function getBlockPos(block) {
     const matrix = block.transform.baseVal.consolidate().matrix;
@@ -213,7 +207,7 @@ function addConnection(parentId, childId, pos, parentType, childType) {
     }
 }
 
-// --- 6. УДАЛЕНИЕ ---
+
 
 trash_bin.addEventListener('mouseup', () => {
     if (!selected) return; 
