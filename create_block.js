@@ -766,7 +766,8 @@
     }
 
 
-        canvas.appendChild(group); // добавляет path в svg html
+        const viewport = document.getElementById('viewport');
+        viewport.appendChild(group);// добавляет path в svg html
 
         return group;
     }
