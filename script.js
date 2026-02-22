@@ -233,6 +233,7 @@ clearButton.addEventListener("click", () => {
         setTimeout(() => block.remove(), 300);
     });
     connections = []; 
+    ArrayName = [];
     selected = null;
 });
 

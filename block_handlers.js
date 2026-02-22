@@ -273,10 +273,6 @@ function HandleArrayBlock(block_id) {
     if (!array_data) {
         console.log("ошибка ввода значений массива");
     }
-
-    console.log(array_data.array_name);
-    console.log(array_data.array_elements);
-    console.log(array_data.array_length);
 }
 
 function HandleCycleForBlock(block_id) {
@@ -335,6 +331,7 @@ function HandleArrayIndexBlock(block_id) {
 
     let selected_array_elements = selected_array.array_elements; 
     let selected_array_length = selected_array.array_length;
+
     if (array_index < 0 || array_index >= selected_array_length) {
         console.log('элемент не существует или неверный индекс');
         return null; 
