@@ -258,7 +258,7 @@
         }
     
     if (data_type === "if_block") { //прямоугольник h100 v60 h -100 Z 
-          path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v60 h-165 l-10,10 h-25 l-10,-10 h-10 Z");
+          path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v10 l10,10 v25 l-10,10 v10     h-165 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "else_block") {
@@ -293,8 +293,20 @@
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h205 v65 h-205 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
+    if (data_type === "array_index_block") {
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v65 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
     if (data_type === "cycle_while_block") { 
        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175    v10 l10,10 v25 l-10,10 v10   h-175 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+    }
+
+    if (data_type === "logic_and_block") {
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+    }
+
+    if (data_type === "logic_or_block") {
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     group.appendChild(path);
@@ -525,7 +537,7 @@
         //Доработка блока if чтобы было 3 вариативных менюшек
         if (data_type === "if_block") {
 
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v60 h-165 l-10,10 h-25 l-10,-10 h-10 Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v10 l10,10 v25 l-10,10 v10     h-165 l-10,10 h-25 l-10,-10 h-10 Z");
 
             group.appendChild(createValueSelector(5));
 
@@ -696,7 +708,7 @@
 
             group.dataset.connectorTop = "false";
             group.dataset.connectorLeft = "false";
-            group.dataset.connectorRight = "false";
+            group.dataset.connectorRight = "true";
             group.dataset.connectorBottom = "true"; 
         }
 
@@ -802,6 +814,45 @@
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
         group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
+    }
+
+    else if (data_type === "array_index_block")
+    {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
+    }
+
+    else if (data_type === "logic_or_block")
+    {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "true";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true";
+    }
+
+    else if (data_type === "logic_and_block")
+    {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "true";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
         group.dataset.connectorBottom = "true"; 
     }
 

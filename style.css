@@ -22,6 +22,11 @@
     cursor: grabbing;
 }
 
+.row_blocks, .row1_blocks, .row2_blocks, .row3_blocks {
+    overflow: visible !important;
+}
+
+
 .main-container {
     display: flex; 
     width: 100%;
@@ -53,10 +58,12 @@
     width: 250px;
     display: flex;
     flex-shrink: 0; 
-    padding: 20px 16px; /*отступы слева-справа*/
+    padding: 20px 16px;
     border-right: 1px solid rgba(200, 200, 200, 0.5);
     flex-direction: column; 
-    gap: 8px; /*расстояние между блоками */
+    gap: 8px;
+    
+    overflow-y: auto;  
 }
 
 .right_part_of_site {
@@ -214,25 +221,16 @@
 
 
 
-.row_blocks {
-    flex-direction: row; 
-    gap: 36px; 
-    display: flex; 
-}
 
-.row1_blocks
+
+.row_blocks, .row1_blocks, .row2_blocks, .row3_blocks
 {
     flex-direction: row; 
     gap: 33px; 
     display: flex; 
 }
 
-.row2_blocks
-{
-    flex-direction: row; 
-    gap: 33px; 
-    display: flex; 
-}
+
 
 
 .block {
@@ -246,8 +244,10 @@
 }
 
 
+
 .varuable_block, .assignment_block, .if_block, 
-.else_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block {
+.else_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .output_block, .__block, .logic_and_block, .logic_or_block, .array_index_block {
+    overflow: visible !important;
     background-color: transparent; 
     padding: 0;
     margin: 5px 0;
@@ -256,9 +256,6 @@
     display: block;
 }
 
-.sidebar {
-    overflow: visible; 
-}
 
 
 .sidebar svg {

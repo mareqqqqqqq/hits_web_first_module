@@ -48,7 +48,7 @@ document.addEventListener('mouseup', () => {
 
 
 const sidebarBlocks = document.querySelectorAll(
-    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block'
+    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .logic_and_block , .logic_or_block, .array_index_block'
 );
 
 sidebarBlocks.forEach(el => {
@@ -67,7 +67,11 @@ sidebarBlocks.forEach(el => {
             el.classList.contains('start_block') ? '#25c733' :
             el.classList.contains('endif_block') ? '#ffac3e' :
             el.classList.contains('endelse_block') ? '#fd4a4a' :
-            el.classList.contains('array_block') ? '#004af7' : '#4caf50';
+            el.classList.contains('logic_and_block') ? '#734f96' :
+            el.classList.contains('logic_or_block') ? '	#8FBC8F' :
+            el.classList.contains('array_block') ? '#004af7' :
+            el.classList.contains('array_index_block') ? '#004af7' :
+            '#4caf50';
 
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left - currentTranslate.x;
