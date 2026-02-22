@@ -290,7 +290,7 @@
     }
 
     if (data_type === "array_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h155 v65 h-155 l-10,10 h-25 l-10,-10 h-10 Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h205 v65 h-205 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "cycle_while_block") { 
@@ -644,8 +644,9 @@
     }
 
     if (data_type === "array_block") {
-        group.appendChild(createNumberInput(15, "array len"));
-        group.appendChild(addNumberWithSpace(75, "array element"));
+        group.appendChild(createTextInput(15, "array name"))
+        group.appendChild(createNumberInput(75, "array len"));
+        group.appendChild(addNumberWithSpace(135, "array element"));
     }
     
     if (data_type === "assignment_block") {
