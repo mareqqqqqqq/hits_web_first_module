@@ -194,6 +194,10 @@ canvas.addEventListener('mousedown', e => {
     const blockId = block.id; 
     connections = connections.filter(conn => conn.parent !== blockId && conn.child !== blockId);
 
+    if (block.dataset.data_type === "varuable_block") {
+        varuable_list = varuable_list.filter(v => v.block_id !== blockId);
+    }
+
     selected = block; 
     const rect = canvas.getBoundingClientRect();
     const matrix = selected.transform.baseVal.consolidate().matrix;
@@ -213,6 +217,21 @@ function getBlockPos(block) {
 function addConnection(parentId, childId, pos, parentType, childType) {
     if (!connections.some(c => c.parent === parentId && c.child === childId)) {
         connections.push({ parent: parentId, child: childId, position: pos, parent_block_type: parentType, child_block_type: childType});
+
+        if (childType === "varuable_block"){
+            if (!varuable_list.some(v => v.block_id === childId)) {
+                const name = getVaruableBlockValue(childId);
+
+                varuable_list.push({
+                    block_id: childId,
+                    block_type: "varuable_block",
+                    varuable_name: name,
+                    varuable_value: null
+                });
+
+                refreshAllVariableSelectors();
+            }
+        }
     }
 }
 
@@ -232,6 +251,7 @@ clearButton.addEventListener("click", () => {
         block.classList.add("clear");
         setTimeout(() => block.remove(), 300);
     });
+    varuable_list.length = 0;
     connections = []; 
     selected = null;
 });
