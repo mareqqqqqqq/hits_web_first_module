@@ -1,5 +1,6 @@
 const start_button = document.getElementById('start_button');
 const varuable_list = [];
+let ArrayName = [];
 
 // получает имена переменных для выпадающей менюшки 
 function getAllVaruableName() {
@@ -50,6 +51,27 @@ function GetAllVaruables() {
         }
     }
 }
+
+function GetAllArrays() {
+    ArrayName = [];
+    let array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
+    
+    array_blocks.forEach(block => {
+        let array_id = block.id;
+        let array_data = getArrayBlockValue(array_id);
+
+
+        if (array_data && array_data.name) {
+            ArrayName.push ({
+                array_name: array_data.name,
+                array_id: array_id
+            });
+        }
+    });
+
+    return;
+} 
+
 
 function HandleAnyBlock(block_type, block_id) {
     switch (block_type) {

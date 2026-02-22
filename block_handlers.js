@@ -274,7 +274,9 @@ function HandleArrayBlock(block_id) {
         console.log("ошибка ввода значений массива");
     }
 
+    console.log(array_data.name);
     console.log(array_data.elements);
+    console.log(array_data.length);
 }
 
 function HandleCycleForBlock(block_id) {

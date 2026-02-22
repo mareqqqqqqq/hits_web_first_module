@@ -143,8 +143,9 @@ function getArrayBlockValue(block_id) {
         return input ? input.value.trim() : null; 
     } 
 
-    const array_length = getInputValue(foreign_objects[0]); 
-    const array_elements = getInputValue(foreign_objects[1]);
+    const array_name = getInputValue(foreign_objects[0]);
+    const array_length = getInputValue(foreign_objects[1]); 
+    const array_elements = getInputValue(foreign_objects[2]);
 
     let elements = [];
     if (array_elements && array_length) {
@@ -152,8 +153,9 @@ function getArrayBlockValue(block_id) {
     }
 
     return {
+        name: array_name, 
         length: array_length, 
-        elements: elements,
+        elements: array_elements
     }
 }
 
