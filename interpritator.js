@@ -57,10 +57,6 @@ function HandleAnyBlock(block_type, block_id) {
             HandleIfBlock(block_id);
             break;
 
-        case "else_block": 
-            HandleElseBlock(block_id);
-            break;
-
         case "cycle_block": 
             HandleCycleBlock(block_id);
             break;
@@ -80,6 +76,18 @@ function HandleAnyBlock(block_type, block_id) {
         case "arif_block": 
             HandleArifBlock(block_id);
             break; 
+
+        case "cycle_while_block":
+            HandleCycleWhileBlock();
+            break; 
+
+        case "cycle_for_blcok":
+            HandleCycleForBlock(); 
+            break; 
+
+        case "array_block": 
+            HandleArrayBlock(); 
+            break; 
     }
 }
 
@@ -94,43 +102,46 @@ function LeftPartOfCodeBlock() {
     let block = document.getElementById(block_id);
     let block_type = block.dataset.data_type;
     
-    const allowed_blocks = ["if_block", "output_block", "arif_block", "cycle_block", "array_block", "varuable_block"]; 
+    const allowed_blocks = ["if_block", "output_block", "arif_block", "cycle_for_block", "cycle_while_block", "array_block", "varuable_block"]; 
 
-    if (allowed_blocks.includes(block_type)) {
-        switch (block_type) {
-            case "if_block":
-                HandleIfBlock(block_id);
-                break;
+    switch (block_type) {
+        case "if_block":
+            HandleIfBlock(block_id);
+            break; 
 
-            case "output_block":
-                HandleOutputBlock(block_id); 
-                break;
-                
-            case "arif_block":
-                 HandleArifBlock(block_id);
-                 break;
+        case "output_block":
+            HandleOutputBlock(block_id); 
+            break
+            
+        case "arif_block":
+            HandleArifBlock(block_id);
+            break; 
 
-            case "cycle_block":
-                 HandleCycleBlock(block_id);
-                 break;
+        case "cycle_block":
+            HandleCycleBlock(block_id);
+            break;
 
-            case "array_block":
-                HandleArrayBlock(block_id);
-                break; 
+        case "array_block":
+            HandleArrayBlock(block_id);
+            break; 
 
-            case "varuable_block": 
-                HandleVaruableBlock(block_id);
-                break; 
+        case "varuable_block": 
+            HandleVaruableBlock(block_id);
+            break; 
+
+        case "arif_block":
+            HandleArifBlock(block_id);
+            break;  
+
+        case "cycle_for_block": 
+            HandleCycleForBlock(block_id);
+            break; 
+
+        case "cycle_while_block":
+            HandleWhileBlock(block_id);
+            break;
         }
-    }
-
-    else { 
-        InvalidSyntacsisError();
-    }
 }
-
-
-
 
 start_button.addEventListener('click', e => {
     varuable_list.length = 0;

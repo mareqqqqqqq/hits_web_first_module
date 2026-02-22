@@ -98,7 +98,7 @@
 
                 select.style.width = "100%";
                 select.style.height = "100%";
-                select.fontSize = "12px";
+                select.style.fontSize = "12px";
                 select.style.fontFamily = "Inter";
                 select.style.background = "rgba(255, 255, 255, 0.9)";
                 select.style.border = "none";
@@ -117,6 +117,125 @@
                 return foreign;
             }
         
+
+            function createTextInput(x, placeholder) {
+                const foreign = document.createElementNS(ns, "foreignObject");
+                foreign.setAttribute("x", x);
+                foreign.setAttribute("y", 20);
+                foreign.setAttribute("width", 50);
+                foreign.setAttribute("height", 25);
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = placeholder;
+
+                input.style.width = "100%";
+                input.style.height = "100%";
+                input.style.fontSize = "12px";
+                input.style.fontFamily = "Inter";
+                input.style.background = "rgba(255, 255, 255, 0.9)";
+                input.style.border = "none";
+                input.style.outline = "none";
+                input.style.padding = "2px 4px";
+
+                input.addEventListener("input", function() {
+                    let value = this.value;
+                    value = value.replace(/\s/g, "");
+                    value = value.replace(/[^a-zA-Z0-9_]/g, "");
+                    if(/^[0-9]/.test(value)) {
+                        value = value.substring(1);
+                    }
+                    this.value = value;
+                });
+
+                input.addEventListener("mousedown", e => e.stopPropagation());
+                foreign.appendChild(input);
+                return foreign;
+            }
+
+                function createNumberInput(x, placeholder) {
+                const foreign = document.createElementNS(ns, "foreignObject");
+                foreign.setAttribute("x", x);
+                foreign.setAttribute("y", 20);
+                foreign.setAttribute("width", 50);
+                foreign.setAttribute("height", 25);
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = placeholder;
+
+                input.style.width = "100%";
+                input.style.height = "100%";
+                input.style.fontSize = "12px";
+                input.style.fontFamily = "Inter";
+                input.style.background = "rgba(255, 255, 255, 0.9)";
+                input.style.border = "none";
+                input.style.outline = "none";
+                input.style.padding = "2px 4px";
+
+                input.addEventListener("input", function() {
+                    let value = this.value;
+                    value = value.replace(/[^0-9\-]/g, "");
+                    if (value.includes("-")) {
+                        value = "-" + value.replace(/-/g, "");
+                    }
+                    this.value = value;
+                });
+
+                input.addEventListener("mousedown", e => e.stopPropagation());
+                foreign.addEventListener("mousedown", e => e.stopPropagation());
+                foreign.appendChild(input);
+                return foreign;
+            }
+
+            function addNumberWithSpace(x, placeholder) {
+                const foreign = document.createElementNS(ns, "foreignObject");
+                foreign.setAttribute("x", x);
+                foreign.setAttribute("y", 20);
+                foreign.setAttribute("width", 120);
+                foreign.setAttribute("height", 25);
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = placeholder;
+
+                input.style.width = "100%";
+                input.style.height = "100%";
+                input.style.fontSize = "12px";
+                input.style.fontFamily = "Inter";
+                input.style.background = "rgba(255, 255, 255, 0.9)";
+                input.style.border = "none";
+                input.style.outline = "none";
+                input.style.padding = "2px 4px";
+                input.style.boxSizing = "border-box";
+
+                input.addEventListener("input", function() {
+                    let value = this.value;
+
+                    value = value.replace(/[^0-9\- ]/g, "");
+                    
+                    let parts = value.split(" ");
+
+                    parts = parts.map(part => {
+                        if (part === "") return "";
+
+                        part = part.replace(/-/g, "");
+                        if (value.includes("-" + part)) {
+                            return "-" + part;
+                        }
+                        return part;
+                    });
+
+                    this.value = parts.join(" ");
+                });
+
+                input.addEventListener("mousedown", e => e.stopPropagation());
+                foreign.addEventListener("mousedown", e => e.stopPropagation());
+
+                foreign.appendChild(input);
+
+                return foreign;
+            }
         
         // вот тут поменяли 
         // вот тут поменяли 
@@ -155,7 +274,7 @@
     }
 
     if (data_type === "cycle_for_block") { 
-       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375    v10 l10,10 v25 l-10,10 v10   h-375 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
     
     if (data_type === "start_block") {
@@ -171,11 +290,11 @@
     }
 
     if (data_type === "array_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v65 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h155 v65 h-155 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "cycle_while_block") { 
-       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175    v10 l10,10 v25 l-10,10 v10   h-175 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     group.appendChild(path);
@@ -419,83 +538,9 @@
     //Для вариативного меню в аутпут блок
 
     if (data_type === "output_block") {
-        const mockVariables = ["1", "2", "3"];
+ 
 
-        function createOutputSelect(x) {
-
-            const foreign = document.createElementNS(ns, "foreignObject");
-            foreign.setAttribute("x", x);
-            foreign.setAttribute("y", 20);
-            foreign.setAttribute("width", 70);
-            foreign.setAttribute("height", 25);
-
-            const container = document.createElement("div");
-            container.style.width = "100%";
-            container.style.height = "100%";
-            container.style.display = "flex";
-
-            const select = document.createElement("select");
-            select.style.width = "100%";
-            select.style.height = "100%";
-            select.style.fontSize = "12px";
-            select.style.fontFamily = "Inter";
-            select.style.background = "rgba(255, 255, 255, 0.9)";
-            select.style.color = "black"
-            select.style.border = "none";
-            select.style.outline = "none";
-
-            mockVariables.forEach(v => {
-                const option = document.createElement("option");
-                option.value = v;
-                option.textContent = v;
-                select.appendChild(option);
-            });
-
-            const customOption = document.createElement("option");
-            customOption.value = "custom";
-            customOption.textContent = "Другое";
-            select.appendChild(customOption);
-
-            const input = document.createElement("input");
-            input.type = "text";
-            input.style.display = "none";
-            input.style.width = "100%";
-            input.style.height = "100%";
-            input.style.fontSize = "12px";
-            input.style.fontFamily = "Inter";
-            input.style.border = "none";
-            input.style.outline = "none";
-            input.style.background = "rgba(255, 255, 255, 0.9)";
-            input.placeholder = "Введите:";
-
-            select.addEventListener("change", () => {
-                if (select.value === "custom") {
-                    select.style.display = "none";
-                    input.style.display = "block";
-                    input.focus();
-                }
-            });
-
-            input.addEventListener ("blur", () => {
-                if (input.value.trim() === "") {
-                    input.style.display = "none";
-                    select.style.display = "block";
-                    select.value = mockValues[0];
-                }
-            });
-
-            select.addEventListener("mousedown", e => e.stopPropagation());
-            input.addEventListener("mousedown", e => e.stopPropagation());
-            foreign.addEventListener("mousedown", e => e.stopPropagation());
-
-            container.appendChild(select);
-            container.appendChild(input);
-            foreign.appendChild(container);
-
-            return foreign;
-        }
-
-        group.appendChild(createOutputSelect(15));
+        group.appendChild(createValueSelector(15));
     }
 
     if (data_type === "arif_block") {
@@ -520,7 +565,7 @@
             select.style.height = "100%";
             select.style.fontSize = "12px";
             select.style.fontFamily = "Inter";
-            select.style.background = "rgba(255, 255, 255, 0.9";
+            select.style.background = "rgba(255, 255, 255, 0.9)";
             select.style.border = "none";
             select.style.outline = "none";
 
@@ -557,10 +602,50 @@
             return foreign;
         }
 
-        // group.appendChild(createVariableSelector(15));
+        //group.appendChild(createVariableSelector(15));
         group.appendChild(createValueSelector(110));
         group.appendChild(createOperatorSelect(185, ["+", "-", "*", "//", "%"]));
         group.appendChild(createValueSelector(240));
+    }
+
+    if (data_type === "cycle_for_block") {
+        function createEqual(x) {
+            const text = document.createElementNS(ns, "text");
+            text.setAttribute("x", x);
+            text.setAttribute("y", 37);
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "14");
+            text.setAttribute("font-family", "Inter");
+            text.setAttribute("font-weight", "bold");
+            text.textContent = "=";
+
+            text.addEventListener("mousedown", e => e.stopPropagation());
+
+            return text;
+        }
+
+
+        group.appendChild(createTextInput(15, "cycle var"));
+        group.appendChild(createEqual(65));
+        group.appendChild(createNumberInput(75, "start cycle"));
+
+        group.appendChild(createTextInput(140, "cycle var"));
+        group.appendChild(createOperatorSelect(195, [">", "<", "=", "!=", ">=", "<="]));
+        group.appendChild(createNumberInput(250, "end cycle"))
+
+        group.appendChild(createOperatorSelect(315, ["+", "-", "*", "//"]));
+        group.appendChild(createNumberInput(370, "cycle step"));
+    }
+
+    if (data_type === "cycle_while_block") {
+        group.appendChild(createValueSelector(15));
+        group.appendChild(createOperatorSelect(95, [">", "<", "=", "!=", ">=", "<="]));
+        group.appendChild(createValueSelector(155))
+    }
+
+    if (data_type === "array_block") {
+        group.appendChild(createNumberInput(15, "array len"));
+        group.appendChild(addNumberWithSpace(75, "array element"));
     }
     
     if (data_type === "assignment_block") {
