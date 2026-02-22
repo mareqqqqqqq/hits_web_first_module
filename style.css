@@ -246,7 +246,7 @@
 
 
 .varuable_block, .assignment_block, .if_block, 
-.else_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .output_block, .__block, .logic_and_block, .logic_or_block, .array_index_block {
+.else_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .output_block, .__block, .logic_and_block, .logic_or_block, .array_index_block, .endfor_block {
     overflow: visible !important;
     background-color: transparent; 
     padding: 0;
