@@ -299,12 +299,11 @@ function HandleCycleForBlock(block_id) {
         conn.parent_block_type === "cycle_for_block" && conn.parent === block_id
     );
 
-        if (!first_block_connection) {
+    if (!first_block_connection) {
         console.log("Нет блоков в теле цикла for");
         InvalidSyntacsisError();
         return;
     }
-
 
     function checkCondition(current, stop, op) {
         switch(op) {
@@ -324,17 +323,62 @@ function HandleCycleForBlock(block_id) {
     while (checkCondition(current_value, stop_value, operator) && iteration_count < max_iterations) {
         iteration_count++;
         
-        // Сохраняем текущее значение переменной в varuable_list
         updateVariable(var_name, current_value);
         
-        // Обрабатываем тело цикла
         let current_block_id = first_block_connection.child;
         let current_block_type = first_block_connection.child_block_type;
         
-        // Проходим по всем блокам до endfor_block
-        while (current_block_id && current_block_type !== "endfor_block") {
-            // Обрабатываем текущий блок
-            HandleAnyBlock(current_block_type, current_block_id);
+        // Проходим по всем блокам до СВОЕГО endfor_block
+        while (current_block_id) {
+            // ЕСЛИ ЭТО НАЧАЛО ВЛОЖЕННОГО ЦИКЛА
+            if (current_block_type === "cycle_for_block") {
+                // Выполняем вложенный цикл
+                HandleCycleForBlock(current_block_id);
+                
+                // ВАЖНО: После выполнения вложенного цикла,
+                // перепрыгиваем к блоку после ЕГО endfor_block
+                let nested_endfor = findEndForBlockId(current_block_id);
+                if (nested_endfor) {
+                    // Находим следующий блок после endfor вложенного цикла
+                    let next_after_nested = connections.find(conn => 
+                        conn.parent === nested_endfor && conn.parent_block_type === "endfor_block"
+                    );
+                    
+                    if (next_after_nested) {
+                        current_block_id = next_after_nested.child;
+                        current_block_type = next_after_nested.child_block_type;
+                        continue; // Продолжаем со следующего блока
+                    }
+                }
+            }
+            
+            // ЕСЛИ ДОШЛИ ДО endfor_block
+            if (current_block_type === "endfor_block") {
+                // Проверяем, принадлежит ли этот endfor_block текущему циклу
+                if (isMyEndForBlock(block_id, current_block_id)) {
+                    break; // Выходим из цикла - это наш endfor
+                }
+                // Если это не наш endfor (принадлежит вложенному циклу), просто пропускаем его
+                else {
+                    // Ищем следующий блок после чужого endfor
+                    let next_connection = connections.find(conn => 
+                        conn.parent === current_block_id && conn.parent_block_type === current_block_type
+                    );
+                    
+                    if (next_connection) {
+                        current_block_id = next_connection.child;
+                        current_block_type = next_connection.child_block_type;
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            
+            // Обрабатываем обычные блоки (не циклы и не endfor)
+            if (current_block_type !== "cycle_for_block" && current_block_type !== "endfor_block") {
+                HandleAnyBlock(current_block_type, current_block_id);
+            }
             
             // Ищем следующий блок
             let next_connection = connections.find(conn => 
@@ -349,11 +393,21 @@ function HandleCycleForBlock(block_id) {
             }
         }
         
-        // Обновляем значение переменной цикла
+        previous_value = current_value;
+
         if (step_sign === "+") {
             current_value += step_value;
-        } else if (step_sign === "-") {
+        } 
+        else if (step_sign === "-") {
             current_value -= step_value;
+        } 
+        else if (step_sign === "*") {
+            current_value *= step_value;
+        } 
+        else if (step_sign === "//") {
+            if (step_value !== 0) {
+                current_value = Math.floor(current_value / step_value);
+            }
         }
     }
 
@@ -362,12 +416,47 @@ function HandleCycleForBlock(block_id) {
         InvalidSyntacsisError();
     }
 
-    let endfor_connection = connections.find(conn => 
-        conn.parent_block_type === "endfor_block" && 
-        conn.parent === findEndForBlockId(block_id)
-    );
+    // Находим следующий блок после СВОЕГО endfor_block
+    let my_endfor_id = findEndForBlockId(block_id);
+    if (my_endfor_id) {
+        let next_after_endfor = connections.find(conn => 
+            conn.parent === my_endfor_id && conn.parent_block_type === "endfor_block"
+        );
+        return next_after_endfor ? next_after_endfor.child : null;
+    }
     
-    return endfor_connection ? endfor_connection.child : null;
+    return null;
+}
+
+// Новая функция для проверки, принадлежит ли endfor_block текущему циклу
+function isMyEndForBlock(cycle_block_id, endfor_block_id) {
+    // Находим путь от cycle_block до endfor_block
+    let current_id = cycle_block_id;
+    let current_type = "cycle_for_block";
+    let nested_level = 0;
+    
+    while (current_id) {
+        let next_connection = connections.find(conn => 
+            conn.parent === current_id && conn.parent_block_type === current_type
+        );
+        
+        if (!next_connection) break;
+        
+        current_id = next_connection.child;
+        current_type = next_connection.child_block_type;
+        
+        if (current_id === endfor_block_id) {
+            return nested_level === 0; // Это наш endfor, если уровень вложенности 0
+        }
+        
+        if (current_type === "cycle_for_block") {
+            nested_level++;
+        } else if (current_type === "endfor_block") {
+            nested_level--;
+        }
+    }
+    
+    return false;
 }
 
 function updateVariable(var_name, value) {
@@ -392,6 +481,7 @@ function updateVariable(var_name, value) {
 function findEndForBlockId(for_block_id) {
     let current_id = for_block_id;
     let current_type = "cycle_for_block";
+    let nested_level = 0;
     
     while (current_id) {
         let next_connection = connections.find(conn => 
@@ -403,11 +493,22 @@ function findEndForBlockId(for_block_id) {
         current_id = next_connection.child;
         current_type = next_connection.child_block_type;
         
-        if (current_type === "endfor_block") {
-            return current_id;
+        if (current_type === "cycle_for_block") {
+            nested_level++;
+        }
+
+        else if (current_type === "endfor_block") {
+            if (nested_level > 0) {
+                nested_level--;
+                continue;  
+            } 
+            else {
+                return current_id;
+            }
         }
     }
-    
+    console.log("Не найден endfor_block");
+    InvalidSyntacsisError();
     return null;
 }
 
