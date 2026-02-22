@@ -153,9 +153,52 @@ function getArrayBlockValue(block_id) {
     }
 
     return {
-        name: array_name, 
-        length: array_length, 
-        elements: array_elements
+        array_name: array_name, 
+        array_length: array_length, 
+        array_elements: elements
+    }
+}
+
+function getArrayIndexValue(block_id) {
+    const block = document.getElementById(block_id);
+    if (!block) return null;
+    
+    const foreign_objects = block.querySelectorAll('foreignObject');
+
+    function getInputValue(foreign_object) {
+         if (!foreign_object) {
+            return null; 
+        }
+
+        let select = foreign_object.querySelector('select'); 
+        let input = foreign_object.querySelector('input');
+
+        if (select && select.style.display !== "none") {
+            if (!select.value) {
+                console.log("не найдено значение для выбора")
+                return null; 
+            }
+            return select.value || null; 
+        }
+
+        else if (input && input.style.display !== "none") {
+            if (!input.value) {
+                console.log("не найдено значение ввода")
+                return null;
+            }
+            return input.value || null;
+        }
+
+        console.log("не найдено значение ни выбора ни ввода ");
+        return null; 
+    } 
+
+    const array_name = getInputValue(foreign_objects[0]);
+    const array_index = getInputValue(foreign_objects[1]); 
+
+    return {
+        array_name: array_name, 
+        array_index: array_index, 
     }
 }
 

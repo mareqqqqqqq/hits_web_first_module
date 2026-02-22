@@ -59,19 +59,22 @@ function GetAllArrays() {
     array_blocks.forEach(block => {
         let array_id = block.id;
         let array_data = getArrayBlockValue(array_id);
+        let array_elements = array_data.array_elements; 
+        let array_length = array_data.array_length; 
 
 
-        if (array_data && array_data.name) {
+        if (array_data && array_data.array_name) {
             ArrayName.push ({
-                array_name: array_data.name,
-                array_id: array_id
+                array_length: array_length, 
+                array_name: array_data.array_name,
+                array_id: array_id, 
+                array_elements: array_elements 
             });
         }
     });
 
     return;
 } 
-
 
 function HandleAnyBlock(block_type, block_id) {
     switch (block_type) {
@@ -100,15 +103,15 @@ function HandleAnyBlock(block_type, block_id) {
             break; 
 
         case "cycle_while_block":
-            HandleCycleWhileBlock();
+            HandleCycleWhileBlock(block_id);
             break; 
 
-        case "cycle_for_blcok":
-            HandleCycleForBlock(); 
+        case "cycle_for_block":
+            HandleCycleForBlock(block_id); 
             break; 
 
         case "array_block": 
-            HandleArrayBlock(); 
+            HandleArrayBlock(block_id); 
             break; 
     }
 }
@@ -124,7 +127,7 @@ function LeftPartOfCodeBlock() {
     let block = document.getElementById(block_id);
     let block_type = block.dataset.data_type;
     
-    const allowed_blocks = ["if_block", "output_block", "arif_block", "cycle_for_block", "cycle_while_block", "array_block", "varuable_block"]; 
+    const allowed_blocks = ["if_block", "output_block", "arif_block", "cycle_for_block", "cycle_while_block", "array_block", "varuable_block", "array_index_block"]; 
 
     switch (block_type) {
         case "if_block":
@@ -162,7 +165,14 @@ function LeftPartOfCodeBlock() {
         case "cycle_while_block":
             HandleWhileBlock(block_id);
             break;
+
+        case "array_index_block": 
+            HandleArrayIndexBlock(block_id);
+            break; 
         }
+
+        
+
 }
 
 start_button.addEventListener('click', e => {

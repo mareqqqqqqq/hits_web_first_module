@@ -215,7 +215,7 @@ function HandleVaruableBlock(block_id) {
     );
 
     let current_assignment_block_id = current_assignment_connection ? current_assignment_connection.child : null; 
-    let current_assignment_blcok_type = current_assignment_connection ? current_assignment_connection.child_block_type : null; 
+    let current_assignment_block_type = current_assignment_connection ? current_assignment_connection.child_block_type : null; 
     let current_varuable_block_value = current_assignment_connection ?  getAssignmentBlockValue(block_id) : null; 
 
     // тут надо будет записывать в масисив varuable_list(пока лень)
@@ -274,9 +274,9 @@ function HandleArrayBlock(block_id) {
         console.log("ошибка ввода значений массива");
     }
 
-    console.log(array_data.name);
-    console.log(array_data.elements);
-    console.log(array_data.length);
+    console.log(array_data.array_name);
+    console.log(array_data.array_elements);
+    console.log(array_data.array_length);
 }
 
 function HandleCycleForBlock(block_id) {
@@ -298,7 +298,7 @@ function HandleCycleForBlock(block_id) {
     console.log(for_cycle_data.cycle_step_value);
 }
 
-function HandleWhileBlock(block_id ) {
+function HandleCycleWhileBlock(block_id ) {
     let block = document.getElementById(block_id); 
     if (!block) return null; 
 
@@ -312,6 +312,36 @@ function HandleWhileBlock(block_id ) {
     console.log(while_block_data.operator); 
     console.log(while_block_data.right);  
 }
+
+function HandleArrayIndexBlock(block_id) {
+    let block = document.getElementById(block_id);
+
+    if (!block) return null; 
+
+    let array_index_block_data = getArrayIndexValue(block_id);
+
+    let array_name = array_index_block_data.array_name; 
+    let array_index = Number(array_index_block_data.array_index);
+
+    let selected_array = ArrayName.find(conn => 
+        conn.array_name === array_name // проверка на то что у нас в массиве ArrayName есть массив с таким же названием что выбрал пользователь
+    );
+
+    if (!selected_array) {
+        console.log("Такого массива не существует"); 
+        InvalidSyntacsisError(); 
+        return null; 
+    }
+
+    let selected_array_elements = selected_array.array_elements; 
+    let selected_array_length = selected_array.array_length;
+    if (array_index < 0 || array_index >= selected_array_length) {
+        console.log('элемент не существует или неверный индекс');
+        return null; 
+    }
+
+    console.log("вы обратились к элементу:", selected_array_elements[array_index]);
+} 
 
 
 
