@@ -135,7 +135,7 @@
         }
 
     if (data_type === "assignment_block") { //прямоульник h65 v50 h-65 Z
-        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v65 h-65 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h10 v60 h-65  Z");
         }
     
     if (data_type === "if_block") { //прямоугольник h100 v60 h -100 Z 
@@ -143,7 +143,7 @@
     }
 
     if (data_type === "else_block") {
-        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v65 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "output_block") { //прямоугольник h100 v60 h -100 Z
@@ -174,8 +174,20 @@
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v65 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
+    if (data_type === "array_index_block") {
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v65 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
     if (data_type === "cycle_while_block") { 
        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+    }
+
+    if (data_type === "logic_and_block") { 
+       path.setAttribute("d", "M0,0 h100 v10 l10,10 v25 l-10,10 v10 h-100 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+    }
+
+    if (data_type === "logic_or_block") { 
+       path.setAttribute("d", "M0,0 h100 v10 l10,10 v25 l-10,10 v10 h-100 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     group.appendChild(path);
@@ -565,54 +577,52 @@
     
     if (data_type === "assignment_block") {
         group.dataset.connectionTop = "true";
-        group.dataset.connectionLeft = "true";
+        group.dataset.connectionLeft = "false";
         group.dataset.connectionRight = "false";
         group.dataset.connectionBottom = "false"; 
 
-            group.dataset.connectorTop = "false";
-            group.dataset.connectorLeft = "false";
-            group.dataset.connectorRight = "false";
-            group.dataset.connectorBottom = "false"; 
-        }
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "false"; 
+    }
 
-        else if (data_type === "varuable_block") {
-            group.dataset.connectionTop = "true";
-            group.dataset.connectionLeft = "true";
-            group.dataset.connectionRight = "false";
-            group.dataset.connectionBottom = "false";
+    else if (data_type === "varuable_block") {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "true";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+    
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true"; 
+    }
 
-            group.dataset.connectorTop = "false";
-            group.dataset.connectorLeft = "false";
-            group.dataset.connectorRight = "true";
-            group.dataset.connectorBottom = "true"; 
-        }
 
+    else if (data_type === "else_block"){
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
 
-        else if (data_type === "else_block")
-        {
-            group.dataset.connectionTop = "true";
-            group.dataset.connectionLeft = "false";
-            group.dataset.connectionRight = "false";
-            group.dataset.connectionBottom = "false";
-
-            group.dataset.connectorTop = "false";
-            group.dataset.connectorLeft = "false";
-            group.dataset.connectorRight = "true";
-            group.dataset.connectorBottom = "true"; 
-        }
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
+    }
         
-        else if (data_type === "if_block" )
-        {
-            group.dataset.connectionTop = "true";
-            group.dataset.connectionLeft = "false";
-            group.dataset.connectionRight = "false";
-            group.dataset.connectionBottom = "false";
+    else if (data_type === "if_block" ){
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
 
-            group.dataset.connectorTop = "false";
-            group.dataset.connectorLeft = "false";
-            group.dataset.connectorRight = "false";
-            group.dataset.connectorBottom = "true"; 
-        }
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
+    }
 
     else if (data_type === "arif_block")
     {
@@ -719,6 +729,44 @@
         group.dataset.connectorBottom = "true"; 
     }
 
+    else if (data_type === "logic_and_block")
+    {
+        group.dataset.connectionTop = "false";
+        group.dataset.connectionLeft = "true";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "false"; 
+    }
+
+    else if (data_type === "logic_or_block")
+    {
+        group.dataset.connectionTop = "false";
+        group.dataset.connectionLeft = "true";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "false"; 
+    }
+
+    else if (data_type === "array_index_block")
+    {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
+    }
 
         const viewport = document.getElementById('viewport');
         viewport.appendChild(group);// добавляет path в svg html
