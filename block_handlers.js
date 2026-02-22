@@ -283,15 +283,132 @@ function HandleCycleForBlock(block_id) {
 
     if (!for_cycle_data) {
         console.log("значения в for не найдены");
+        return;
     }
 
-    console.log(for_cycle_data.cycle_varuable);
-    console.log(for_cycle_data.cycle_start_value);
-    console.log(for_cycle_data.cycle_varuable_start);
-    console.log(for_cycle_data.cycle_operator_select);
-    console.log(for_cycle_data.cycle_varuable_stop);
-    console.log(for_cycle_data.cycle_step_sign);
-    console.log(for_cycle_data.cycle_step_value);
+    let var_name = for_cycle_data.cycle_varuable;
+    let start_value = Number(for_cycle_data.cycle_start_value);
+    let stop_value = Number(for_cycle_data.cycle_varuable_stop);
+    let operator = for_cycle_data.cycle_operator_select;
+    let step_sign = for_cycle_data.cycle_step_sign;
+    let step_value = Number(for_cycle_data.cycle_step_value);
+    
+    let current_value = start_value;
+
+    let first_block_connection = connections.find(conn => 
+        conn.parent_block_type === "cycle_for_block" && conn.parent === block_id
+    );
+
+        if (!first_block_connection) {
+        console.log("Нет блоков в теле цикла for");
+        InvalidSyntacsisError();
+        return;
+    }
+
+
+    function checkCondition(current, stop, op) {
+        switch(op) {
+            case ">": return current > stop;
+            case "<": return current < stop;
+            case "=": return current == stop;
+            case "!=": return current != stop;
+            case ">=": return current >= stop;
+            case "<=": return current <= stop;
+            default: return false;
+        }
+    }
+
+    let iteration_count = 0;
+    let max_iterations = 1000;
+
+    while (checkCondition(current_value, stop_value, operator) && iteration_count < max_iterations) {
+        iteration_count++;
+        
+        // Сохраняем текущее значение переменной в varuable_list
+        updateVariable(var_name, current_value);
+        
+        // Обрабатываем тело цикла
+        let current_block_id = first_block_connection.child;
+        let current_block_type = first_block_connection.child_block_type;
+        
+        // Проходим по всем блокам до endfor_block
+        while (current_block_id && current_block_type !== "endfor_block") {
+            // Обрабатываем текущий блок
+            HandleAnyBlock(current_block_type, current_block_id);
+            
+            // Ищем следующий блок
+            let next_connection = connections.find(conn => 
+                conn.parent === current_block_id && conn.parent_block_type === current_block_type
+            );
+            
+            if (next_connection) {
+                current_block_id = next_connection.child;
+                current_block_type = next_connection.child_block_type;
+            } else {
+                break;
+            }
+        }
+        
+        // Обновляем значение переменной цикла
+        if (step_sign === "+") {
+            current_value += step_value;
+        } else if (step_sign === "-") {
+            current_value -= step_value;
+        }
+    }
+
+    if (iteration_count >= max_iterations) {
+        console.log("Превышено максимальное количество итераций в цикле for");
+        InvalidSyntacsisError();
+    }
+
+    let endfor_connection = connections.find(conn => 
+        conn.parent_block_type === "endfor_block" && 
+        conn.parent === findEndForBlockId(block_id)
+    );
+    
+    return endfor_connection ? endfor_connection.child : null;
+}
+
+function updateVariable(var_name, value) {
+    // Ищем существующую переменную
+    let existing_var = varuable_list.find(v => v.varuable_name === var_name);
+    
+    if (existing_var) {
+        existing_var.varuable_value = value;
+    } else {
+        // Если переменная не найдена, создаём новую
+        varuable_list.push({
+            varuable_block_id: null,
+            varuable_block_type: "cycle_variable",
+            varuable_name: var_name,
+            varuable_value: value,
+            assignment_value: null,
+            assignment_type: null
+        });
+    }
+}
+
+function findEndForBlockId(for_block_id) {
+    let current_id = for_block_id;
+    let current_type = "cycle_for_block";
+    
+    while (current_id) {
+        let next_connection = connections.find(conn => 
+            conn.parent === current_id && conn.parent_block_type === current_type
+        );
+        
+        if (!next_connection) break;
+        
+        current_id = next_connection.child;
+        current_type = next_connection.child_block_type;
+        
+        if (current_type === "endfor_block") {
+            return current_id;
+        }
+    }
+    
+    return null;
 }
 
 function HandleCycleWhileBlock(block_id ) {
