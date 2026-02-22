@@ -82,10 +82,6 @@ function HandleAnyBlock(block_type, block_id) {
             HandleIfBlock(block_id);
             break;
 
-        case "cycle_block": 
-            HandleCycleBlock(block_id);
-            break;
-
         case "output_block": 
             HandleOutputBlock(block_id);
             break;
@@ -141,10 +137,6 @@ function LeftPartOfCodeBlock() {
         case "arif_block":
             HandleArifBlock(block_id);
             break; 
-
-        case "cycle_block":
-            HandleCycleBlock(block_id);
-            break;
 
         case "array_block":
             HandleArrayBlock(block_id);

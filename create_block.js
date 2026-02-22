@@ -738,7 +738,7 @@
 
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
-        group.dataset.connectorRight = "true";
+        group.dataset.connectorRight = "false";
         group.dataset.connectorBottom = "true";
     }
 
