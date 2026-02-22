@@ -208,7 +208,7 @@ function getForCycleValue(block_id) {
     
     const foreign_objects = block.querySelectorAll('foreignObject');
 
-    console.log(foreign_objects);
+    //console.log(foreign_objects);
 
     function getInputValue(foreign_object) {
         if (!foreign_object) {

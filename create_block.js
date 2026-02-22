@@ -220,11 +220,8 @@
                     parts = parts.map(part => {
                         if (part === "") return "";
 
-                        let isNegative = part.startsWith("-");
-
                         part = part.replace(/-/g, "");
-
-                        if (isNegative) {
+                        if (value.includes("-" + part)) {
                             return "-" + part;
                         }
                         return part;
@@ -237,53 +234,6 @@
                 foreign.addEventListener("mousedown", e => e.stopPropagation());
 
                 foreign.appendChild(input);
-
-                return foreign;
-            }
-
-            function createArraySelector (x) {
-                
-                const foreign = document.createElementNS(ns, "foreignObject");
-                foreign.setAttribute("x", x);
-                foreign.setAttribute("y", 20);
-                foreign.setAttribute("width", 70);
-                foreign.setAttribute("height", 25);
-
-                const container = document.createElement("div");
-                container.style.width = "100%";
-                container.style.height = "100%";
-                container.style.display = "flex";
-
-                const select = document.createElement("select");
-                select.style.width = "100%";
-                select.style.height = "100%";
-                select.style.fontSize = "12px";
-                select.style.fontFamily = "Inter";
-                select.style.background = "rgba(255, 255, 255, 0.9)";
-                select.style.border = "none";
-                select.style.outline = "none";
-
-                if (ArrayName.length === 0) {
-                    const option = document.createElement("option");
-                    option.value = "";
-                    option.textContent = "Нет массивов";
-                    select.appendChild(option);
-                }
-
-                else {
-                    ArrayName.forEach (item => {
-                        const option = document.createElement("option");
-                        option.value = item.array_name;
-                        option.textContent = item.array_name;
-                        select.appendChild(option);
-                    });
-                }
-
-                select.addEventListener("mousedown", e => e.stopPropagation());
-                foreign.addEventListener("mousedown", e => e.stopPropagation());
-
-                container.appendChild(select);
-                foreign.appendChild(container);
 
                 return foreign;
             }
@@ -345,7 +295,7 @@
     }
 
     if (data_type === "array_index_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h100 v65 h-100 l-10,10 h-25 l-10,-10 h-10 Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v65 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "cycle_while_block") { 
@@ -358,6 +308,10 @@
 
     if (data_type === "logic_or_block") {
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+    }
+
+    if (data_type === "endfor_block") {
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375 v65 h-375 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     group.appendChild(path);
@@ -719,15 +673,9 @@
     }
 
     if (data_type === "array_block") {
-        group.appendChild(createTextInput(15, "array name"));
+        group.appendChild(createTextInput(15, "array name"))
         group.appendChild(createNumberInput(75, "array len"));
         group.appendChild(addNumberWithSpace(135, "array element"));
-    }
-
-    if (data_type === "array_index_block") {
-        GetAllArrays();
-        group.appendChild(createArraySelector(15));
-        group.appendChild(createNumberInput(95, "index element"));
     }
     
     if (data_type === "assignment_block") {
@@ -803,7 +751,7 @@
 
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
-        group.dataset.connectorRight = "true";
+        group.dataset.connectorRight = "false";
         group.dataset.connectorBottom = "true";
     }
 
@@ -925,6 +873,18 @@
         group.dataset.connectorBottom = "true"; 
     }
 
+    else if (data_type === "endfor_block")
+    {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
+    }
 
         const viewport = document.getElementById('viewport');
         viewport.appendChild(group);// добавляет path в svg html
