@@ -636,7 +636,7 @@
             container.style.overflow = "hidden";
 
             const select = document.createElement("select");
-            select.dataset.varuableSelectors = "true";
+            select.dataset.onlyExisting = "true";
             select.style.flex = "1";
             select.style.height = "100%";
             select.style.fontSize = "12px";

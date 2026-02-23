@@ -37,33 +37,33 @@ function getAllVaruableName() {
 
 function refreshAllVariableSelectors() {
     document.querySelectorAll("select").forEach(select => {
-        if (!select.dataset.varuableSelectors) return;
-
+        
         const currentValue = select.value;
         select.innerHTML = "";
 
         const names = getAllVaruableName();
 
-        if (names.length === 0){
+        if (names.length === 0) {
             const option = document.createElement("option");
             option.value = "";
             option.textContent = "Нет переменных";
             select.appendChild(option);
         }
         else {
-        names.forEach(name => {
-            const option = document.createElement("option");
-            option.value = name;
-            option.textContent = name;
-            select.appendChild(option);
-        });
-    }
+            names.forEach(name => {
+                const option = document.createElement("option");
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+        }
 
-        const customOption = document.createElement("option");
-        customOption.value = "custom";
-        customOption.textContent = "Другое";
-        select.appendChild(customOption);
-
+        if (select.dataset.varuableSelectors === "true") {
+            const customOption = document.createElement("option");
+            customOption.value = "custom";
+            customOption.textContent = "Другое";
+            select.appendChild(customOption);
+        }
         select.value = currentValue;
     });
 }

@@ -193,6 +193,9 @@ canvas.addEventListener('mousedown', e => {
     viewport.appendChild(block); 
 
     const blockId = block.id; 
+    if (block.dataset.data_type === "assignment_block") {
+        resetAssignmentBlock(blockId);
+    }
     connections = connections.filter(conn => conn.parent !== blockId && conn.child !== blockId);
 
     if (block.dataset.data_type === "varuable_block") {
@@ -209,6 +212,24 @@ canvas.addEventListener('mousedown', e => {
     selected.style.cursor = 'grabbing';
 });
 
+function resetAssignmentBlock(blockId) {
+    const block = document.getElementById(blockId);
+    if (!block) return;
+
+    const div = block.querySelector('div[contenteditable = "true"]');
+    if (!div) return;
+
+    const value = div.textContent.trim();
+
+    const connection = connections.find(conn => 
+        conn.child === blockId &&
+        conn.parent_block_type === "varuable_block"
+    );
+
+    if (connection) {
+        updateVaruableValue(connection.parent, 0);
+    }
+}
 
 function getBlockPos(block) {
     const matrix = block.transform.baseVal.consolidate().matrix;
@@ -232,6 +253,18 @@ function addConnection(parentId, childId, pos, parentType, childType) {
 
                 refreshAllVariableSelectors();
             }
+        }
+    }
+    if (
+        parentType === "varuable_block" &&
+        childType === "assignment_block"
+    ) {
+        const block = document.getElementById(childId);
+        const div = block.querySelector('div[contenteditable = "true"]');
+
+        if (div) {
+            const value = div.textContent.trim();
+            updateVaruableValue(parentId, value || 0);
         }
     }
 }
