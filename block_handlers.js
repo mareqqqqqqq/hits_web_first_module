@@ -516,19 +516,176 @@ function findEndForBlockId(for_block_id) {
     return null;
 }
 
-function HandleCycleWhileBlock(block_id ) {
+function HandleCycleWhileBlock(block_id) {
     let block = document.getElementById(block_id); 
     if (!block) return null; 
 
     let while_block_data = getWhileBlockData(block_id);
 
     if (!while_block_data) {
-        return;
+        return null;
     }
 
-    console.log(while_block_data.left); 
-    console.log(while_block_data.operator); 
-    console.log(while_block_data.right);  
+    function getActualValue(value)
+    {
+        let variable = varuable_list.find(v => v.varuable_name === value);
+        if (variable)
+        {
+            return Number(variable.varuable_value);
+        }
+        return Number(value);
+    }
+
+    let operator = while_block_data.operator;
+    
+    let first_block_connection = connections.find(conn => conn.parent_block_type === "cycle_while_block" && conn.parent === block_id);
+
+    if (!first_block_connection)
+    {
+        InvalidSyntacsisError();
+        return null;
+    }
+
+    function checkCondition()
+    {
+        let left_val = getActualValue(while_block_data.left);
+        let right_val = getActualValue(while_block_data.right);
+
+        switch(operator)
+        {
+            case ">": return left_val > right_val;
+            case "<": return left_val < right_val;
+            case "=": return left_val == right_val;
+            case "!=": return left_val != right_val;
+            case ">=": return left_val >= right_val;
+            case "<=": return left_val <= right_val;
+            default: return false;
+        }
+    }
+
+    let iteration_count = 0;
+    let max_iterations = 1000;
+
+    while (checkCondition() && iteration_count < max_iterations) {
+        iteration_count++;
+
+        let current_block_id = first_block_connection.child;
+        let current_block_type = first_block_connection.child_block_type;
+
+        while (current_block_id && current_block_type !== "endwhile_block") {
+
+            if (current_block_type === "cycle_for_block")
+            {
+                HandleCycleForBlock(current_block_id);
+
+                
+                let nested_endfor = findEndForBlockId(current_block_id);
+
+                if (nested_endfor)
+                {
+                    let next_after_nested = connections.find(conn => conn.parent === nested_endfor && conn.parent_block_type === "endfor_block");
+
+                    if (next_after_nested) {
+                        current_block_id = next_after_nested.child;
+                        current_block_type = next_after_nested.child_block_type;
+                        continue;
+                    }
+                }
+            }
+
+            else if (current_block_type === "cycle_while_block")
+            {
+                HandleCycleWhileBlock(current_block_id);
+
+                let nested_endwhile = findEndWhileBlockId(current_block_id);
+
+                if (nested_endwhile)
+                {
+                    let next_after_nested = connections.find(conn => conn.parent === nested_endwhile && conn.parent_block_type === "endwhile_block");
+
+                    if (next_after_nested)
+                    {
+                        current_block_id = next_after_nested.child;
+                        current_block_type = next_after_nested.child_block_type;
+                        continue;
+                    }
+                }
+            }
+
+            else 
+            {
+                HandleAnyBlock(current_block_type, current_block_id);
+            }
+
+            let next_connection = connections.find(conn => conn.parent === current_block_id && conn.parent_block_type === current_block_type);
+
+
+            if (next_connection)
+            {
+                current_block_id = next_connection.child;
+                current_block_type = next_connection.child_block_type;
+            }
+            else 
+                break;
+        }
+    }
+
+    if (iteration_count >= max_iterations) {
+        console.log("Превышено максимальное количество интераций в цикле while");
+        InvalidSyntacsisError();
+        return null;
+    }
+
+
+    let endwhile_id = findEndWhileBlockId(block_id);
+
+    if (endwhile_id)
+    {
+        let next_after_endwhile = connections.find(conn => conn.parent === endwhile_id && conn.parent_block_type === "endwhile_block");
+
+        return next_after_endwhile ? next_after_endwhile.child : null;
+    
+    }
+
+    return null;
+}
+
+function findEndWhileBlockId(while_block_id) {
+
+    let current_id = while_block_id;
+    let current_type = "cycle_while_block";
+    let nested_level = 0;
+
+    while (current_id) {
+        let next_connection = connections.find(conn => conn.parent === current_id && conn.parent_block_type === current_type);
+
+        if (!next_connection) 
+            break;
+
+        current_id = next_connection.child;
+        current_type = next_connection.child_block_type;
+
+        if (current_type === "cycle_while_block" || current_type === "cycle_for_block")
+        {
+            nested_level++;
+        }
+
+        else if (current_type === "endwhile_block" || current_type === "endfor_block")
+        {
+            if (nested_level > 0)
+            {
+                nested_level--;
+                continue;
+
+            }
+            else {
+                return current_id;
+            }
+        }
+    }
+
+    InvalidSyntacsisError();
+    return null;
 }
 
 function HandleArrayIndexBlock(block_id) {

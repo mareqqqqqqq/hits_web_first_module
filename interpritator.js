@@ -2,6 +2,8 @@ const start_button = document.getElementById('start_button');
 let varuable_list = [];
 let ArrayName = [];
 
+
+
 function updateVaruable(block_id, name) {
 
     const existing = varuable_list.find(v => v.block_id === block_id);
@@ -113,11 +115,7 @@ function HandleAnyBlock(block_type, block_id) {
         case "arif_block": 
             HandleArifBlock(block_id);
             break; 
-
-        case "cycle_while_block":
-            HandleCycleWhileBlock(block_id);
-            break; 
-
+        
         case "cycle_for_block":
             HandleCycleForBlock(block_id); 
             break; 
@@ -125,6 +123,10 @@ function HandleAnyBlock(block_type, block_id) {
         case "array_block": 
             HandleArrayBlock(block_id); 
             break; 
+
+        case "cycle_while_block":
+            HandleCycleWhileBlock(block_id);
+            break;
     }
 }
 
@@ -171,7 +173,7 @@ function LeftPartOfCodeBlock() {
             break; 
 
         case "cycle_while_block":
-            HandleWhileBlock(block_id);
+            HandleCycleWhileBlock(block_id);
             break;
 
         case "array_index_block": 

@@ -22,7 +22,7 @@
     cursor: grabbing;
 }
 
-.row_blocks, .row1_blocks, .row2_blocks, .row3_blocks {
+.row_blocks, .row1_blocks, .row2_blocks, .row3_blocks, .row4_blocks {
     overflow: visible !important;
 }
 
@@ -223,7 +223,7 @@
 
 
 
-.row_blocks, .row1_blocks, .row2_blocks, .row3_blocks
+.row_blocks, .row1_blocks, .row2_blocks, .row3_blocks, .row4_blocks
 {
     flex-direction: row; 
     gap: 33px; 
@@ -246,7 +246,7 @@
 
 
 .varuable_block, .assignment_block, .if_block, 
-.else_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .output_block, .__block, .logic_and_block, .logic_or_block, .array_index_block, .endfor_block {
+.else_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .output_block, .__block, .logic_and_block, .logic_or_block, .array_index_block, .endfor_block, .endwhile_block {
     overflow: visible !important;
     background-color: transparent; 
     padding: 0;

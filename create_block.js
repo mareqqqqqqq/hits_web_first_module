@@ -314,6 +314,10 @@
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375 v65 h-375 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
+    if (data_type === "endwhile_block") {
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175 v65 h-175 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
     group.appendChild(path);
     
     if (data_type === "varuable_block") {
@@ -884,6 +888,20 @@
         group.dataset.connectorLeft = "false";
         group.dataset.connectorRight = "false";
         group.dataset.connectorBottom = "true"; 
+    }
+
+     else if (data_type === "endwhile_block")
+    {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
+    
     }
 
         const viewport = document.getElementById('viewport');
