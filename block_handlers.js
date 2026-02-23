@@ -5,16 +5,56 @@ function HandleIfBlock(block_id) {
         return null; 
     }
 
-    let forms_data = getIfBlockValue(block.id); 
+    let forms_data = getIfBlockValue(block.id);
+
+    if (!forms_data) {
+        console.log("вы ничего не ввели в if или ввели что то не то")
+    }
+
+    console.log("считано");
+
+    let left_str = forms_data.left;
+    let left; 
+
+    let found_left_varuable = varuable_list.find(varuable => 
+        varuable.varuable_name === left_str
+    ); 
+
+    if (!found_left_varuable) {
+        left = Number(left_str);
+    }
+
+    else {
+        left = Number(found_left_varuable.varuable_value); 
+    }
+
+
+
+    let right_str = forms_data.right;
+    let right; 
+
+    let found_right_varuable = varuable_list.find(varuable => 
+        varuable.varuable_name === right_str
+    );
+
+    if (!found_right_varuable) {
+        right = Number(right_str);
+    }
+
+    else {
+        right = Number(found_right_varuable.varuable_value);
+    }
+
+    if (isNaN(left) || isNaN(right)) {
+        InvalidSyntacsisError(); 
+        return null; 
+    }
 
     let operator = forms_data.operator; 
-    let right_str = forms_data.right; 
-    let left_str = forms_data.left; 
-
     let bool_result; 
-
-    let right = Number(right_str);
-    let left = Number(left_str);
+    console.log("правый", right); 
+    console.log("левый", left);
+    
 
     switch(operator) {
         case ">": bool_result = left > right;
@@ -40,7 +80,7 @@ function HandleIfBlock(block_id) {
     if (bool_result == true) {
         // соединение с if блоком 
         find_current_connection_with_if = connections.find(conn =>    
-            conn.parent_block_type === "if_block" && conn.parent === block_id && position === "vertical"); // block_id эт айдишка if блока нашли это соеднение 
+            conn.parent_block_type === "if_block" && conn.parent === block_id && conn.position === "vertical"); // block_id эт айдишка if блока нашли это соеднение 
 
         // просто находим нект блок который после if
         if (find_current_connection_with_if) {
@@ -102,7 +142,7 @@ function HandleIfBlock(block_id) {
 
         while (next_block_id && next_block_type !== "endif_block") {
             current_connection = connections.find(conn => 
-                conn.parent === next_block_id && conn.parent_block_type === next_block_type && position === "vertical"
+                conn.parent === next_block_id && conn.parent_block_type === next_block_type && conn.position === "vertical"
             );
             
             if (current_connection) {
@@ -276,7 +316,6 @@ function HandleArifBlock(block_id) {
     else {
         left_varuable_value = Number(found_left_varuable.varuable_value);
     } 
-
 
 
     let right_varuable_name = arif_block_input.right; 

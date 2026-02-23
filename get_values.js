@@ -59,8 +59,29 @@ function getIfBlockValue(block_id) {
     let operatorSelect = foreign_objects[1].querySelector('select');
     let operator = operatorSelect ? operatorSelect.value : null; 
 
-    let left_num_form_value = GetForeignObjectsValue(foreign_objects[0]); 
-    let right_num_form_value = GetForeignObjectsValue(foreign_objects[2]); 
+    let raw_left = GetForeignObjectsValue(foreign_objects[0]);
+    let raw_right = GetForeignObjectsValue(foreign_objects[2]);
+
+    let left_num_form_value; 
+    let right_num_form_value; 
+
+
+
+    if (checkIsArray(raw_left) != null) {
+        left_num_form_value = checkIsArray(raw_left);   
+    }
+
+    else {
+        left_num_form_value = GetForeignObjectsValue(foreign_objects[0]); 
+    }
+
+    if (checkIsArray(raw_right) != null) {
+        right_num_form_value = checkIsArray(raw_right);
+    }
+
+    else {
+        right_num_form_value = GetForeignObjectsValue(foreign_objects[2]); 
+    }
 
     return {
         left: left_num_form_value, 
@@ -124,7 +145,6 @@ function getArifBlockValue(block_id) {
 
     let operatorSelect = foreign_objects[2].querySelector('select');
     let operator = operatorSelect ? operatorSelect.value : null; 
-
 
     return {
         varuable_name: varuable_name, 
@@ -289,6 +309,62 @@ function getWhileBlockData(block_id) {
         operator: operator, 
         right: right 
     }
+}
+
+function checkIsArray(str) {
+    if (!str) {
+        console.log("вы ничего не ввели в какой то блок");
+        return;
+    }
+
+    str = str.trim(); 
+
+    const match = str.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\[(.+)\]$/);
+
+    if (!match) {
+        return null; 
+    }
+
+    let array_name = match[1];
+    let array_index = match[2]; 
+
+    let index;
+
+    if (isNaN(array_index)) {
+        let found_varuable = varuable_list.find(varuable =>
+            varuable.varuable_name === array_index
+        );
+
+        if (!found_varuable) {
+            console.log("вы пытаетесь обратиться к элементу массива с помощью несущ перменной");
+            return null;
+        }
+
+        index = found_varuable.varuable_value; 
+    }
+
+    else {
+        index = Number(array_index);
+    }
+
+    
+    let found_array = ArrayName.find(array => 
+        array.array_name === array_name
+    );
+
+    if (!found_array) {
+        console.log("массив не найден");
+        return null; 
+    }
+
+    let array_elements = found_array.array_elements; 
+
+    if (index >= found_array.array_length) {
+        console.log("вы обратились к несуществующему индексу")
+        return null;
+    }
+
+    return array_elements[index];
 }
 
 window.script = this;
