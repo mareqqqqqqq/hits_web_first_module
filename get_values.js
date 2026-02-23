@@ -138,28 +138,23 @@ function getArrayBlockValue(block_id) {
     const block = document.getElementById(block_id);
     if (!block) return null;
     
-    const foreign_objects = block.querySelectorAll('foreignObject');
+    const inputs = block.querySelectorAll("input");
 
-    function getInputValue(foreign_object) {
-        if (!foreign_object) return null;
-        const input = foreign_object.querySelector('input');
-        return input ? input.value.trim() : null; 
-    } 
+    const name = inputs[0]?.value.trim() || "";
+    const length = parseInt(inputs[1]?.value) || 0;
 
-    const array_name = getInputValue(foreign_objects[0]);
-    const array_length = getInputValue(foreign_objects[1]); 
-    const array_elements = getInputValue(foreign_objects[2]);
+    const elementsRaw = inputs[2]?.value.trim() || "";
 
-    let elements = [];
-    if (array_elements && array_length) {
-        elements = array_elements.split(' ').filter(el => el != ''); 
-    }
+    const elements = elementsRaw
+        .split(" ")
+        .filter(v => v !== "")
+        .map(v => parseInt(v));
 
-    return {
-        array_name: array_name, 
-        array_length: array_length, 
-        array_elements: elements
-    }
+        return {
+            array_name: name,
+            array_length: length,
+            array_elements: elements
+        };
 }
 
 function getArrayIndexValue(block_id) {

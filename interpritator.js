@@ -14,8 +14,9 @@ function updateVaruable(block_id, name) {
             block_id: block_id,
             block_type: "varuable_block",
             varuable_name: name,
-            varuable_value: null
-        });
+            varuable_value: null,
+            initial_value
+        }); 
     }
     refreshAllVariableSelectors();
 }
@@ -24,15 +25,22 @@ function updateVaruableValue(block_id, value) {
     const existing = varuable_list.find(v => v.block_id === block_id);
 
     if (existing) {
-        existing.varuable_value = value;
+        existing.initial_value = parseInt(value) || 0;
+        existing.varuable_value = parseInt(value) || 0;
     }
 }
 
 // получает имена переменных для выпадающей менюшки 
 function getAllVaruableName() {
-    return varuable_list
+    const variables = varuable_list
     .map(v => v.varuable_name)
     .filter(name => name && name.trim() !== "");
+
+    const arrays = ArrayName
+        .map(a => a.array_name)
+        .filter(name => name && name.trim() !== "");
+
+    return [...variables, ...arrays];
 }
 
 function refreshAllVariableSelectors() {
@@ -68,6 +76,12 @@ function refreshAllVariableSelectors() {
     });
 }
 
+function resetAllVariables() {
+    varuable_list.forEach( v => {
+        v.varuable_value = v.initial_value ?? 0;
+    });
+}
+
 function GetAllArrays() {
     ArrayName = [];
     let array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
@@ -91,6 +105,30 @@ function GetAllArrays() {
 
     return;
 } 
+
+
+
+function updateArray(block_id) {
+    const data = getArrayBlockValue(block_id);
+    if (!data) return;
+
+    const existing = ArrayName.find(a => a.array_id === block_id);
+
+    if (existing) {
+        existing.array_name = data.array_name;
+        existing.array_length = data.array_length;
+        existing.array_elements = data.array_elements;
+    }
+    else {
+        ArrayName.push({
+            array_id: block_id,
+            array_name: data.array_name,
+            array_length: data.array_length,
+            array_elements: data.array_elements
+        });
+    }
+    refreshAllVariableSelectors();
+}
 
 function HandleAnyBlock(block_type, block_id) {
     switch (block_type) {
@@ -184,6 +222,8 @@ function LeftPartOfCodeBlock() {
 }
 
 start_button.addEventListener('click', e => {
+    resetAllVariables();
+    GetAllArrays();
     LeftPartOfCodeBlock();
 })
 

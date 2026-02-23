@@ -220,11 +220,12 @@
                     parts = parts.map(part => {
                         if (part === "") return "";
 
-                        part = part.replace(/-/g, "");
-                        if (value.includes("-" + part)) {
-                            return "-" + part;
+                        let cleaned = part.replace(/-/g, "");
+                        if (part.startsWith("-")) {
+                            return "-" + cleaned;
                         }
-                        return part;
+
+                        return cleaned;
                     });
 
                     this.value = parts.join(" ");
@@ -722,9 +723,21 @@
     }
 
     if (data_type === "array_block") {
-        group.appendChild(createTextInput(15, "array name"))
-        group.appendChild(createNumberInput(75, "array len"));
-        group.appendChild(addNumberWithSpace(135, "array element"));
+        const nameInput = createTextInput(15, "array name");
+        const lenInput = createNumberInput(75, "array len");
+        const elementsInput = addNumberWithSpace(135, "array element");
+
+        const nameField = nameInput.querySelector("input");
+        const lenField = lenInput.querySelector("input");
+        const elementField = elementsInput.querySelector("input");
+
+        nameField.addEventListener("input", () => updateArray(group.id));
+        lenField.addEventListener("input", () => updateArray(group.id));
+        elementField.addEventListener("input", () => updateArray(group.id));
+
+        group.appendChild(nameInput);
+        group.appendChild(lenInput);
+        group.appendChild(elementsInput);
     }
 
     if (data_type === "array_index_block") {
