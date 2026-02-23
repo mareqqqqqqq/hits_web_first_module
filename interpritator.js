@@ -14,8 +14,9 @@ function updateVaruable(block_id, name) {
             block_id: block_id,
             block_type: "varuable_block",
             varuable_name: name,
-            varuable_value: null
-        });
+            varuable_value: null,
+            initial_value
+        }); 
     }
     refreshAllVariableSelectors();
 }
@@ -24,47 +25,60 @@ function updateVaruableValue(block_id, value) {
     const existing = varuable_list.find(v => v.block_id === block_id);
 
     if (existing) {
-        existing.varuable_value = value;
+        existing.initial_value = parseInt(value) || 0;
+        existing.varuable_value = parseInt(value) || 0;
     }
 }
 
 // получает имена переменных для выпадающей менюшки 
 function getAllVaruableName() {
-    return varuable_list
+    const variables = varuable_list
     .map(v => v.varuable_name)
     .filter(name => name && name.trim() !== "");
+
+    const arrays = ArrayName
+        .map(a => a.array_name)
+        .filter(name => name && name.trim() !== "");
+
+    return [...variables, ...arrays];
 }
 
 function refreshAllVariableSelectors() {
     document.querySelectorAll("select").forEach(select => {
-        if (!select.dataset.varuableSelectors) return;
-
+        
         const currentValue = select.value;
         select.innerHTML = "";
 
         const names = getAllVaruableName();
 
-        if (names.length === 0){
+        if (names.length === 0) {
             const option = document.createElement("option");
             option.value = "";
             option.textContent = "Нет переменных";
             select.appendChild(option);
         }
         else {
-        names.forEach(name => {
-            const option = document.createElement("option");
-            option.value = name;
-            option.textContent = name;
-            select.appendChild(option);
-        });
-    }
+            names.forEach(name => {
+                const option = document.createElement("option");
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+        }
 
-        const customOption = document.createElement("option");
-        customOption.value = "custom";
-        customOption.textContent = "Другое";
-        select.appendChild(customOption);
-
+        if (select.dataset.varuableSelectors === "true") {
+            const customOption = document.createElement("option");
+            customOption.value = "custom";
+            customOption.textContent = "Другое";
+            select.appendChild(customOption);
+        }
         select.value = currentValue;
+    });
+}
+
+function resetAllVariables() {
+    varuable_list.forEach( v => {
+        v.varuable_value = v.initial_value ?? 0;
     });
 }
 
@@ -92,39 +106,54 @@ function GetAllArrays() {
     return;
 } 
 
+function updateArray(block_id) {
+    const data = getArrayBlockValue(block_id);
+    if (!data) return;
+
+    const existing = ArrayName.find(a => a.array_id === block_id);
+
+    if (existing) {
+        existing.array_name = data.array_name;
+        existing.array_length = data.array_length;
+        existing.array_elements = data.array_elements;
+    }
+    else {
+        ArrayName.push({
+            array_id: block_id,
+            array_name: data.array_name,
+            array_length: data.array_length,
+            array_elements: data.array_elements
+        });
+    }
+    refreshAllVariableSelectors();
+}
+
 function HandleAnyBlock(block_type, block_id) {
     switch (block_type) {
         case "if_block":
-            HandleIfBlock(block_id);
-            break;
+            return HandleIfBlock(block_id);
 
         case "output_block": 
-            HandleOutputBlock(block_id);
-            break;
+            return HandleOutputBlock(block_id);
+            
 
         case "varuable_block": 
-            HandleVaruableBlock(block_id);
-            break;
+            return HandleVaruableBlock(block_id);
 
         case "assignment_block": 
-            HandleAssignmentBlock(block_id);
-            break;
+            return HandleAssignmentBlock(block_id);
 
         case "arif_block": 
-            HandleArifBlock(block_id);
-            break; 
+            return HandleArifBlock(block_id);
 
         case "cycle_while_block":
-            HandleCycleWhileBlock(block_id);
-            break; 
+            return HandleCycleWhileBlock(block_id);
 
         case "cycle_for_block":
-            HandleCycleForBlock(block_id); 
-            break; 
+            return HandleCycleForBlock(block_id); 
 
         case "array_block": 
-            HandleArrayBlock(block_id); 
-            break; 
+            return HandleArrayBlock(block_id); 
     }
 }
 
@@ -136,54 +165,20 @@ function LeftPartOfCodeBlock() {
 
     // получаем next блок
     let block_id = connection_array_element_with_start_block.child; 
-    let block = document.getElementById(block_id);
-    let block_type = block.dataset.data_type;
     
-    const allowed_blocks = ["if_block", "output_block", "arif_block", "cycle_for_block", "cycle_while_block", "array_block", "varuable_block", "array_index_block"]; 
+    while (block_id) {
+        let block = document.getElementById(block_id);
+        if (!block) break;
 
-    switch (block_type) {
-        case "if_block":
-            HandleIfBlock(block_id);
-            break; 
+        let block_type = block.dataset.data_type;
 
-        case "output_block":
-            HandleOutputBlock(block_id); 
-            break
-            
-        case "arif_block":
-            HandleArifBlock(block_id);
-            break; 
-
-        case "array_block":
-            HandleArrayBlock(block_id);
-            break; 
-
-        case "varuable_block": 
-            HandleVaruableBlock(block_id);
-            break; 
-
-        case "arif_block":
-            HandleArifBlock(block_id);
-            break;  
-
-        case "cycle_for_block": 
-            HandleCycleForBlock(block_id);
-            break; 
-
-        case "cycle_while_block":
-            HandleWhileBlock(block_id);
-            break;
-
-        case "array_index_block": 
-            HandleArrayIndexBlock(block_id);
-            break; 
-        }
-
-        
-
+        block_id = HandleAnyBlock(block_type, block_id);
+    }  
 }
 
 start_button.addEventListener('click', e => {
+    resetAllVariables();
+    GetAllArrays();
     LeftPartOfCodeBlock();
 })
 
