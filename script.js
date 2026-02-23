@@ -269,8 +269,6 @@ function addConnection(parentId, childId, pos, parentType, childType) {
     }
 }
 
-
-
 trash_bin.addEventListener('mouseup', () => {
     if (!selected) return; 
     const id = selected.id;
@@ -287,6 +285,7 @@ clearButton.addEventListener("click", () => {
     });
     varuable_list.length = 0;
     connections = []; 
+    ArrayName = [];
     selected = null;
 });
 

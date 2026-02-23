@@ -284,6 +284,21 @@
 
                 return foreign;
             }
+
+            function createEqual(x) {
+            const text = document.createElementNS(ns, "text");
+            text.setAttribute("x", x);
+            text.setAttribute("y", 37);
+            text.setAttribute("fill", "white");
+            text.setAttribute("font-size", "14");
+            text.setAttribute("font-family", "Inter");
+            text.setAttribute("font-weight", "bold");
+            text.textContent = "=";
+
+            text.addEventListener("mousedown", e => e.stopPropagation());
+
+            return text;
+        }
         
         // вот тут поменяли 
         // вот тут поменяли 
@@ -342,7 +357,7 @@
     }
 
     if (data_type === "array_index_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h100 v65 h-100 l-10,10 h-25 l-10,-10 h-10 Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h130 v65 h-130 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "cycle_while_block") { 
@@ -685,20 +700,7 @@
     }
 
     if (data_type === "cycle_for_block") {
-        function createEqual(x) {
-            const text = document.createElementNS(ns, "text");
-            text.setAttribute("x", x);
-            text.setAttribute("y", 37);
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "14");
-            text.setAttribute("font-family", "Inter");
-            text.setAttribute("font-weight", "bold");
-            text.textContent = "=";
 
-            text.addEventListener("mousedown", e => e.stopPropagation());
-
-            return text;
-        }
 
 
         group.appendChild(createTextInput(15, "cycle var"));
@@ -726,9 +728,9 @@
     }
 
     if (data_type === "array_index_block") {
-        GetAllArrays();
-        group.appendChild(createArraySelector(15));
-        group.appendChild(createNumberInput(95, "index element"));
+        group.appendChild(createValueSelector(15));
+        group.appendChild(createEqual(90));
+        group.appendChild(createValueSelector(105));
     }
     
     if (data_type === "assignment_block") {
