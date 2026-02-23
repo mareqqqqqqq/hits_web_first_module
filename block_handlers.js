@@ -102,7 +102,7 @@ function HandleIfBlock(block_id) {
 
         while (next_block_id && next_block_type !== "endif_block") {
             current_connection = connections.find(conn => 
-                conn.parent === next_block_id && conn.parent_block_type === next_block_type && position === "vertical "
+                conn.parent === next_block_id && conn.parent_block_type === next_block_type && position === "vertical"
             );
             
             if (current_connection) {
