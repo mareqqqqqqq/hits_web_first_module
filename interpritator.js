@@ -1,6 +1,32 @@
 const start_button = document.getElementById('start_button');
-const varuable_list = [];
+let varuable_list = [];
 let ArrayName = [];
+
+function updateVaruable(block_id, name) {
+
+    const existing = varuable_list.find(v => v.block_id === block_id);
+
+    if (existing) {
+        existing.varuable_name = name;
+    }
+    else {
+        varuable_list.push({
+            block_id: block_id,
+            block_type: "varuable_block",
+            varuable_name: name,
+            varuable_value: null
+        });
+    }
+    refreshAllVariableSelectors();
+}
+
+function updateVaruableValue(block_id, value) {
+    const existing = varuable_list.find(v => v.block_id === block_id);
+
+    if (existing) {
+        existing.varuable_value = value;
+    }
+}
 
 // получает имена переменных для выпадающей менюшки 
 function getAllVaruableName() {
@@ -9,47 +35,37 @@ function getAllVaruableName() {
     .filter(name => name && name.trim() !== "");
 }
 
-function GetAllVaruables() {
-    const connection_array_element_with_start_block = connections.find(conn => // нашли соеденение где старт где: родитель - старт, а сын - переменная  
-        conn.parent_block_type === "start_block" && conn.child_block_type === "varuable_block");
+function refreshAllVariableSelectors() {
+    document.querySelectorAll("select").forEach(select => {
+        if (!select.dataset.varuableSelectors) return;
 
-    // получили ребёнка 
-    let current_varuable_block_id = connection_array_element_with_start_block.child; // айди диктуй 
-    let current_varuable_block = document.getElementById(current_varuable_block_id);
-    let current_varuable_block_type = current_varuable_block.dataset.data_type; 
+        const currentValue = select.value;
+        select.innerHTML = "";
 
-    // тут будет цикл wihle пока есть перемнные и есть сын присвоить то выводи
+        const names = getAllVaruableName();
 
-    while (current_varuable_block) {
-        const connection_array_current_varuable_block_assignment = connections.find(conn => // нашли соеденение где старт где: родитель - старт, а сын - переменная  
-            conn.parent_block_type === "varuable_block" && conn.child_block_type === "assignment_block" && conn.parent === current_varuable_block_id);
-
-        // проверка на null
-        const varuable_assignment_block_id = connection_array_current_varuable_block_assignment ? connection_array_current_varuable_block_assignment.child :  null; 
-        
-        // защита от дурака(прилепил не туда(потом пофильруем по переменным если что кинем invalid))
-        varuable_list.push({
-            block_id: current_varuable_block.id,
-            block_type: current_varuable_block.dataset.data_type, 
-            varuable_name: getVaruableBlockValue(current_varuable_block_id), 
-            varuable_value: getAssignmentBlockValue(varuable_assignment_block_id) 
-        })
-
-        // получили next блок хранится как сам блок
-        const next_conn = connections.find(conn =>  // получили connection запись где у нас cuurent блок - отец, а тип его сына - varuable
-            conn.parent === current_varuable_block.id && conn.child_block_type === "varuable_block"
-        )
-
-        if (next_conn) {
-            current_varuable_block_id = next_conn.child; // айди диктуй
-            current_varuable_block = document.getElementById(current_varuable_block_id);
-            current_varuable_block_type = current_varuable_block.dataset.data_type; 
+        if (names.length === 0){
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "Нет переменных";
+            select.appendChild(option);
         }
-
         else {
-            current_varuable_block = null;
-        }
+        names.forEach(name => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            select.appendChild(option);
+        });
     }
+
+        const customOption = document.createElement("option");
+        customOption.value = "custom";
+        customOption.textContent = "Другое";
+        select.appendChild(customOption);
+
+        select.value = currentValue;
+    });
 }
 
 function GetAllArrays() {
@@ -168,8 +184,6 @@ function LeftPartOfCodeBlock() {
 }
 
 start_button.addEventListener('click', e => {
-    varuable_list.length = 0;
-    GetAllVaruables(); 
     LeftPartOfCodeBlock();
 })
 

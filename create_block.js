@@ -18,6 +18,7 @@
                 container.style.display = "flex";
 
                 const select = document.createElement("select");
+                select.dataset.varuableSelectors = "true";
                 select.style.width = "100%";
                 select.style.height = "100%";
                 select.style.fontSize = "12px";
@@ -239,7 +240,7 @@
         
         // вот тут поменяли 
         // вот тут поменяли 
-        group.classList.add("block"); 
+        // group.classList.add("block"); 
         group.setAttribute("fill", color); // заливка color как параметр
         group.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
         group.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
@@ -397,6 +398,8 @@
 
             div.textContent = text;
 
+            updateVaruable(group.id, text);
+
             const range = document.createRange();
             const sel = window.getSelection();
             range.selectNodeContents(div);
@@ -499,6 +502,15 @@
 
             this.textContent = value;
 
+            const connection = connections.find(conn =>
+                conn.child === group.id &&
+                conn.parent_block_type === "varuable_block"
+            );
+
+            if (connection) {
+                updateVaruableValue(connection.parent, value);
+            }
+
             if (this.textContent.trim() !== "") {
                 this.style.color = "black";
             }
@@ -577,6 +589,7 @@
             container.style.overflow = "hidden";
 
             const select = document.createElement("select");
+            select.dataset.varuableSelectors = "true";
             select.style.flex = "1";
             select.style.height = "100%";
             select.style.fontSize = "12px";
@@ -586,7 +599,7 @@
             select.style.outline = "none";
 
             const variableNames = getAllVaruableName();
-
+            
             if (variableNames.length === 0) {
                 const option = document.createElement("option");
                 option.value = "";

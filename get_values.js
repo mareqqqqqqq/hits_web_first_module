@@ -117,14 +117,17 @@ function getArifBlockValue(block_id) {
         }
     }
 
-    let left = GetForeignObjectsValue((foreign_objects[0])); 
-    let right =  GetForeignObjectsValue((foreign_objects[2]));
 
-    let operatorSelect = foreign_objects[1].querySelector('select');
+    let varuable_name = GetForeignObjectsValue(foreign_objects[0]);
+    let left = GetForeignObjectsValue((foreign_objects[1])); 
+    let right =  GetForeignObjectsValue((foreign_objects[3]));
+
+    let operatorSelect = foreign_objects[2].querySelector('select');
     let operator = operatorSelect ? operatorSelect.value : null; 
 
 
     return {
+        varuable_name: varuable_name, 
         left: left, 
         operator:  operator, 
         right: right 

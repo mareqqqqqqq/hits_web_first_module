@@ -40,7 +40,7 @@ function HandleIfBlock(block_id) {
     if (bool_result == true) {
         // соединение с if блоком 
         find_current_connection_with_if = connections.find(conn =>    
-            conn.parent_block_type === "if_block" && conn.parent === block_id); // block_id эт айдишка if блока нашли это соеднение 
+            conn.parent_block_type === "if_block" && conn.parent === block_id && position === "vertical"); // block_id эт айдишка if блока нашли это соеднение 
 
         // просто находим нект блок который после if
         if (find_current_connection_with_if) {
@@ -102,7 +102,7 @@ function HandleIfBlock(block_id) {
 
         while (next_block_id && next_block_type !== "endif_block") {
             current_connection = connections.find(conn => 
-                conn.parent === next_block_id && conn.parent_block_type === next_block_type
+                conn.parent === next_block_id && conn.parent_block_type === next_block_type && position === "vertical "
             );
             
             if (current_connection) {
@@ -175,18 +175,25 @@ function HandleOutputBlock(block_id) {
 
     if (!block) {
         InvalidSyntacsisError();
+        return null;
     }
 
     let output = getOutputBlockValue(block.id); 
 
-    if (output) {
-        console.log(output)
-        // return output;
+    if (!output) {
+        console.log("вы ничего не ввели в output блок")
+    }
+
+    let found_varuable = varuable_list.find(varuable => 
+        varuable.varuable_name === output
+    );
+
+    if (!found_varuable) {
+        console.log(output);
     }
 
     else {
-        console.log("вы ничего не ввели в output блок")
-        return; 
+        console.log(found_varuable.varuable_value);
     }
 
     return null; 
@@ -237,9 +244,56 @@ function HandleArifBlock(block_id) {
 
     let arif_block_input = getArifBlockValue(block_id);
 
+    // основная перменная надо которой совершается арифметика 
+    let main_varuable_name = arif_block_input.varuable_name;
+    let main_varuable_value; 
 
-    let left = Number(arif_block_input.left);  
-    let right  = Number(arif_block_input.right); 
+    let found_main_varuable = varuable_list.find(varuable => 
+        varuable.varuable_name === main_varuable_name
+    );
+
+    if (!found_main_varuable) {
+        console.log("переменная с таким именем не найдена");
+        return null;   
+    }
+
+    main_varuable_value = Number(found_main_varuable.varuable_value);
+
+
+
+    // обработка левой перменной(или не перем)
+    let left_varuable_name = arif_block_input.left;
+    let left_varuable_value
+
+    let found_left_varuable = varuable_list.find(varuable => 
+        varuable.varuable_name === left_varuable_name
+    );
+    
+    if (!found_left_varuable) {
+        left_varuable_value = Number(left_varuable_name);         
+    }
+
+    else {
+        left_varuable_value = Number(found_left_varuable.varuable_value);
+    } 
+
+
+
+    let right_varuable_name = arif_block_input.right; 
+    let right_varuable_value; 
+
+    let found_right_varuable = varuable_list.find(varuable =>
+        varuable.varuable_name === right_varuable_name
+    );
+    
+    if (!found_right_varuable) {
+        right_varuable_value = Number(right_varuable_name); 
+    }
+
+    else {
+        right_varuable_value = Number(found_right_varuable.varuable_value); 
+    }
+
 
     let operator = arif_block_input.operator;
 
@@ -247,21 +301,22 @@ function HandleArifBlock(block_id) {
 
     if (arif_block_input.operator) {
         switch (operator) {
-            case "+": arif_result = left + right;
+            case "+": arif_result = left_varuable_value + right_varuable_value;
                 break; 
-            case "-": arif_result = left - right;
+            case "-": arif_result = left_varuable_value - right_varuable_value;
                 break; 
-            case "*": arif_result = left * right;
+            case "*": arif_result = left_varuable_value * right_varuable_value;
                 break; 
-            case "//": arif_result = left / right;
+            case "//": arif_result = left_varuable_value / right_varuable_value;
                 break; 
-            case "%": arif_result = left % right;
+            case "%": arif_result = left_varuable_value % right_varuable_value;
                 break;
         }
     }
 
-    console.log(arif_result); 
-    return arif_result; 
+    found_main_varuable.varuable_value = arif_result;
+    console.log("результат операции:", arif_result) 
+    console.log("изменённая переменная", found_main_varuable);
 }
 
 function HandleArrayBlock(block_id) {
@@ -557,7 +612,5 @@ function HandleArrayIndexBlock(block_id) {
 
     console.log("вы обратились к элементу:", selected_array_elements[array_index]);
 } 
-
-
 
 window.script = this; 
