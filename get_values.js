@@ -59,8 +59,9 @@ function getIfBlockValue(block_id) {
     let operatorSelect = foreign_objects[1].querySelector('select');
     let operator = operatorSelect ? operatorSelect.value : null; 
 
-    let left_num_form_value = GetForeignObjectsValue(foreign_objects[0]); 
-    let right_num_form_value = GetForeignObjectsValue(foreign_objects[2]); 
+    
+    let left_num_form_value = GetForeignObjectsValue(foreign_objects[0]);
+    let right_num_form_value = GetForeignObjectsValue(foreign_objects[2]);
 
     return {
         left: left_num_form_value, 
@@ -117,14 +118,38 @@ function getArifBlockValue(block_id) {
         }
     }
 
+    let varuable_name; 
+    let left; 
+    let right; 
 
-    let varuable_name = GetForeignObjectsValue(foreign_objects[0]);
-    let left = GetForeignObjectsValue((foreign_objects[1])); 
-    let right =  GetForeignObjectsValue((foreign_objects[3]));
+
+    let raw_left = GetForeignObjectsValue((foreign_objects[1]));
+    let raw_right = GetForeignObjectsValue((foreign_objects[3]));
+
+    if (checkIsArray(raw_left)) {
+        left = Number(checkIsArray(raw_left));
+    }
+
+    else {
+        left = Number(GetForeignObjectsValue((foreign_objects[1])));
+    }
+
+    if (checkIsArray(raw_right)) {
+        right = checkIsArray(raw_right);
+    }
+
+    else {
+        right = Number(GetForeignObjectsValue((foreign_objects[3])));
+    }
+    
+
+
+    varuable_name = GetForeignObjectsValue(foreign_objects[0]);
+    left = GetForeignObjectsValue((foreign_objects[1])); 
+    right =  GetForeignObjectsValue((foreign_objects[3]));
 
     let operatorSelect = foreign_objects[2].querySelector('select');
     let operator = operatorSelect ? operatorSelect.value : null; 
-
 
     return {
         varuable_name: varuable_name, 
@@ -138,28 +163,23 @@ function getArrayBlockValue(block_id) {
     const block = document.getElementById(block_id);
     if (!block) return null;
     
-    const foreign_objects = block.querySelectorAll('foreignObject');
+    const inputs = block.querySelectorAll("input");
 
-    function getInputValue(foreign_object) {
-        if (!foreign_object) return null;
-        const input = foreign_object.querySelector('input');
-        return input ? input.value.trim() : null; 
-    } 
+    const name = inputs[0]?.value.trim() || "";
+    const length = parseInt(inputs[1]?.value) || 0;
 
-    const array_name = getInputValue(foreign_objects[0]);
-    const array_length = getInputValue(foreign_objects[1]); 
-    const array_elements = getInputValue(foreign_objects[2]);
+    const elementsRaw = inputs[2]?.value.trim() || "";
 
-    let elements = [];
-    if (array_elements && array_length) {
-        elements = array_elements.split(' ').filter(el => el != ''); 
-    }
+    const elements = elementsRaw
+        .split(" ")
+        .filter(v => v !== "")
+        .map(v => parseInt(v));
 
-    return {
-        array_name: array_name, 
-        array_length: array_length, 
-        array_elements: elements
-    }
+        return {
+            array_name: name,
+            array_length: length,
+            array_elements: elements
+        };
 }
 
 function getArrayIndexValue(block_id) {
@@ -290,6 +310,81 @@ function getWhileBlockData(block_id) {
         operator: operator, 
         right: right 
     }
+}
+
+function checkIsArray(str) {
+    if (str === null || str === undefined) {
+        console.log("вы ничего не ввели в какой то блок");
+        return null;
+    }
+
+    str = String(str).trim(); 
+
+    const match = str.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\[(.+)\]$/);
+
+    // если это не введённое назвение не корректтное то null
+    if (!match) {
+        return null; 
+    }
+
+    let array_name = match[1];
+    let array_index = match[2]; 
+
+    let index;
+
+    // пытаемся найти перменную с таким именем
+    if (isNaN(array_index)) {
+        let found_varuable = varuable_list.find(varuable =>
+            varuable.varuable_name === array_index
+        );
+
+        // если не нашли то кидаем ошибку 
+        if (!found_varuable) {
+            console.log("вы пытаетесь обратиться к элементу массива с помощью несущ перменной");
+            return null;
+        }
+
+        index = found_varuable.varuable_value; 
+    }
+
+    else {
+        index = Number(array_index);
+    }
+
+    // крч индекс это либо значение переменной, либо значение просто число которое пользователь ввёл 
+
+    
+    let found_array = ArrayName.find(array => 
+        array.array_name === array_name
+    );
+
+    if (!found_array) {
+        console.log("массив не найден");
+        return null; 
+    }
+
+    let array_elements = found_array.array_elements; 
+
+    if (index < 0 ||  index > Number(found_array.array_length)) {
+        console.log("вы обратились к несуществующему индексу")
+        return null;
+    }
+
+    console.log(array_elements); 
+    console.log(index);
+    console.log(found_array.array_elements[index]);
+    console.log(array_name);
+
+
+    let result =  {
+        array_elements: array_elements, 
+        array_index: index,
+        array_name: array_name,
+        array_element_value: found_array.array_elements[index]
+    };
+
+    console.log("ФИНАЛЬНЫЙ ОБЬЕКТ", result)
+    return result;
 }
 
 window.script = this;

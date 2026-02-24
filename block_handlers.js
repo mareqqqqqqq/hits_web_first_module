@@ -1,3 +1,4 @@
+// ВЕРНУТЬ
 function HandleIfBlock(block_id) {
     let block = document.getElementById(block_id);
     if (!block) {
@@ -5,16 +6,87 @@ function HandleIfBlock(block_id) {
         return null; 
     }
 
-    let forms_data = getIfBlockValue(block.id); 
+    let forms_data = getIfBlockValue(block.id);
+
+    if (!forms_data) {
+        console.log("вы ничего не ввели");
+    }
+
+    let left_str = forms_data.left;
+    let right_str = forms_data.right;
+
+  
+    let left; 
+
+    console.log(left_str);
+    let left_array_check = checkIsArray(left_str);
+    console.log(left_array_check);
+
+    if (left_array_check !== null) {
+        left = left_array_check.array_element_value; 
+        console.log("будет массив)");
+    } 
+
+    
+    else {
+        let found_left_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === left_str
+        );
+
+        if (found_left_varuable) {
+            left = found_left_varuable.varuable_value;
+            console.log("будет переменная левая ")
+        }
+
+        else {
+            left = Number(left_str);
+            console.log("будет цифра левая")
+        }
+    }
+
+
+
+
+   
+    let right; 
+
+    let right_array_check = checkIsArray(right_str);
+    console.log(right_array_check);
+
+    if (right_array_check !== null) {
+        right = right_array_check.array_element_value;
+        console.log(right);
+        console.log("будет массив правый )");
+    }
+
+    else {
+        let found_right_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === right_str
+        );
+
+        if (found_right_varuable) {
+            right = found_right_varuable.varuable_value; 
+            console.log("переменная правая будет ");
+        }
+
+        else  {
+            right = Number(right_str);
+            console.log("просто цифра правая ")
+            
+        }
+    }
+
+    if (left === null || right === null) {
+        InvalidSyntacsisError(); 
+        return null; 
+    }
 
     let operator = forms_data.operator; 
-    let right_str = forms_data.right; 
-    let left_str = forms_data.left; 
-
     let bool_result; 
 
-    let right = Number(right_str);
-    let left = Number(left_str);
+    console.log("правый", right); 
+    console.log("левый", left);
+    
 
     switch(operator) {
         case ">": bool_result = left > right;
@@ -40,7 +112,7 @@ function HandleIfBlock(block_id) {
     if (bool_result == true) {
         // соединение с if блоком 
         find_current_connection_with_if = connections.find(conn =>    
-            conn.parent_block_type === "if_block" && conn.parent === block_id && position === "vertical"); // block_id эт айдишка if блока нашли это соеднение 
+            conn.parent_block_type === "if_block" && conn.parent === block_id && conn.position === "vertical"); // block_id эт айдишка if блока нашли это соеднение 
 
         // просто находим нект блок который после if
         if (find_current_connection_with_if) {
@@ -97,12 +169,13 @@ function HandleIfBlock(block_id) {
         }
 
         next_block_id = current_connection.child; 
-        next_block_type = current_connection.child_block_type; 
+        next_block_type =
+        current_connection.child_block_type; 
 
 
         while (next_block_id && next_block_type !== "endif_block") {
             current_connection = connections.find(conn => 
-                conn.parent === next_block_id && conn.parent_block_type === next_block_type && position === "vertical"
+                conn.parent === next_block_id && conn.parent_block_type === next_block_type && conn.position === "vertical"
             );
             
             if (current_connection) {
@@ -161,14 +234,15 @@ function HandleIfBlock(block_id) {
     } 
 }
 
-function HandleElseBlock(block_id) {
-    let block = document.getElementById(block_id);
-    if (!block) {
-        InvalidSyntacsisError();
-    }
+// ВЕРНУТЬ
+// function HandleElseBlock(block_id) {
+//     let block = document.getElementById(block_id);
+//     if (!block) {
+//         InvalidSyntacsisError();
+//     }
 
-    return null; 
-}
+//     return null; 
+// }
 
 function HandleOutputBlock(block_id) {
     let block = document.getElementById(block_id);
@@ -196,9 +270,14 @@ function HandleOutputBlock(block_id) {
         console.log(found_varuable.varuable_value);
     }
 
-    return null; 
+    let connection = connections.find(conn => 
+        conn.parent === block_id && conn.parent_block_type === "output_block"
+    );
+
+    return connection ? connection.child : null;
 }
 
+// ВЕРНУТЬ
 function HandleVaruableBlock(block_id) {
     let block = document.getElementById(block_id);
 
@@ -237,6 +316,7 @@ function HandleVaruableBlock(block_id) {
         assignment_type: current_assignment_block_type 
     })
 }
+
 
 function HandleArifBlock(block_id) {
     let block = document.getElementById(block_id);
@@ -278,7 +358,6 @@ function HandleArifBlock(block_id) {
     } 
 
 
-
     let right_varuable_name = arif_block_input.right; 
     let right_varuable_value; 
 
@@ -317,6 +396,12 @@ function HandleArifBlock(block_id) {
     found_main_varuable.varuable_value = arif_result;
     console.log("результат операции:", arif_result) 
     console.log("изменённая переменная", found_main_varuable);
+
+    connection = connections.find(conn => 
+        conn.parent === block_id && conn.parent_block_type === "arif_block"
+    );
+
+    return connection ? connection.child : null;
 }
 
 function HandleArrayBlock(block_id) {
@@ -328,12 +413,21 @@ function HandleArrayBlock(block_id) {
     if (!array_data) {
         console.log("ошибка ввода значений массива");
     }
+
+    let connection = connections.find(conn => 
+        conn.parent === block_id && conn.parent_block_type === "array_block"
+    );
+
+    return connection ? connection.child : null;
 }
 
+// ВЕРНУТЬ
 function HandleCycleForBlock(block_id) {
+    // получаем блок 
     let block = document.getElementById(block_id);
     if (!block) return null; 
 
+    // знач
     let for_cycle_data = getForCycleValue(block_id); 
 
     if (!for_cycle_data) {
@@ -341,6 +435,7 @@ function HandleCycleForBlock(block_id) {
         return;
     }
 
+    // точно всё получили
     let var_name = for_cycle_data.cycle_varuable;
     let start_value = Number(for_cycle_data.cycle_start_value);
     let stop_value = Number(for_cycle_data.cycle_varuable_stop);
@@ -383,14 +478,13 @@ function HandleCycleForBlock(block_id) {
         let current_block_id = first_block_connection.child;
         let current_block_type = first_block_connection.child_block_type;
         
-        // Проходим по всем блокам до СВОЕГО endfor_block
+        // пока у нас есть некст блок
         while (current_block_id) {
             // ЕСЛИ ЭТО НАЧАЛО ВЛОЖЕННОГО ЦИКЛА
             if (current_block_type === "cycle_for_block") {
-                // Выполняем вложенный цикл
+                // выполням вложенный 
                 HandleCycleForBlock(current_block_id);
                 
-                // ВАЖНО: После выполнения вложенного цикла,
                 // перепрыгиваем к блоку после ЕГО endfor_block
                 let nested_endfor = findEndForBlockId(current_block_id);
                 if (nested_endfor) {
@@ -567,7 +661,8 @@ function findEndForBlockId(for_block_id) {
     return null;
 }
 
-function HandleCycleWhileBlock(block_id) {
+// ВЕРНУТЬ
+function HandleCycleWhileBlock(block_id ) {
     let block = document.getElementById(block_id); 
     if (!block) return null; 
 
@@ -774,6 +869,12 @@ function HandleArrayIndexBlock(block_id) {
     }
 
     console.log("вы обратились к элементу:", selected_array_elements[array_index]);
+
+    let connection = connections.find(conn => 
+        conn.parent === block_id && conn.parent_block_type === "array_index_block"
+    );
+
+    return connection ? connection.child : null;
 } 
 
 window.script = this; 
