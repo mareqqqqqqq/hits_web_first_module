@@ -571,6 +571,15 @@ function HandleCycleWhileBlock(block_id) {
     let block = document.getElementById(block_id); 
     if (!block) return null; 
 
+    let endwhile_id = findEndWhileBlockId(block_id);
+
+    if (!endwhile_id)
+    {
+        InvalidSyntacsisError();
+        return null;
+    }
+    
+    
     let while_block_data = getWhileBlockData(block_id);
 
     if (!while_block_data) {
@@ -593,7 +602,6 @@ function HandleCycleWhileBlock(block_id) {
 
     if (!first_block_connection)
     {
-        InvalidSyntacsisError();
         return null;
     }
 
@@ -687,8 +695,6 @@ function HandleCycleWhileBlock(block_id) {
         return null;
     }
 
-
-    let endwhile_id = findEndWhileBlockId(block_id);
 
     if (endwhile_id)
     {
