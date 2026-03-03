@@ -231,8 +231,6 @@ function getForCycleValue(block_id) {
     
     const foreign_objects = block.querySelectorAll('foreignObject');
 
-    //console.log(foreign_objects);
-
     function getInputValue(foreign_object) {
         if (!foreign_object) {
             console.log("foreign_object не найден")
@@ -370,11 +368,6 @@ function checkIsArray(str) {
         return null;
     }
 
-    console.log(array_elements); 
-    console.log(index);
-    console.log(found_array.array_elements[index]);
-    console.log(array_name);
-
 
     let result =  {
         array_elements: array_elements, 
@@ -383,7 +376,6 @@ function checkIsArray(str) {
         array_element_value: found_array.array_elements[index]
     };
 
-    console.log("ФИНАЛЬНЫЙ ОБЬЕКТ", result)
     return result;
 }
 

@@ -326,7 +326,7 @@
     }
 
     if (data_type === "else_block") {
-        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v65 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "output_block") { //прямоугольник h100 v60 h -100 Z
@@ -338,7 +338,7 @@
     }
 
     if (data_type === "cycle_for_block") { 
-       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375    v10 l10,10 v25 l-10,10 v10   h-375 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375    v65  h-375 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
     
     if (data_type === "start_block") {
@@ -370,6 +370,10 @@
     }
 
     if (data_type === "logic_or_block") {
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+    }
+
+    if (data_type === "logic_not_block") {
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
@@ -784,7 +788,7 @@
 
             group.dataset.connectorTop = "false";
             group.dataset.connectorLeft = "false";
-            group.dataset.connectorRight = "true";
+            group.dataset.connectorRight = "false";
             group.dataset.connectorBottom = "true"; 
         }
         
@@ -810,7 +814,7 @@
 
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
-        group.dataset.connectorRight = "true";
+        group.dataset.connectorRight = "false";
         group.dataset.connectorBottom = "true";
     }
 
@@ -837,7 +841,7 @@
 
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
-        group.dataset.connectorRight = "true";
+        group.dataset.connectorRight = "false";
         group.dataset.connectorBottom = "true"; 
     }
 
@@ -944,6 +948,20 @@
         group.dataset.connectorRight = "true";
         group.dataset.connectorBottom = "true"; 
     }
+
+    else if (data_type === "logic_not_block")
+    {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "true";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true"; 
+    }
+
 
     else if (data_type === "endfor_block")
     {
