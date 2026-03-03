@@ -154,6 +154,9 @@ function HandleAnyBlock(block_type, block_id) {
 
         case "array_block": 
             return HandleArrayBlock(block_id); 
+
+        case "array_index_block":
+            return HandleArrayIndexBlock(block_id);
     }
 }
 

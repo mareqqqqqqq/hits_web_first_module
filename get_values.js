@@ -118,38 +118,14 @@ function getArifBlockValue(block_id) {
         }
     }
 
-    let varuable_name; 
-    let left; 
-    let right; 
-
-
-    let raw_left = GetForeignObjectsValue((foreign_objects[1]));
-    let raw_right = GetForeignObjectsValue((foreign_objects[3]));
-
-    if (checkIsArray(raw_left)) {
-        left = Number(checkIsArray(raw_left));
-    }
-
-    else {
-        left = Number(GetForeignObjectsValue((foreign_objects[1])));
-    }
-
-    if (checkIsArray(raw_right)) {
-        right = checkIsArray(raw_right);
-    }
-
-    else {
-        right = Number(GetForeignObjectsValue((foreign_objects[3])));
-    }
+    let varuable_name = GetForeignObjectsValue(foreign_objects[0]);
+    let left = GetForeignObjectsValue(foreign_objects[1]); 
+    let right = GetForeignObjectsValue(foreign_objects[3]);
     
-
-
-    varuable_name = GetForeignObjectsValue(foreign_objects[0]);
-    left = GetForeignObjectsValue((foreign_objects[1])); 
-    right =  GetForeignObjectsValue((foreign_objects[3]));
 
     let operatorSelect = foreign_objects[2].querySelector('select');
     let operator = operatorSelect ? operatorSelect.value : null; 
+
 
     return {
         varuable_name: varuable_name, 
@@ -209,6 +185,7 @@ function getArrayIndexValue(block_id) {
                 console.log("не найдено значение ввода")
                 return null;
             }
+
             return input.value || null;
         }
 
@@ -220,8 +197,8 @@ function getArrayIndexValue(block_id) {
     const array_index = getInputValue(foreign_objects[1]); 
 
     return {
-        array_name: array_name, 
-        array_index: array_index, 
+        left: array_name, 
+        right: array_index, 
     }
 }
 
@@ -339,7 +316,6 @@ function checkIsArray(str) {
 
         // если не нашли то кидаем ошибку 
         if (!found_varuable) {
-            console.log("вы пытаетесь обратиться к элементу массива с помощью несущ перменной");
             return null;
         }
 
@@ -352,7 +328,6 @@ function checkIsArray(str) {
 
     // крч индекс это либо значение переменной, либо значение просто число которое пользователь ввёл 
 
-    
     let found_array = ArrayName.find(array => 
         array.array_name === array_name
     );
@@ -364,7 +339,7 @@ function checkIsArray(str) {
 
     let array_elements = found_array.array_elements; 
 
-    if (index < 0 ||  index > Number(found_array.array_length)) {
+    if (index < 0 ||  index >= Number(found_array.array_length)) {
         console.log("вы обратились к несуществующему индексу")
         return null;
     }
@@ -382,7 +357,6 @@ function checkIsArray(str) {
         array_element_value: found_array.array_elements[index]
     };
 
-    console.log("ФИНАЛЬНЫЙ ОБЬЕКТ", result)
     return result;
 }
 

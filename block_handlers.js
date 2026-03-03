@@ -18,15 +18,11 @@ function HandleIfBlock(block_id) {
   
     let left; 
 
-    console.log(left_str);
     let left_array_check = checkIsArray(left_str);
-    console.log(left_array_check);
 
     if (left_array_check !== null) {
         left = left_array_check.array_element_value; 
-        console.log("будет массив)");
     } 
-
     
     else {
         let found_left_varuable = varuable_list.find(varuable => 
@@ -35,12 +31,10 @@ function HandleIfBlock(block_id) {
 
         if (found_left_varuable) {
             left = found_left_varuable.varuable_value;
-            console.log("будет переменная левая ")
         }
 
         else {
             left = Number(left_str);
-            console.log("будет цифра левая")
         }
     }
 
@@ -55,8 +49,6 @@ function HandleIfBlock(block_id) {
 
     if (right_array_check !== null) {
         right = right_array_check.array_element_value;
-        console.log(right);
-        console.log("будет массив правый )");
     }
 
     else {
@@ -66,13 +58,10 @@ function HandleIfBlock(block_id) {
 
         if (found_right_varuable) {
             right = found_right_varuable.varuable_value; 
-            console.log("переменная правая будет ");
         }
 
         else  {
             right = Number(right_str);
-            console.log("просто цифра правая ")
-            
         }
     }
 
@@ -83,10 +72,6 @@ function HandleIfBlock(block_id) {
 
     let operator = forms_data.operator; 
     let bool_result; 
-
-    console.log("правый", right); 
-    console.log("левый", left);
-    
 
     switch(operator) {
         case ">": bool_result = left > right;
@@ -109,6 +94,7 @@ function HandleIfBlock(block_id) {
 
     let find_current_connection_with_if; 
 
+
     if (bool_result == true) {
         // соединение с if блоком 
         find_current_connection_with_if = connections.find(conn =>    
@@ -128,11 +114,14 @@ function HandleIfBlock(block_id) {
             return;
         }
 
+        let endif_block_id; 
+
         // по идее пока есть next блок мы его обрабатываем и находим next 
         while (next_block_type) {
             // если дошли до конца if 
             if (next_block_type == "endif_block") {
-                break;
+                endif_block_id = next_block_id;  
+                break; // стоп обработки конструкции 
             }
 
             else {
@@ -154,6 +143,37 @@ function HandleIfBlock(block_id) {
                 }
             }
         }
+
+        let find_after_endif_connection = connections.find(conn => 
+            conn.parent_block_type === "endif_block" && conn.parent === endif_block_id
+        );
+
+        if (!find_after_endif_connection) return null;
+
+        let skip_block_id = find_after_endif_connection.child; 
+        let skip_block = document.getElementById(skip_block_id);
+        let skip_block_type = skip_block ? skip_block.dataset.data_type : null;
+        
+        while (skip_block_id && skip_block_type !== "endelse_block") {
+            let find_skip_connection = connections.find(conn => 
+                conn.parent === skip_block_id && conn.parent_block_type === skip_block_type
+            );
+
+            if (!find_skip_connection) break;
+            skip_block_id = find_skip_connection.child; 
+            skip_block = document.getElementById(skip_block_id);
+            skip_block_type = skip_block ? skip_block.dataset.data_type : null;
+        } 
+
+        if (skip_block_type === "endelse_block") {
+            let find_after_endelse_connection = connections.find(conn => 
+                conn.parent === skip_block_id && conn.parent_block_type === "endelse_block"
+            );
+
+            return find_after_endelse_connection ? find_after_endelse_connection.child : null;
+        }
+
+        return null;
     }
 
     else if (bool_result == false) {
@@ -204,10 +224,20 @@ function HandleIfBlock(block_id) {
 
         let else_block_id = else_connection.child;
         let else_block = document.getElementById(else_block_id);
+
+        if (!else_block) {
+            return null;
+        }
         let else_block_type = else_block.dataset.data_type;
 
+        let endelse_block_id; 
+
         // обрабатываем else ветку до endelse_block
-        while (else_block_id && else_block_type !== "endelse_block") {
+        while (else_block_id && else_block_type) {
+            if (else_block_type === "endelse_block") {
+                endelse_block_id = else_block_id;
+                break;
+            }
             // обрабатываем текущий блок в else ветке
             HandleAnyBlock(else_block_type, else_block_id);
 
@@ -216,33 +246,30 @@ function HandleIfBlock(block_id) {
                 conn.parent === else_block_id && conn.parent_block_type === else_block_type
             );
 
-            if (next_else_connection) {
-                else_block_id = next_else_connection.child;
-                else_block = document.getElementById(else_block_id);
-                else_block_type = else_block.dataset.data_type;
-            } else {
-                break;
-            }
+            if (!next_else_connection) break;
+
+            else_block_id = next_else_connection.child;
+            else_block = document.getElementById(else_block_id);
+            else_block_type = else_block.dataset.data_type;
+    
+            if (!else_block) break;
         }
 
-        // возвращаем следующий блок после всей if-else конструкции
+        if (!endelse_block_id) {
+            return connections.find(conn => 
+                conn.parent === next_block_id && conn.parent_block_type === "endif_block"
+            )?.child || null;
+        }
+
         let next_after_else = connections.find(conn => 
-            conn.parent === else_block_id && conn.parent_block_type === else_block_type
+            conn.parent === endelse_block_id && 
+            conn.parent_block_type === "endelse_block"
         );
 
         return next_after_else ? next_after_else.child : null;
     } 
 }
 
-// ВЕРНУТЬ
-// function HandleElseBlock(block_id) {
-//     let block = document.getElementById(block_id);
-//     if (!block) {
-//         InvalidSyntacsisError();
-//     }
-
-//     return null; 
-// }
 
 function HandleOutputBlock(block_id) {
     let block = document.getElementById(block_id);
@@ -324,57 +351,62 @@ function HandleArifBlock(block_id) {
 
     let arif_block_input = getArifBlockValue(block_id);
 
-    // основная перменная надо которой совершается арифметика 
-    let main_varuable_name = arif_block_input.varuable_name;
-    let main_varuable_value; 
-
-    let found_main_varuable = varuable_list.find(varuable => 
-        varuable.varuable_name === main_varuable_name
-    );
-
-    if (!found_main_varuable) {
-        console.log("переменная с таким именем не найдена");
-        return null;   
+    if (!arif_block_input) {
+        console.log("что то вы не то ввели");
     }
 
-    main_varuable_value = Number(found_main_varuable.varuable_value);
-
-
-
-    // обработка левой перменной(или не перем)
     let left_varuable_name = arif_block_input.left;
-    let left_varuable_value
+    let left_varuable_value; 
 
-    let found_left_varuable = varuable_list.find(varuable => 
-        varuable.varuable_name === left_varuable_name
-    );
-    
-    if (!found_left_varuable) {
-        left_varuable_value = Number(left_varuable_name);         
+    let check_left_varuable_is_array = checkIsArray(left_varuable_name);
+    if (check_left_varuable_is_array) {
+        left_varuable_value = Number(check_left_varuable_is_array.array_element_value);
     }
 
     else {
-        left_varuable_value = Number(found_left_varuable.varuable_value);
-    } 
+        let found_left_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === left_varuable_name
+        ); 
+        
+        if (found_left_varuable) {
+            left_varuable_value = Number(found_left_varuable.varuable_value);  
+        }
 
+        else {
+            left_varuable_value = Number(left_varuable_name);
+        }
+    }
 
-    let right_varuable_name = arif_block_input.right; 
+    let right_varuable_name = arif_block_input.right;
     let right_varuable_value; 
 
-    let found_right_varuable = varuable_list.find(varuable =>
-        varuable.varuable_name === right_varuable_name
-    );
-    
-    if (!found_right_varuable) {
-        right_varuable_value = Number(right_varuable_name); 
+    let check_right_varuable_is_array = checkIsArray(right_varuable_name);
+    if (check_right_varuable_is_array) {
+        right_varuable_value = Number(check_right_varuable_is_array.array_element_value);
     }
 
     else {
-        right_varuable_value = Number(found_right_varuable.varuable_value); 
+        let found_right_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === right_varuable_name
+        ); 
+        
+        if (found_right_varuable) {
+            right_varuable_value = Number(found_right_varuable.varuable_value);  
+        }
+
+        else {
+            right_varuable_value = Number(right_varuable_name);
+        }
     }
+
+    
 
 
     let operator = arif_block_input.operator;
+
+    if (!operator) {
+        conosle.log("вы не выбрали оператор");
+    }
 
     let arif_result; 
 
@@ -393,9 +425,39 @@ function HandleArifBlock(block_id) {
         }
     }
 
-    found_main_varuable.varuable_value = arif_result;
-    console.log("результат операции:", arif_result) 
-    console.log("изменённая переменная", found_main_varuable);
+    let main_varuable_name = arif_block_input.varuable_name; 
+    let check_main_varuable_is_array = checkIsArray(main_varuable_name);
+
+    if (check_main_varuable_is_array) {
+        let array_name = check_main_varuable_is_array.array_name;
+        let array_index = check_main_varuable_is_array.array_index; 
+
+        let found_array = ArrayName.find(array => 
+            array.array_name === array_name
+        );
+
+        if (!found_array) {
+            console.log("не получилось обратиться к элементу массива")
+            return null;
+        }
+
+        found_array.array_elements[array_index] = arif_result;
+    }
+
+    else {
+        let found_main_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === main_varuable_name
+        );
+
+        if (found_main_varuable) {
+            found_main_varuable.varuable_value = arif_result;
+        }
+
+        else {
+            console.log("переменная не найдена")
+            return null;
+        }
+    }
 
     connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "arif_block"
@@ -526,7 +588,17 @@ function HandleCycleForBlock(block_id) {
             
             // Обрабатываем обычные блоки (не циклы и не endfor)
             if (current_block_type !== "cycle_for_block" && current_block_type !== "endfor_block") {
-                HandleAnyBlock(current_block_type, current_block_id);
+                let next_override = HandleAnyBlock(current_block_type, current_block_id);
+
+                if (next_override) {
+                    current_block_id = next_override;
+
+                    let block_obj = document.getElementById(current_block_id);
+                    if (!block_obj) break;
+
+                    current_block_type = block_obj.dataset.data_type;
+                    continue;
+                }
             }
             
             // Ищем следующий блок
@@ -684,28 +756,70 @@ function HandleArrayIndexBlock(block_id) {
 
     let array_index_block_data = getArrayIndexValue(block_id);
 
-    let array_name = array_index_block_data.array_name; 
-    let array_index = Number(array_index_block_data.array_index);
-
-    let selected_array = ArrayName.find(conn => 
-        conn.array_name === array_name // проверка на то что у нас в массиве ArrayName есть массив с таким же названием что выбрал пользователь
-    );
-
-    if (!selected_array) {
-        console.log("Такого массива не существует"); 
-        InvalidSyntacsisError(); 
-        return null; 
+    if (!array_index_block_data) {
+        console.log("вы ввели что то не то в array_index");
+        return null;
     }
 
-    let selected_array_elements = selected_array.array_elements; 
-    let selected_array_length = selected_array.array_length;
+    let right_varuable_name = array_index_block_data.right;
+    let right_varuable_value;
 
-    if (array_index < 0 || array_index >= selected_array_length) {
-        console.log('элемент не существует или неверный индекс');
-        return null; 
+    let check_is_right_varuable_array = checkIsArray(right_varuable_name);
+
+    if (check_is_right_varuable_array) {
+        right_varuable_value = Number(check_is_right_varuable_array.array_element_value);
     }
 
-    console.log("вы обратились к элементу:", selected_array_elements[array_index]);
+    else {
+        let found_right_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === right_varuable_name
+        );
+
+      if (found_right_varuable) {
+        right_varuable_value = Number(found_right_varuable.varuable_value); 
+      }
+
+      else {
+        right_varuable_value = Number(right_varuable_name);
+      }
+    }
+
+
+    let left_varuable_name = array_index_block_data.left; 
+    let left_varuable_value; 
+
+    let check_is_left_varuable_array = checkIsArray(left_varuable_name);
+    
+    if (check_is_left_varuable_array) {
+        let array_index = check_is_left_varuable_array.array_index;
+        let array_name = check_is_left_varuable_array.array_name;
+        let current_array = ArrayName.find(array => 
+            array.array_name ===  array_name  
+        );
+
+        if (current_array) {
+            current_array.array_elements[array_index] = right_varuable_value;
+        } 
+
+        else {
+            console.log("массив не найден слева");
+            return null;
+        }
+    }
+
+    else {
+        let found_left_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === left_varuable_name
+        );
+
+        if (found_left_varuable) {
+            found_left_varuable.varuable_value = right_varuable_value; 
+        }
+
+        else {
+            console.log("слева не переменная и не массив");
+        }
+    }
 
     let connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "array_index_block"
