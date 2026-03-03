@@ -220,8 +220,6 @@ function resetAssignmentBlock(blockId) {
     const div = block.querySelector('div[contenteditable = "true"]');
     if (!div) return;
 
-    const value = div.textContent.trim();
-
     const connection = connections.find(conn => 
         conn.child === blockId &&
         conn.parent_block_type === "varuable_block"

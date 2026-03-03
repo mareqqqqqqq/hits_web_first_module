@@ -234,16 +234,6 @@ function HandleIfBlock(block_id) {
     } 
 }
 
-// ВЕРНУТЬ
-// function HandleElseBlock(block_id) {
-//     let block = document.getElementById(block_id);
-//     if (!block) {
-//         InvalidSyntacsisError();
-//     }
-
-//     return null; 
-// }
-
 function HandleOutputBlock(block_id) {
     let block = document.getElementById(block_id);
 
@@ -480,7 +470,7 @@ function HandleCycleForBlock(block_id) {
         
         // пока у нас есть некст блок
         while (current_block_id) {
-            // ЕСЛИ ЭТО НАЧАЛО ВЛОЖЕННОГО ЦИКЛА
+
             if (current_block_type === "cycle_for_block") {
                 // выполням вложенный 
                 HandleCycleForBlock(current_block_id);
@@ -501,15 +491,11 @@ function HandleCycleForBlock(block_id) {
                 }
             }
             
-            // ЕСЛИ ДОШЛИ ДО endfor_block
             if (current_block_type === "endfor_block") {
-                // Проверяем, принадлежит ли этот endfor_block текущему циклу
                 if (isMyEndForBlock(block_id, current_block_id)) {
-                    break; // Выходим из цикла - это наш endfor
+                    break; 
                 }
-                // Если это не наш endfor (принадлежит вложенному циклу), просто пропускаем его
                 else {
-                    // Ищем следующий блок после чужого endfor
                     let next_connection = connections.find(conn => 
                         conn.parent === current_block_id && conn.parent_block_type === current_block_type
                     );
@@ -524,12 +510,10 @@ function HandleCycleForBlock(block_id) {
                 }
             }
             
-            // Обрабатываем обычные блоки (не циклы и не endfor)
             if (current_block_type !== "cycle_for_block" && current_block_type !== "endfor_block") {
                 HandleAnyBlock(current_block_type, current_block_id);
             }
             
-            // Ищем следующий блок
             let next_connection = connections.find(conn => 
                 conn.parent === current_block_id && conn.parent_block_type === current_block_type
             );
@@ -565,7 +549,6 @@ function HandleCycleForBlock(block_id) {
         InvalidSyntacsisError();
     }
 
-    // Находим следующий блок после СВОЕГО endfor_block
     let my_endfor_id = findEndForBlockId(block_id);
     if (my_endfor_id) {
         let next_after_endfor = connections.find(conn => 
@@ -577,9 +560,7 @@ function HandleCycleForBlock(block_id) {
     return null;
 }
 
-// Новая функция для проверки, принадлежит ли endfor_block текущему циклу
 function isMyEndForBlock(cycle_block_id, endfor_block_id) {
-    // Находим путь от cycle_block до endfor_block
     let current_id = cycle_block_id;
     let current_type = "cycle_for_block";
     let nested_level = 0;
@@ -595,7 +576,7 @@ function isMyEndForBlock(cycle_block_id, endfor_block_id) {
         current_type = next_connection.child_block_type;
         
         if (current_id === endfor_block_id) {
-            return nested_level === 0; // Это наш endfor, если уровень вложенности 0
+            return nested_level === 0; 
         }
         
         if (current_type === "cycle_for_block") {
@@ -609,13 +590,11 @@ function isMyEndForBlock(cycle_block_id, endfor_block_id) {
 }
 
 function updateVariable(var_name, value) {
-    // Ищем существующую переменную
     let existing_var = varuable_list.find(v => v.varuable_name === var_name);
     
     if (existing_var) {
         existing_var.varuable_value = value;
     } else {
-        // Если переменная не найдена, создаём новую
         varuable_list.push({
             varuable_block_id: null,
             varuable_block_type: "cycle_variable",

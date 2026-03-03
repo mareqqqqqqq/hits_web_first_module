@@ -47,11 +47,31 @@ function getAllVaruableName() {
 
 function refreshAllVariableSelectors() {
     document.querySelectorAll("select").forEach(select => {
+
+        if (!select.dataset.selectorType) return;
         
         const currentValue = select.value;
         select.innerHTML = "";
 
-        const names = getAllVaruableName();
+        let names = [];
+
+        if (select.dataset.selectorType === "variable") {
+            names = varuable_list
+                .map(v => v.varuable_name)
+                .filter(n => n);
+        }
+
+        if (select.dataset.selectorType === "variable+array") {
+            const vars = varuable_list
+                .map(v => v.varuable_name)
+                .filter(n => n);
+
+                const arrays = ArrayName
+                    .map(a => a.array_name)
+                    .filter(n => n);
+
+                    names = [...vars, ...arrays];
+        }
 
         if (names.length === 0) {
             const option = document.createElement("option");
