@@ -48,7 +48,7 @@ document.addEventListener('mouseup', () => {
 
 
 const sidebarBlocks = document.querySelectorAll(
-    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .logic_and_block , .logic_or_block, .array_index_block, .endfor_block'
+    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .logic_and_block , .logic_or_block, .array_index_block, .endfor_block, .endwhile_block'
 );
 
 sidebarBlocks.forEach(el => {
@@ -65,6 +65,7 @@ sidebarBlocks.forEach(el => {
             el.classList.contains('cycle_for_block') ? '#0066ff' :
             el.classList.contains('endfor_block') ? '#0066ff' :
             el.classList.contains('cycle_while_block') ? '#0066ff' :
+            el.classList.contains('endwhile_block') ? '#0066ff' :
             el.classList.contains('start_block') ? '#25c733' :
             el.classList.contains('endif_block') ? '#ffac3e' :
             el.classList.contains('endelse_block') ? '#fd4a4a' :
@@ -218,8 +219,6 @@ function resetAssignmentBlock(blockId) {
 
     const div = block.querySelector('div[contenteditable = "true"]');
     if (!div) return;
-
-    const value = div.textContent.trim();
 
     const connection = connections.find(conn => 
         conn.child === blockId &&

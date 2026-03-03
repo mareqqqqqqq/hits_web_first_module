@@ -275,6 +275,7 @@ function getWhileBlockData(block_id) {
         else if (input && input.style.display !== "none") {
             return input.value;
         }
+        return null;
     }
 
     let left = getBlockValue(foreign_objects[0]);

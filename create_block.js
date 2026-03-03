@@ -4,7 +4,7 @@
         const path = document.createElementNS(ns, "path");
 
         
-        function createValueSelector (x) {
+        function createValueSelector (x, mode = "variable", allowCustom = true) {
                 
                 const foreign = document.createElementNS(ns, "foreignObject");
                 foreign.setAttribute("x", x);
@@ -18,7 +18,10 @@
                 container.style.display = "flex";
 
                 const select = document.createElement("select");
-                select.dataset.varuableSelectors = "true";
+                if (allowCustom === true) {
+                    select.dataset.varuableSelectors = "true";
+                }
+                select.dataset.selectorType = mode;
                 select.style.width = "100%";
                 select.style.height = "100%";
                 select.style.fontSize = "12px";
@@ -26,29 +29,6 @@
                 select.style.background = "rgba(255, 255, 255, 0.9)";
                 select.style.border = "none";
                 select.style.outline = "none";
-
-                const variableName = getAllVaruableName();
-
-                if (variableName.length === 0) {
-                    const option = document.createElement("option");
-                    option.value = "";
-                    option.textContent = "Нет переменных";
-                    select.appendChild(option);
-                }
-
-                else {
-                    variableName.forEach (v => {
-                        const option = document.createElement("option");
-                        option.value = v;
-                        option.textContent = v;
-                        select.appendChild(option);
-                    });
-                }
-
-                const customOption = document.createElement("option");
-                customOption.value = "custom";
-                customOption.textContent = "Другое";
-                select.appendChild(customOption);
 
                 const input = document.createElement("input");
                 input.type = "text";
@@ -366,15 +346,19 @@
     }
 
     if (data_type === "logic_and_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175    v10 l10,10 v25 l-10,10 v10   h-175 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     if (data_type === "logic_or_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175    v10 l10,10 v25 l-10,10 v10   h-175 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     if (data_type === "endfor_block") {
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375 v65 h-375 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    if (data_type === "endwhile_block") {
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175 v65 h-175 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     group.appendChild(path);
@@ -618,11 +602,11 @@
 
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v10 l10,10 v25 l-10,10 v10     h-165 l-10,10 h-25 l-10,-10 h-10 Z");
 
-            group.appendChild(createValueSelector(5));
+            group.appendChild(createValueSelector(5, "variable", true));
 
             group.appendChild(createOperatorSelect(85, [">", "<", "=", "!=", ">=", "<="]));
 
-            group.appendChild(createValueSelector(145));
+            group.appendChild(createValueSelector(145, "variable", true));
         }
 
 
@@ -631,73 +615,16 @@
     if (data_type === "output_block") {
  
 
-        group.appendChild(createValueSelector(15));
+        group.appendChild(createValueSelector(15, "variable+array"));
     }
 
     if (data_type === "arif_block") {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h250 v10 l10,10 v25 l-10,10 v10 h-250 l-10,10 h-25 l-10,-10 h-10 v-10 l10,-10 v-25 l-10,-10 v-10 Z")
 
-        function createVariableSelector(x) {
-            const foreign = document.createElementNS(ns, "foreignObject");
-            foreign.setAttribute("x", x);
-            foreign.setAttribute("y", 20);
-            foreign.setAttribute("width", 90);
-            foreign.setAttribute("height", 25);
-
-            const container = document.createElement("div");
-            container.style.width = "100%";
-            container.style.height = "100%";
-            container.style.display = "flex";
-            container.style.alignItems = "center";
-            container.style.overflow = "hidden";
-
-            const select = document.createElement("select");
-            select.dataset.onlyExisting = "true";
-            select.style.flex = "1";
-            select.style.height = "100%";
-            select.style.fontSize = "12px";
-            select.style.fontFamily = "Inter";
-            select.style.background = "rgba(255, 255, 255, 0.9)";
-            select.style.border = "none";
-            select.style.outline = "none";
-
-            const variableNames = getAllVaruableName();
-            
-            if (variableNames.length === 0) {
-                const option = document.createElement("option");
-                option.value = "";
-                option.textContent = "Нет переменных";
-                select.appendChild(option);
-            }
-            else {
-                variableNames.forEach (v => {
-                    const option = document.createElement("option");
-                    option.value = v;
-                    option.textContent = v;
-                    select.appendChild(option);
-                });
-            }
-
-            const equalSign = document.createElement("span");
-            equalSign.textContent = "=";
-            equalSign.style.marginLeft = "6px";
-            equalSign.style.fontSize = "Inter";
-            equalSign.style.fontWeight = "bold";
-
-            select.addEventListener("mousedown", e => e.stopPropagation());
-            foreign.addEventListener("mousedown", e => e.stopPropagation());
-
-            container.appendChild(select);
-            container.appendChild(equalSign);
-            foreign.appendChild(container);
-
-            return foreign;
-        }
-
-        group.appendChild(createVariableSelector(15));
-        group.appendChild(createValueSelector(110));
+        group.appendChild(createValueSelector(15, "variable", false));
+        group.appendChild(createValueSelector(110, "variable", true));
         group.appendChild(createOperatorSelect(185, ["+", "-", "*", "//", "%"]));
-        group.appendChild(createValueSelector(240));
+        group.appendChild(createValueSelector(240, "variable", true));
     }
 
     if (data_type === "cycle_for_block") {
@@ -745,6 +672,18 @@
         group.appendChild(createEqual(90));
         group.appendChild(createValueSelector(105));
     }
+
+    if (data_type === "logic_and_block") {
+            group.appendChild(createValueSelector(15));
+            group.appendChild(createOperatorSelect(95, [">", "<", "=", "!=", ">=", "<="]));
+            group.appendChild(createValueSelector(155));
+    }
+
+    if (data_type === "logic_or_block") {
+        group.appendChild(createValueSelector(15));
+        group.appendChild(createOperatorSelect(95, [">", "<", "=", "!=", ">=", "<="]));
+        group.appendChild(createValueSelector(155));
+}
     
     if (data_type === "assignment_block") {
         group.dataset.connectionTop = "true";
@@ -954,8 +893,24 @@
         group.dataset.connectorBottom = "true"; 
     }
 
+     else if (data_type === "endwhile_block")
+    {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "true"; 
+    
+    }
+
         const viewport = document.getElementById('viewport');
         viewport.appendChild(group);// добавляет path в svg html
+
+        refreshAllVariableSelectors();
 
         return group;
     }
