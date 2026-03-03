@@ -598,7 +598,7 @@ function HandleCycleForBlock(block_id) {
             }
         }
         
-        previous_value = current_value;
+        let previous_value = current_value;
 
         if (step_sign === "+") {
             current_value += step_value;
@@ -896,81 +896,81 @@ function HandleArrayIndexBlock(block_id) {
     let block = document.getElementById(block_id);
 
     if (!block) return null; 
-
     let array_index_block_data = getArrayIndexValue(block_id);
-
-    let array_name = array_index_block_data.array_name; 
-    let array_index = Number(array_index_block_data.array_index);
-
-    let selected_array = ArrayName.find(conn => 
-        conn.array_name === array_name // проверка на то что у нас в массиве ArrayName есть массив с таким же названием что выбрал пользователь
-    );
-
-    if (!selected_array) {
-        console.log("Такого массива не существует"); 
-        InvalidSyntacsisError(); 
+    if (!array_index_block_data) {
+        console.log("вы не ввели ничего");
         return null; 
     }
 
-    let right_varuable_name = array_index_block_data.right;
-    let right_varuable_value;
+    let right_str = array_index_block_data.right; 
+    let right_value; 
 
-    let check_is_right_varuable_array = checkIsArray(right_varuable_name);
+    let check_is_right_array = checkIsArray(right_str);
 
-    if (check_is_right_varuable_array) {
-        right_varuable_value = Number(check_is_right_varuable_array.array_element_value);
+    if (check_is_right_array) {
+        let found_array = ArrayName.find(array => 
+            array.array_name === check_is_right_array.array_name
+        )
+
+        if (!found_array) {
+            InvalidSyntacsisError(); 
+            return; 
+        }
+
+        right_value = check_is_right_array.array_element_value;
     }
 
     else {
         let found_right_varuable = varuable_list.find(varuable => 
-            varuable.varuable_name === right_varuable_name
-        );
+            varuable.varuable_name === right_str
+        )
 
-      if (found_right_varuable) {
-        right_varuable_value = Number(found_right_varuable.varuable_value); 
-      }
+        if (found_right_varuable) {
+            right_value = found_right_varuable.varuable_value;
+        }
 
-      else {
-        right_varuable_value = Number(right_varuable_name);
-      }
+        else { 
+            right_value = Number(right_str); 
+        }
+ 
     }
 
 
-    let left_varuable_name = array_index_block_data.left; 
-    let left_varuable_value; 
+    let left_str = array_index_block_data.left; 
+    let left_varuable; 
 
-    let check_is_left_varuable_array = checkIsArray(left_varuable_name);
+    let check_is_left_varuable_array = checkIsArray(left_str);
     
     if (check_is_left_varuable_array) {
-        let array_index = check_is_left_varuable_array.array_index;
-        let array_name = check_is_left_varuable_array.array_name;
-        let current_array = ArrayName.find(array => 
-            array.array_name ===  array_name  
-        );
+        let found_array = ArrayName.find(array => 
+            array.array_name === check_is_left_varuable_array.array_name
+        )
 
-        if (current_array) {
-            current_array.array_elements[array_index] = right_varuable_value;
-        } 
+        if (!found_array) {
+            InvalidSyntacsisError(); 
+            return; 
+        }   
 
-        else {
-            console.log("массив не найден слева");
-            return null;
-        }
+        found_array.array_elements[check_is_left_varuable_array.array_index] = right_value; 
     }
 
     else {
-        let found_left_varuable = varuable_list.find(varuable => 
-            varuable.varuable_name === left_varuable_name
-        );
+        let found_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === left_str
+        )
 
-        if (found_left_varuable) {
-            found_left_varuable.varuable_value = right_varuable_value; 
+        if (found_varuable) {
+            found_varuable.varuable_value = right_value; 
         }
 
         else {
-            console.log("слева не переменная и не массив");
+            InvalidSyntacsisError(); 
+            return; 
         }
     }
+
+    
+
 
     let connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "array_index_block"
