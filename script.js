@@ -14,8 +14,6 @@ let currentTranslate = { x: 0, y: 0 };
 
 const SNAP_OVERLAP = 10; 
 
-
-
 canvas.addEventListener('mousedown', (e) => {
     if (e.target === canvas) {
         isPanning = true;
@@ -31,10 +29,16 @@ document.addEventListener('mousemove', (e) => {
         viewport.setAttribute('transform', `translate(${currentTranslate.x}, ${currentTranslate.y})`);
     } else if (selected) {
         const rect = canvas.getBoundingClientRect();
-
         const x = e.clientX - rect.left - offsetX - currentTranslate.x;
         const y = e.clientY - rect.top - offsetY - currentTranslate.y;
+
+        const oldM = selected.transform.baseVal.consolidate().matrix;
+        const dx = x - oldM.e;
+        const dy = y - oldM.f;
+
         selected.setAttribute('transform', `translate(${x},${y})`);
+
+        moveSlotChildrenBy(selected, dx, dy);
     }
 });
 
@@ -44,8 +48,6 @@ document.addEventListener('mouseup', () => {
         canvas.style.cursor = 'default';
     }
 });
-
-
 
 const sidebarBlocks = document.querySelectorAll(
     '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .logic_and_block , .logic_or_block, .array_index_block, .endfor_block, .endwhile_block, .logic_not_block , .input_arif_block'
@@ -62,7 +64,7 @@ sidebarBlocks.forEach(el => {
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             el.classList.contains('output_block') ? '#a3a669' :
             el.classList.contains('arif_block') ? '#5caeb9' :
-            el.classList.contains('input_arif_block') ? '#5caeb9' :
+            el.classList.contains('input_arif_block') ? '#3a7d8c' :
             el.classList.contains('cycle_for_block') ? '#0066ff' :
             el.classList.contains('endfor_block') ? '#0066ff' :
             el.classList.contains('cycle_while_block') ? '#0066ff' :
@@ -71,7 +73,7 @@ sidebarBlocks.forEach(el => {
             el.classList.contains('endif_block') ? '#ffac3e' :
             el.classList.contains('endelse_block') ? '#fd4a4a' :
             el.classList.contains('logic_and_block') ? '#734f96' :
-            el.classList.contains('logic_or_block') ? '	#8FBC8F' :
+            el.classList.contains('logic_or_block') ? '#8FBC8F' :
             el.classList.contains('logic_not_block') ? '#551118' :
             el.classList.contains('array_block') ? '#004af7' :
             el.classList.contains('array_index_block') ? '#004af7' :
@@ -94,9 +96,229 @@ sidebarBlocks.forEach(el => {
 });
 
 
+
+
+function rebuildPath(group) {
+    const path = group.querySelector("path");
+    if (!path) return;
+    const W = parseInt(group.dataset.currentInnerW);
+    if (isNaN(W)) return;
+    if (group.dataset.data_type === "arif_block") {
+        path.setAttribute("d",
+            `M0,0 h10 l10,10 h25 l10,-10 h${W} v65 h-${W} l-10,10 h-25 l-10,-10 h-10 v-10 l10,-10 v-25 l-10,-10 v-10 Z`
+        );
+    } else if (group.dataset.data_type === "input_arif_block") {
+        path.setAttribute("d", `M0,0 h${W} v40 h-${W} Z`);
+    }
+}
+
+function getSlotEl(group, slotName) {
+    return Array.from(group.querySelectorAll("[data-slot]"))
+        .find(r => r.dataset.slot === slotName && r.closest(".block") === group) || null;
+}
+
+function getSlotParent(childId) {
+    const conn = connections.find(c => c.child === childId &&
+        (c.position === "slot_left" || c.position === "slot_right"));
+    return conn ? document.getElementById(conn.parent) : null;
+}
+
+function findSlotNameForChild(parentId, childId) {
+    const conn = connections.find(c => c.parent === parentId && c.child === childId &&
+        (c.position === "slot_left" || c.position === "slot_right"));
+    return conn ? conn.position : null;
+}
+
+
+function shiftRightOf(parentGroup, slotEl, delta) {
+    const SLOT_BASE_W = 80;
+    const slotRightEdge = parseFloat(slotEl.getAttribute("x")) + SLOT_BASE_W;
+
+    Array.from(parentGroup.childNodes).forEach(node => {
+        if (!node.getAttribute) return;
+        if (node === slotEl) return;
+        if (node.tagName === "path") return;
+        if (node.classList && node.classList.contains("block")) return;
+        const nx = parseFloat(node.getAttribute("x"));
+        if (!isNaN(nx) && nx >= slotRightEdge) {
+            node.setAttribute("x", nx + delta);
+        }
+    });
+
+
+    connections
+        .filter(c => c.parent === parentGroup.id &&
+            (c.position === "slot_left" || c.position === "slot_right") &&
+            c.position !== slotEl.dataset.slot)
+        .forEach(c => {
+            const childSlotEl = getSlotEl(parentGroup, c.position);
+            if (!childSlotEl) return;
+            const childSlotX = parseFloat(childSlotEl.getAttribute("x"));
+            if (childSlotX >= slotRightEdge) {
+                const childBlock = document.getElementById(c.child);
+                if (childBlock) {
+                    const m = childBlock.transform.baseVal.consolidate().matrix;
+                    childBlock.setAttribute("transform", `translate(${m.e + delta}, ${m.f})`);
+                    moveSlotChildrenBy(childBlock, delta, 0);
+                }
+            }
+        });
+}
+
+function growParent(parentGroup, childGroup, slotName, deltaOverride) {
+    const SLOT_W = 80;
+    const childW = parseInt(childGroup.dataset.currentInnerW) || SLOT_W;
+    const extra = deltaOverride !== undefined ? deltaOverride : Math.max(0, childW - SLOT_W);
+    if (extra === 0) return;
+
+    const slotEl = getSlotEl(parentGroup, slotName);
+    if (slotEl) {
+        const prev = parseInt(slotEl.dataset.addedExtra || "0");
+        slotEl.dataset.addedExtra = prev + extra;
+    }
+
+    parentGroup.dataset.currentInnerW = parseInt(parentGroup.dataset.currentInnerW) + extra;
+    rebuildPath(parentGroup);
+    if (slotEl) shiftRightOf(parentGroup, slotEl, extra);
+
+    const grandParent = getSlotParent(parentGroup.id);
+    if (grandParent) {
+        const gpSlot = findSlotNameForChild(grandParent.id, parentGroup.id);
+        if (gpSlot) growParent(grandParent, parentGroup, gpSlot, extra);
+    }
+}
+
+function shrinkParent(parentGroup, childGroup, slotName, deltaOverride) {
+    const slotEl = getSlotEl(parentGroup, slotName);
+    const extra = deltaOverride !== undefined
+        ? deltaOverride
+        : (slotEl ? parseInt(slotEl.dataset.addedExtra || "0") : 0);
+    if (extra === 0) return;
+
+    if (slotEl) {
+        const prev = parseInt(slotEl.dataset.addedExtra || "0");
+        slotEl.dataset.addedExtra = Math.max(0, prev - extra);
+    }
+
+    parentGroup.dataset.currentInnerW = parseInt(parentGroup.dataset.currentInnerW) - extra;
+    rebuildPath(parentGroup);
+    if (slotEl) shiftRightOf(parentGroup, slotEl, -extra);
+
+    const grandParent = getSlotParent(parentGroup.id);
+    if (grandParent) {
+        const gpSlot = findSlotNameForChild(grandParent.id, parentGroup.id);
+        if (gpSlot) shrinkParent(grandParent, parentGroup, gpSlot, extra);
+    }
+}
+
+
+function moveSlotChildrenBy(block, dx, dy) {
+    connections
+        .filter(c => c.parent === block.id &&
+            (c.position === "slot_left" || c.position === "slot_right"))
+        .forEach(c => {
+            const child = document.getElementById(c.child);
+            if (!child) return;
+            const m = child.transform.baseVal.consolidate().matrix;
+            child.setAttribute("transform", `translate(${m.e + dx}, ${m.f + dy})`);
+            moveSlotChildrenBy(child, dx, dy);
+        });
+}
+
+function bringToFrontWithChildren(rootBlock) {
+    viewport.appendChild(rootBlock);
+    ["slot_left", "slot_right"].forEach(pos => {
+        const conn = connections.find(c => c.parent === rootBlock.id && c.position === pos);
+        if (!conn) return;
+        const child = document.getElementById(conn.child);
+        if (child) bringToFrontWithChildren(child);
+    });
+}
+
+function getSlotRoot(block) {
+    let cur = block;
+    while (true) {
+        const pc = connections.find(c => c.child === cur.id &&
+            (c.position === "slot_left" || c.position === "slot_right"));
+        if (!pc) return cur;
+        const parent = document.getElementById(pc.parent);
+        if (!parent) return cur;
+        cur = parent;
+    }
+}
+
+
+
 canvas.addEventListener('mouseup', () => {
-    if (!selected || isPanning) 
-        return;
+    if (!selected || isPanning) return;
+
+
+    if (selected.dataset.data_type === "input_arif_block") {
+        const selPos = getBlockPos(selected);
+        const selBBox = selected.getBBox();
+        const selCX = selPos.x + selBBox.width / 2;
+        const selCY = selPos.y + selBBox.height / 2;
+
+        const allSlots = Array.from(viewport.querySelectorAll("[data-slot]")).filter(slot => {
+            if (slot.dataset.occupied === "true") return false;
+            if (parseFloat(slot.getAttribute("width") || "80") === 0) return false;
+            const pg = slot.closest(".block");
+            if (!pg || pg === selected) return false;
+
+            let cur = pg;
+            while (cur) {
+                if (cur === selected) return false;
+                const conn = connections.find(c => c.child === cur.id &&
+                    (c.position === "slot_left" || c.position === "slot_right"));
+                cur = conn ? document.getElementById(conn.parent) : null;
+            }
+            return true;
+        });
+
+        let bestSlot = null;
+        let bestDist = 60;
+        for (let slot of allSlots) {
+            const pg = slot.closest(".block");
+            const pgPos = getBlockPos(pg);
+            const sx = pgPos.x + parseFloat(slot.getAttribute("x")) + 40;
+            const sy = pgPos.y + parseFloat(slot.getAttribute("y")) + parseFloat(slot.getAttribute("height") || "30") / 2;
+            const dist = Math.hypot(selCX - sx, selCY - sy);
+            if (dist < bestDist) { bestDist = dist; bestSlot = slot; }
+        }
+
+        if (bestSlot) {
+            const parentGroup = bestSlot.closest(".block");
+            const parentPos = getBlockPos(parentGroup);
+            const slotX = parseFloat(bestSlot.getAttribute("x"));
+            const slotY = parseFloat(bestSlot.getAttribute("y"));
+            const slotH = parseFloat(bestSlot.getAttribute("height") || "30");
+
+
+            const parentH = parentGroup.getBBox().height;
+            const childH = selected.getBBox().height;
+            const newX = parentPos.x + slotX;
+            const newY = parentPos.y + (parentH - childH) / 2;
+            selected.setAttribute("transform", `translate(${newX}, ${newY})`);
+
+            bestSlot.dataset.occupied = "true";
+            bestSlot.setAttribute("width", "0");
+            bestSlot.setAttribute("height", "0");
+
+            const slotName = bestSlot.dataset.slot;
+            addConnection(parentGroup.id, selected.id, slotName, parentGroup.dataset.data_type, selected.dataset.data_type);
+
+            growParent(parentGroup, selected, slotName);
+
+
+            const root = getSlotRoot(parentGroup);
+            bringToFrontWithChildren(root);
+
+            selected.style.cursor = "grab";
+            selected = null;
+            return;
+        }
+    }
+
 
     const selBox = selected.getBBox(); 
     const selPos = getBlockPos(selected); 
@@ -108,7 +330,6 @@ canvas.addEventListener('mouseup', () => {
     let snappedHor = false;
 
     const isConnectorFree = (blockId, position) => !connections.some(c => c.parent === blockId && c.position === position);
-    
     const isInputFree = (blockId, position) => !connections.some(c => c.child === blockId && c.position === position);
 
     for (let block of allBlocks) {
@@ -126,7 +347,6 @@ canvas.addEventListener('mouseup', () => {
                 selected.dataset.connectionTop === "true" && 
                 block.dataset.connectorBottom === "true" &&
                 isConnectorFree(block.id, "vertical") && isInputFree(selected.id, "vertical")) {
-                
                 targetX = bPos.x;
                 targetY = targetYBottom;
                 addConnection(block.id, selected.id, "vertical", block.dataset.data_type, selected.dataset.data_type);
@@ -137,14 +357,12 @@ canvas.addEventListener('mouseup', () => {
                 selected.dataset.connectorBottom === "true" && 
                 block.dataset.connectionTop === "true" &&
                 isConnectorFree(selected.id, "vertical") && isInputFree(block.id, "vertical")) {
-                
                 targetX = bPos.x;
                 targetY = targetYTop;
                 addConnection(selected.id, block.id, "vertical", selected.dataset.data_type, block.dataset.data_type);
                 snappedVer = true;
             }
         }
-
 
         const dyHor = Math.abs(selPos.y - bPos.y);
         if (dyHor < 50) {
@@ -155,7 +373,6 @@ canvas.addEventListener('mouseup', () => {
                 selected.dataset.connectionLeft === "true" && 
                 block.dataset.connectorRight === "true" &&
                 isConnectorFree(block.id, 'horizontal') && isInputFree(selected.id, 'horizontal')) {
-                
                 targetX = targetXRight;
                 if (!snappedVer) targetY = bPos.y; 
                 addConnection(block.id, selected.id, "horizontal", block.dataset.data_type, selected.dataset.data_type);
@@ -166,17 +383,12 @@ canvas.addEventListener('mouseup', () => {
                 selected.dataset.connectorRight === "true" && 
                 block.dataset.connectionLeft === "true" &&
                 isConnectorFree(selected.id, 'horizontal') && isInputFree(block.id, 'horizontal')) {
-                
                 targetX = targetXLeft;
                 if (!snappedVer) targetY = bPos.y;
                 addConnection(selected.id, block.id, "horizontal", selected.dataset.data_type, block.dataset.data_type);
                 snappedHor = true;
             }
         }
-    }
-
-    if (snappedVer || snappedHor) {
-        selected.setAttribute('transform', `translate(${targetX}, ${targetY})`);
     }
 
     if (snappedVer || snappedHor) {
@@ -193,15 +405,52 @@ canvas.addEventListener('mousedown', e => {
     if (!block) return; 
 
     e.preventDefault();
-    viewport.appendChild(block); 
 
-    const blockId = block.id; 
-    if (block.dataset.data_type === "assignment_block") {
+    const blockId = block.id;
+    const blockType = block.dataset.data_type;
+
+    if (blockType === "input_arif_block") {
+        const hasChildren = connections.some(c => c.parent === blockId &&
+            (c.position === "slot_left" || c.position === "slot_right"));
+        if (hasChildren) return;
+    }
+
+
+    if (blockType === "input_arif_block") {
+        const conn = connections.find(c => c.child === blockId &&
+            (c.position === "slot_left" || c.position === "slot_right"));
+        if (conn) {
+            const parentGroup = document.getElementById(conn.parent);
+            const slotName = conn.position;
+            if (parentGroup) {
+                shrinkParent(parentGroup, block, slotName);
+                const slotEl = getSlotEl(parentGroup, slotName);
+                if (slotEl) {
+                    slotEl.dataset.occupied = "false";
+                    slotEl.setAttribute("width", "80");
+                    slotEl.setAttribute("height", slotEl.dataset.baseHeight || "30");
+                }
+            }
+            connections = connections.filter(c => !(c.child === blockId && c.parent === conn.parent));
+        }
+    }
+
+
+    bringToFrontWithChildren(block);
+
+    if (blockType === "assignment_block") {
         resetAssignmentBlock(blockId);
     }
-    connections = connections.filter(conn => conn.parent !== blockId && conn.child !== blockId);
 
-    if (block.dataset.data_type === "varuable_block") {
+
+    connections = connections.filter(conn => {
+        const isSlotConn = (conn.position === "slot_left" || conn.position === "slot_right");
+        if (conn.parent === blockId && !isSlotConn) return false;
+        if (conn.child === blockId && !isSlotConn) return false;
+        return true;
+    });
+
+    if (blockType === "varuable_block") {
         varuable_list = varuable_list.filter(v => v.block_id !== blockId);
     }
 
@@ -244,25 +493,19 @@ function addConnection(parentId, childId, pos, parentType, childType) {
         if (childType === "varuable_block"){
             if (!varuable_list.some(v => v.block_id === childId)) {
                 const name = getVaruableBlockValue(childId);
-
                 varuable_list.push({
                     block_id: childId,
                     block_type: "varuable_block",
                     varuable_name: name,
                     varuable_value: null
                 });
-
                 refreshAllVariableSelectors();
             }
         }
     }
-    if (
-        parentType === "varuable_block" &&
-        childType === "assignment_block"
-    ) {
+    if (parentType === "varuable_block" && childType === "assignment_block") {
         const block = document.getElementById(childId);
         const div = block.querySelector('div[contenteditable = "true"]');
-
         if (div) {
             const value = div.textContent.trim();
             updateVaruableValue(parentId, value || 0);
@@ -273,6 +516,15 @@ function addConnection(parentId, childId, pos, parentType, childType) {
 trash_bin.addEventListener('mouseup', () => {
     if (!selected) return; 
     const id = selected.id;
+    // также удаляем все slot-вложения
+    function removeWithChildren(blockId) {
+        connections
+            .filter(c => c.parent === blockId && (c.position === "slot_left" || c.position === "slot_right"))
+            .forEach(c => removeWithChildren(c.child));
+        const el = document.getElementById(blockId);
+        if (el) el.remove();
+    }
+    removeWithChildren(id);
     connections = connections.filter(conn => conn.parent !== id && conn.child !== id);
     selected.remove(); 
     selected = null; 
