@@ -492,7 +492,8 @@ function HandleCycleForBlock(block_id) {
     let current_value = start_value;
 
 
-    updateVariable(var_name, current_value, block_id);
+    updateVaruable(block_id, var_name);
+    updateVaruableValue(block_id, start_value);
 
     let first_block_connection = connections.find(conn => 
         conn.parent_block_type === "cycle_for_block" && conn.parent === block_id
@@ -522,7 +523,7 @@ function HandleCycleForBlock(block_id) {
     while (checkCondition(current_value, stop_value, operator) && iteration_count < max_iterations) {
         iteration_count++;
         
-        updateVariable(var_name, current_value, block_id);
+        updateVaruableValue(block_id, current_value);
         
         let current_block_id = first_block_connection.child;
         let current_block_type = first_block_connection.child_block_type;
@@ -612,16 +613,21 @@ function HandleCycleForBlock(block_id) {
 
         if (step_sign === "+") {
             current_value += step_value;
+            updateVaruableValue(block_id, current_value);
         } 
         else if (step_sign === "-") {
             current_value -= step_value;
+            updateVaruableValue(block_id, current_value);
+
         } 
         else if (step_sign === "*") {
             current_value *= step_value;
+            updateVaruableValue(block_id, current_value);
         } 
         else if (step_sign === "//") {
             if (step_value !== 0) {
                 current_value = Math.floor(current_value / step_value);
+                updateVaruableValue(block_id, current_value);
             }
         }
     }
@@ -674,22 +680,6 @@ function isMyEndForBlock(cycle_block_id, endfor_block_id) {
     return false;
 }
 
-function updateVariable(var_name, value, block_id) {
-    // Ищем существующую переменную
-    let existing_var = varuable_list.find(v => v.varuable_name === var_name);
-    
-    if (existing_var) {
-        existing_var.varuable_value = value;
-    } else {
-        varuable_list.push({
-            block_id: block_id,
-            block_type: "cycle_for_block",
-            varuable_name: var_name,
-            varuable_value: value,
-
-        });
-    }
-}
 
 // kjhsdkjhfsdf
 function findEndForBlockId(for_block_id) {
