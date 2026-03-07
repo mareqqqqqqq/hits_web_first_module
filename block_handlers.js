@@ -283,26 +283,36 @@ function HandleOutputBlock(block_id) {
         addLine("вы ничего не ввели в output блок", "error");
     }
 
-    let found_varuable = varuable_list.find(varuable => 
-        varuable.varuable_name === output
+    let found_array = ArrayName.find(array => 
+        array.array_name === output
     );
 
-    if (!found_varuable) {
-        addLine(String(output), 'output');
+    if (found_array) {
+        addLine(found_array.array_elements);
     }
+
+    else {
+        let found_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === output
+        );
+        
+        if (!found_varuable) {
+            addLine(output);
+        }
 
     else {
         addLine(String(found_varuable.varuable_value), 'output');
     }
-
+    
+    
     let connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "output_block"
     );
 
     return connection ? connection.child : null;
 }
+}
 
-// ВЕРНУТЬ
 function HandleVaruableBlock(block_id) {
     let block = document.getElementById(block_id);
 
@@ -311,35 +321,11 @@ function HandleVaruableBlock(block_id) {
         return;
     }
 
-    let block_type = block.dataset.block_type;  
+      
+    let next_varuable_connection = connections.find(conn => 
+        conn.parent_block_type === "varuable_block" && conn.parent === block_id && conn.position === "vertical");
 
-    let current_varuable_connection = connections.find(conn => 
-        conn.child_block_type === "varuable_block" && conn.child === block_id);
-
-    let current_varuable_name = getVaruableBlockValue(block_id);
-    
-
-
-    // соедиенение где присваивание блок 
-    let current_assignment_connection = connections.find(conn => 
-        conn.parent === block_id && conn.child_block_type === "assignment_block" && conn.parent_block_type === "assignment_block"
-    );
-
-    let current_assignment_block_id = current_assignment_connection ? current_assignment_connection.child : null; 
-    let current_assignment_block_type = current_assignment_connection ? current_assignment_connection.child_block_type : null; 
-    let current_varuable_block_value = current_assignment_connection ?  getAssignmentBlockValue(block_id) : null; 
-
-    // тут надо будет записывать в масисив varuable_list(пока лень)
-    // записываем в varuable_list
-
-    varuable_list.push({
-        varuable_block_id: block_id,
-        varuable_block_type: block_type,
-        varuable_name: current_varuable_name, 
-        varuable_value: current_varuable_block_value, 
-        assignment_value: current_assignment_block_id,
-        assignment_type: current_assignment_block_type 
-    })
+    return next_varuable_connection ? next_varuable_connection.child : null; 
 }
 
 
@@ -505,7 +491,8 @@ function HandleCycleForBlock(block_id) {
     let current_value = start_value;
 
 
-    updateVariable(var_name, current_value, block_id);
+    updateVaruable(block_id, var_name);
+    updateVaruableValue(block_id, start_value);
 
     let first_block_connection = connections.find(conn => 
         conn.parent_block_type === "cycle_for_block" && conn.parent === block_id
@@ -535,12 +522,12 @@ function HandleCycleForBlock(block_id) {
     while (checkCondition(current_value, stop_value, operator) && iteration_count < max_iterations) {
         iteration_count++;
         
-        updateVariable(var_name, current_value, block_id);
+        updateVaruableValue(block_id, current_value);
         
         let current_block_id = first_block_connection.child;
         let current_block_type = first_block_connection.child_block_type;
         
- 
+        // ksjdjkfhkjsdfsdfsdf
         while (current_block_id) {
 
             if (current_block_type === "cycle_for_block") {
@@ -625,16 +612,21 @@ function HandleCycleForBlock(block_id) {
 
         if (step_sign === "+") {
             current_value += step_value;
+            updateVaruableValue(block_id, current_value);
         } 
         else if (step_sign === "-") {
             current_value -= step_value;
+            updateVaruableValue(block_id, current_value);
+
         } 
         else if (step_sign === "*") {
             current_value *= step_value;
+            updateVaruableValue(block_id, current_value);
         } 
         else if (step_sign === "//") {
             if (step_value !== 0) {
                 current_value = Math.floor(current_value / step_value);
+                updateVaruableValue(block_id, current_value);
             }
         }
     }
@@ -687,22 +679,6 @@ function isMyEndForBlock(cycle_block_id, endfor_block_id) {
     return false;
 }
 
-function updateVariable(var_name, value, block_id) {
-    // Ищем существующую переменную
-    let existing_var = varuable_list.find(v => v.varuable_name === var_name);
-    
-    if (existing_var) {
-        existing_var.varuable_value = value;
-    } else {
-        varuable_list.push({
-            block_id: block_id,
-            block_type: "cycle_for_block",
-            varuable_name: var_name,
-            varuable_value: value,
-
-        });
-    }
-}
 
 // kjhsdkjhfsdf
 function findEndForBlockId(for_block_id) {
@@ -921,81 +897,81 @@ function HandleArrayIndexBlock(block_id) {
     let block = document.getElementById(block_id);
 
     if (!block) return null; 
-
     let array_index_block_data = getArrayIndexValue(block_id);
-
-    let array_name = array_index_block_data.array_name; 
-    let array_index = Number(array_index_block_data.array_index);
-
-    let selected_array = ArrayName.find(conn => 
-        conn.array_name === array_name // проверка на то что у нас в массиве ArrayName есть массив с таким же названием что выбрал пользователь
-    );
-
-    if (!selected_array) {
-        console.log("Такого массива не существует"); 
-        InvalidSyntacsisError(); 
+    if (!array_index_block_data) {
+        console.log("вы не ввели ничего");
         return null; 
     }
 
-    let right_varuable_name = array_index_block_data.right;
-    let right_varuable_value;
+    let right_str = array_index_block_data.right; 
+    let right_value; 
 
-    let check_is_right_varuable_array = checkIsArray(right_varuable_name);
+    let check_is_right_array = checkIsArray(right_str);
 
-    if (check_is_right_varuable_array) {
-        right_varuable_value = Number(check_is_right_varuable_array.array_element_value);
+    if (check_is_right_array) {
+        let found_array = ArrayName.find(array => 
+            array.array_name === check_is_right_array.array_name
+        )
+
+        if (!found_array) {
+            InvalidSyntacsisError(); 
+            return; 
+        }
+
+        right_value = check_is_right_array.array_element_value;
     }
 
     else {
         let found_right_varuable = varuable_list.find(varuable => 
-            varuable.varuable_name === right_varuable_name
-        );
+            varuable.varuable_name === right_str
+        )
 
-      if (found_right_varuable) {
-        right_varuable_value = Number(found_right_varuable.varuable_value); 
-      }
+        if (found_right_varuable) {
+            right_value = found_right_varuable.varuable_value;
+        }
 
-      else {
-        right_varuable_value = Number(right_varuable_name);
-      }
+        else { 
+            right_value = Number(right_str); 
+        }
+ 
     }
 
 
-    let left_varuable_name = array_index_block_data.left; 
-    let left_varuable_value; 
+    let left_str = array_index_block_data.left; 
+    let left_varuable; 
 
-    let check_is_left_varuable_array = checkIsArray(left_varuable_name);
+    let check_is_left_varuable_array = checkIsArray(left_str);
     
     if (check_is_left_varuable_array) {
-        let array_index = check_is_left_varuable_array.array_index;
-        let array_name = check_is_left_varuable_array.array_name;
-        let current_array = ArrayName.find(array => 
-            array.array_name ===  array_name  
-        );
+        let found_array = ArrayName.find(array => 
+            array.array_name === check_is_left_varuable_array.array_name
+        )
 
-        if (current_array) {
-            current_array.array_elements[array_index] = right_varuable_value;
-        } 
+        if (!found_array) {
+            InvalidSyntacsisError(); 
+            return; 
+        }   
 
-        else {
-            console.log("массив не найден слева");
-            return null;
-        }
+        found_array.array_elements[check_is_left_varuable_array.array_index] = right_value; 
     }
 
     else {
-        let found_left_varuable = varuable_list.find(varuable => 
-            varuable.varuable_name === left_varuable_name
-        );
+        let found_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === left_str
+        )
 
-        if (found_left_varuable) {
-            found_left_varuable.varuable_value = right_varuable_value; 
+        if (found_varuable) {
+            found_varuable.varuable_value = right_value; 
         }
 
         else {
-            console.log("слева не переменная и не массив");
+            InvalidSyntacsisError(); 
+            return; 
         }
     }
+
+    
+
 
     let connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "array_index_block"
@@ -1004,4 +980,4 @@ function HandleArrayIndexBlock(block_id) {
     return connection ? connection.child : null;
 } 
 
-window.script = this; 
+window.script = this;
