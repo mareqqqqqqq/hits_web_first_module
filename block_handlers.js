@@ -528,7 +528,7 @@ function HandleCycleForBlock(block_id) {
         let current_block_id = first_block_connection.child;
         let current_block_type = first_block_connection.child_block_type;
         
-        // ksjdjkfhkjsdf
+        // ksjdjkfhkjsdfsdfsdf
         while (current_block_id) {
 
             if (current_block_type === "cycle_for_block") {
