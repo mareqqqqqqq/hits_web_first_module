@@ -68,10 +68,10 @@ function createBlock(x, y, color, id, data_type) {
                 return foreign;
             }
 
-            function createOperatorSelect(x, operators) {
+            function createOperatorSelect(x, operators, y = 20) {
                 const foreign = document.createElementNS(ns, "foreignObject");
                 foreign.setAttribute("x", x);
-                foreign.setAttribute("y", 20);
+                foreign.setAttribute("y", y);
                 foreign.setAttribute("width", 50);
                 foreign.setAttribute("height", 25);
 
@@ -219,20 +219,27 @@ function createBlock(x, y, color, id, data_type) {
                 return foreign;
             }
 
-                function createArraySelector (x) {
-                
+            function createInputSlot(x, slotName, y = 20) {
+                // выглядит как первая дырка у arif — foreignObject с белым фоном
                 const foreign = document.createElementNS(ns, "foreignObject");
                 foreign.setAttribute("x", x);
-                foreign.setAttribute("y", 20);
-                foreign.setAttribute("width", 70);
+                foreign.setAttribute("y", y);
+                foreign.setAttribute("width", 80);
                 foreign.setAttribute("height", 25);
+                foreign.dataset.slot = slotName;
+                foreign.dataset.occupied = "false";
 
                 const container = document.createElement("div");
                 container.style.width = "100%";
                 container.style.height = "100%";
-                container.style.display = "flex";
+                container.style.background = "rgba(255,255,255,0.9)";
+                container.style.border = "none";
+                container.style.borderRadius = "2px";
+                container.style.boxSizing = "border-box";
 
                 const select = document.createElement("select");
+                select.dataset.varuableSelectors = "true";
+                select.dataset.selectorType = "variable";
                 select.style.width = "100%";
                 select.style.height = "100%";
                 select.style.fontSize = "12px";
@@ -241,51 +248,42 @@ function createBlock(x, y, color, id, data_type) {
                 select.style.border = "none";
                 select.style.outline = "none";
 
-                if (ArrayName.length === 0) {
-                    const option = document.createElement("option");
-                    option.value = "";
-                    option.textContent = "Нет массивов";
-                    select.appendChild(option);
-                }
+                const input = document.createElement("input");
+                input.type = "text";
+                input.style.display = "none";
+                input.style.width = "100%";
+                input.style.height = "100%";
+                input.style.fontSize = "12px";
+                input.style.fontFamily = "Inter";
+                input.style.border = "none";
+                input.style.outline = "none";
+                input.style.background = "rgba(255, 255, 255, 0.9)";
+                input.placeholder = "Введите:";
 
-                else {
-                    ArrayName.forEach (item => {
-                        const option = document.createElement("option");
-                        option.value = item.array_name;
-                        option.textContent = item.array_name;
-                        select.appendChild(option);
-                    });
+            select.addEventListener("change", () => {
+                if (select.value === "custom") {
+                    select.style.display = "none";
+                    input.style.display = "block";
+                    input.focus();
                 }
+            });
+//при потере фокуса отрабаотывается
+            input.addEventListener("blur", () => {
+                if (input.value.trim() === "") {
+                    input.style.display = "none";
+                    select.style.display = "block";
+                }
+            });
 
                 select.addEventListener("mousedown", e => e.stopPropagation());
+                input.addEventListener("mousedown", e => e.stopPropagation());
                 foreign.addEventListener("mousedown", e => e.stopPropagation());
 
                 container.appendChild(select);
+                container.appendChild(input);
                 foreign.appendChild(container);
 
-                return foreign;
-            }
 
-            function createInputSlot(x, slotName) {
-                // выглядит как первая дырка у arif — foreignObject с белым фоном
-                const foreign = document.createElementNS(ns, "foreignObject");
-                foreign.setAttribute("x", x);
-                foreign.setAttribute("y", 20);
-                foreign.setAttribute("width", 80);
-                foreign.setAttribute("height", 25);
-                foreign.dataset.slot = slotName;
-                foreign.dataset.occupied = "false";
-
-                const div = document.createElement("div");
-                div.style.width = "100%";
-                div.style.height = "100%";
-                div.style.background = "rgba(255,255,255,0.9)";
-                div.style.border = "none";
-                div.style.borderRadius = "2px";
-                div.style.boxSizing = "border-box";
-
-                foreign.addEventListener("mousedown", e => e.stopPropagation());
-                foreign.appendChild(div);
                 return foreign;
             }
 
@@ -341,7 +339,7 @@ function createBlock(x, y, color, id, data_type) {
     }
 
     if (data_type === "cycle_for_block") { 
-       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375    v65  h-375 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h395    v65  h-395 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
     
     if (data_type === "start_block") {
@@ -381,7 +379,7 @@ function createBlock(x, y, color, id, data_type) {
     }
 
     if (data_type === "endfor_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375 v65 h-375 l-10,10 h-25 l-10,-10 h-10 Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h395 v65 h-395 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "endwhile_block") {
@@ -400,9 +398,10 @@ function createBlock(x, y, color, id, data_type) {
 
     // input_arif_block: добавляем дочерние элементы ПОСЛЕ path, чтобы они рендерились поверх
     if (data_type === "input_arif_block") {
-        group.appendChild(createInputSlot(5, "slot_left"));
-        group.appendChild(createOperatorSelect(90, ["+", "-", "*", "//", "%"]));
-        group.appendChild(createInputSlot(150, "slot_right"));
+        const op = createOperatorSelect(90, ["+", "-", "*", "//", "%"], 8);
+        group.appendChild(createInputSlot(5, "slot_left", 8));
+        group.appendChild(op)
+        group.appendChild(createInputSlot(150, "slot_right", 8));
     }
     
     if (data_type === "varuable_block") {
@@ -674,18 +673,30 @@ function createBlock(x, y, color, id, data_type) {
 
     if (data_type === "cycle_for_block") {
 
+        const cycleVarInput = createTextInput(15, "cycle var");
 
+        const varFied = cycleVarInput.querySelector("input");
+        varFied.addEventListener("input", () => {
+            const name = varFied.value.trim();
+            if (name) {
+                updateVaruable(group.id, name);
+            }
+            else {
+                varuable_list = varuable_list.filter(v => v.block_id !== group.id);
+                refreshAllVariableSelectors();
+            }
+        });
 
-        group.appendChild(createTextInput(15, "cycle var"));
+        group.appendChild(cycleVarInput);
         group.appendChild(createEqual(65));
         group.appendChild(createNumberInput(75, "start cycle"));
 
-        group.appendChild(createTextInput(140, "cycle var"));
-        group.appendChild(createOperatorSelect(195, [">", "<", "=", "!=", ">=", "<="]));
-        group.appendChild(createNumberInput(250, "end cycle"))
+        group.appendChild(createValueSelector(140, "variable"));
+        group.appendChild(createOperatorSelect(215, [">", "<", "=", "!=", ">=", "<="]));
+        group.appendChild(createNumberInput(270, "end cycle"))
 
-        group.appendChild(createOperatorSelect(315, ["+", "-", "*", "//"]));
-        group.appendChild(createNumberInput(370, "cycle step"));
+        group.appendChild(createOperatorSelect(335, ["+", "-", "*", "//"]));
+        group.appendChild(createNumberInput(390, "cycle step"));
     }
 
     if (data_type === "cycle_while_block") {
