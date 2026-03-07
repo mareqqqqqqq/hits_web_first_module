@@ -306,7 +306,7 @@
     }
 
     if (data_type === "else_block") {
-        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v10 l10,10 v25 l-10,10 v10 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45 v65 h-45 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "output_block") { //прямоугольник h100 v60 h -100 Z
@@ -318,11 +318,11 @@
     }
 
     if (data_type === "cycle_for_block") { 
-       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375    v10 l10,10 v25 l-10,10 v10   h-375 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+       path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375    v65  h-375 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
     
     if (data_type === "start_block") {
-            path.setAttribute("d", "M0,0 h235 v10  l10,10 v25 l-10,10 v10 h-170 v100 h-10 l-10,10 h-25 l-10,-10 h-10   Z");
+            path.setAttribute("d", "M0,0 h235 v65  h-170 h-10 l-10,10 h-25 l-10,-10 h-10   Z");
     }
 
     if (data_type === "endif_block") {
@@ -353,12 +353,20 @@
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175    v10 l10,10 v25 l-10,10 v10   h-175 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
+    if (data_type === "logic_not_block") {
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+    }
+
     if (data_type === "endfor_block") {
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h375 v65 h-375 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
     if (data_type === "endwhile_block") {
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175 v65 h-175 l-10,10 h-25 l-10,-10 h-10 Z");
+    }
+
+    if (data_type === "input_arif_block") {
+            path.setAttribute("d", "M0,0 h140 v40 h-140 v-40 Z");
     }
 
     group.appendChild(path);
@@ -619,7 +627,7 @@
     }
 
     if (data_type === "arif_block") {
-        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h250 v10 l10,10 v25 l-10,10 v10 h-250 l-10,10 h-25 l-10,-10 h-10 v-10 l10,-10 v-25 l-10,-10 v-10 Z")
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h260 v65 h-260 l-10,10 h-25 l-10,-10 h-10 v-10 l10,-10 v-25 l-10,-10 v-10 Z")
 
         group.appendChild(createValueSelector(15, "variable", false));
         group.appendChild(createValueSelector(110, "variable", true));
@@ -719,7 +727,7 @@
 
             group.dataset.connectorTop = "false";
             group.dataset.connectorLeft = "false";
-            group.dataset.connectorRight = "true";
+            group.dataset.connectorRight = "false";
             group.dataset.connectorBottom = "true"; 
         }
         
@@ -745,7 +753,7 @@
 
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
-        group.dataset.connectorRight = "true";
+        group.dataset.connectorRight = "false";
         group.dataset.connectorBottom = "true";
     }
 
@@ -772,7 +780,7 @@
 
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
-        group.dataset.connectorRight = "true";
+        group.dataset.connectorRight = "false";
         group.dataset.connectorBottom = "true"; 
     }
 
@@ -798,7 +806,7 @@
 
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
-        group.dataset.connectorRight = "true";
+        group.dataset.connectorRight = "false";
         group.dataset.connectorBottom = "true"; 
     }
 
@@ -880,6 +888,20 @@
         group.dataset.connectorBottom = "true"; 
     }
 
+    else if (data_type === "logic_not_block")
+    {
+        group.dataset.connectionTop = "true";
+        group.dataset.connectionLeft = "true";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "true";
+        group.dataset.connectorBottom = "true"; 
+    }
+
+
     else if (data_type === "endfor_block")
     {
         group.dataset.connectionTop = "true";
@@ -905,6 +927,19 @@
         group.dataset.connectorRight = "false";
         group.dataset.connectorBottom = "true"; 
     
+    }
+
+    else if (data_type === "input_arif_block")
+    {
+        group.dataset.connectionTop = "false";
+        group.dataset.connectionLeft = "false";
+        group.dataset.connectionRight = "false";
+        group.dataset.connectionBottom = "false";
+
+        group.dataset.connectorTop = "false";
+        group.dataset.connectorLeft = "false";
+        group.dataset.connectorRight = "false";
+        group.dataset.connectorBottom = "false"; 
     }
 
         const viewport = document.getElementById('viewport');

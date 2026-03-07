@@ -48,7 +48,7 @@ document.addEventListener('mouseup', () => {
 
 
 const sidebarBlocks = document.querySelectorAll(
-    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .logic_and_block , .logic_or_block, .array_index_block, .endfor_block, .endwhile_block'
+    '.varuable_block, .else_block, .if_block, .assignment_block, .output_block, .arif_block, .cycle_for_block, .start_block, .endif_block, .endelse_block, .array_block, .cycle_while_block, .logic_and_block , .logic_or_block, .array_index_block, .endfor_block, .endwhile_block, .logic_not_block , .input_arif_block'
 );
 
 sidebarBlocks.forEach(el => {
@@ -62,6 +62,7 @@ sidebarBlocks.forEach(el => {
             el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
             el.classList.contains('output_block') ? '#a3a669' :
             el.classList.contains('arif_block') ? '#5caeb9' :
+            el.classList.contains('input_arif_block') ? '#5caeb9' :
             el.classList.contains('cycle_for_block') ? '#0066ff' :
             el.classList.contains('endfor_block') ? '#0066ff' :
             el.classList.contains('cycle_while_block') ? '#0066ff' :
@@ -71,6 +72,7 @@ sidebarBlocks.forEach(el => {
             el.classList.contains('endelse_block') ? '#fd4a4a' :
             el.classList.contains('logic_and_block') ? '#734f96' :
             el.classList.contains('logic_or_block') ? '	#8FBC8F' :
+            el.classList.contains('logic_not_block') ? '#551118' :
             el.classList.contains('array_block') ? '#004af7' :
             el.classList.contains('array_index_block') ? '#004af7' :
             '#4caf50';
@@ -287,15 +289,5 @@ clearButton.addEventListener("click", () => {
     ArrayName = [];
     selected = null;
 });
-
-function addLine(text, type = "output") {
-    const body = document.getElementById("outputBody");
-    if (!body) return;
-    const div = document.createElement("div");
-    div.className = "line " + type;
-    div.textContent = text;
-    body.insertBefore(div, body.lastElementChild);
-    body.scrollTop = body.scrollHeight;
-}
 
 window.script = this;

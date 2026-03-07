@@ -16,8 +16,7 @@ function updateVaruable(block_id, name) {
             block_id: block_id,
             block_type: "varuable_block",
             varuable_name: name,
-            varuable_value: null,
-            initial_value
+            varuable_value: null
         }); 
     }
     refreshAllVariableSelectors();

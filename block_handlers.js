@@ -17,7 +17,6 @@ function HandleIfBlock(block_id) {
 
   
     let left; 
-
     let left_array_check = checkIsArray(left_str);
 
     if (left_array_check !== null) {
@@ -45,7 +44,6 @@ function HandleIfBlock(block_id) {
     let right; 
 
     let right_array_check = checkIsArray(right_str);
-    console.log(right_array_check);
 
     if (right_array_check !== null) {
         right = right_array_check.array_element_value;
@@ -470,7 +468,7 @@ function HandleArrayBlock(block_id) {
     return connection ? connection.child : null;
 }
 
-// ВЕРНУТЬ
+
 function HandleCycleForBlock(block_id) {
     // получаем блок 
     let block = document.getElementById(block_id);
@@ -484,7 +482,6 @@ function HandleCycleForBlock(block_id) {
         return;
     }
 
-    // точно всё получили
     let var_name = for_cycle_data.cycle_varuable;
     let start_value = Number(for_cycle_data.cycle_start_value);
     let stop_value = Number(for_cycle_data.cycle_varuable_stop);
@@ -493,6 +490,9 @@ function HandleCycleForBlock(block_id) {
     let step_value = Number(for_cycle_data.cycle_step_value);
     
     let current_value = start_value;
+
+
+    updateVariable(var_name, current_value, block_id);
 
     let first_block_connection = connections.find(conn => 
         conn.parent_block_type === "cycle_for_block" && conn.parent === block_id
@@ -522,22 +522,21 @@ function HandleCycleForBlock(block_id) {
     while (checkCondition(current_value, stop_value, operator) && iteration_count < max_iterations) {
         iteration_count++;
         
-        updateVariable(var_name, current_value);
+        updateVariable(var_name, current_value, block_id);
         
         let current_block_id = first_block_connection.child;
         let current_block_type = first_block_connection.child_block_type;
         
-        // пока у нас есть некст блок
+ 
         while (current_block_id) {
 
             if (current_block_type === "cycle_for_block") {
-                // выполням вложенный 
+ 
                 HandleCycleForBlock(current_block_id);
                 
-                // перепрыгиваем к блоку после ЕГО endfor_block
                 let nested_endfor = findEndForBlockId(current_block_id);
                 if (nested_endfor) {
-                    // Находим следующий блок после endfor вложенного цикла
+                   
                     let next_after_nested = connections.find(conn => 
                         conn.parent === nested_endfor && conn.parent_block_type === "endfor_block"
                     );
@@ -545,16 +544,40 @@ function HandleCycleForBlock(block_id) {
                     if (next_after_nested) {
                         current_block_id = next_after_nested.child;
                         current_block_type = next_after_nested.child_block_type;
-                        continue; // Продолжаем со следующего блока
+                        continue; 
                     }
                 }
             }
-            
+
+            else if (current_block_type === "cycle_while_block")
+            {
+                HandleCycleWhileBlock(current_block_id);
+
+                let nested_endwhile = findEndWhileBlockId(current_block_id);
+
+                if (nested_endwhile) 
+                {
+                    let next_after_nested = connections.find(conn => conn.parent === nested_endwhile && conn.parent_block_type === "endwhile_block");
+
+                    if (next_after_nested)
+                    {
+                        current_block_id = next_after_nested.child;
+
+                        current_block_type = next_after_nested.child_block_type;
+                        continue;
+                    }
+                }
+            }
+
             if (current_block_type === "endfor_block") {
+
                 if (isMyEndForBlock(block_id, current_block_id)) {
                     break; 
+                    break; 
                 }
+
                 else {
+
                     let next_connection = connections.find(conn => 
                         conn.parent === current_block_id && conn.parent_block_type === current_block_type
                     );
@@ -568,11 +591,12 @@ function HandleCycleForBlock(block_id) {
                     }
                 }
             }
-            
+
             if (current_block_type !== "cycle_for_block" && current_block_type !== "endfor_block") {
                 HandleAnyBlock(current_block_type, current_block_id);
             }
             
+
             let next_connection = connections.find(conn => 
                 conn.parent === current_block_id && conn.parent_block_type === current_block_type
             );
@@ -584,8 +608,7 @@ function HandleCycleForBlock(block_id) {
                 break;
             }
         }
-        
-        let previous_value = current_value;
+
 
         if (step_sign === "+") {
             current_value += step_value;
@@ -608,6 +631,7 @@ function HandleCycleForBlock(block_id) {
         InvalidSyntacsisError();
     }
 
+
     let my_endfor_id = findEndForBlockId(block_id);
     if (my_endfor_id) {
         let next_after_endfor = connections.find(conn => 
@@ -619,7 +643,9 @@ function HandleCycleForBlock(block_id) {
     return null;
 }
 
+
 function isMyEndForBlock(cycle_block_id, endfor_block_id) {
+
     let current_id = cycle_block_id;
     let current_type = "cycle_for_block";
     let nested_level = 0;
@@ -648,19 +674,19 @@ function isMyEndForBlock(cycle_block_id, endfor_block_id) {
     return false;
 }
 
-function updateVariable(var_name, value) {
+function updateVariable(var_name, value, block_id) {
+    // Ищем существующую переменную
     let existing_var = varuable_list.find(v => v.varuable_name === var_name);
     
     if (existing_var) {
         existing_var.varuable_value = value;
     } else {
         varuable_list.push({
-            varuable_block_id: null,
-            varuable_block_type: "cycle_variable",
+            block_id: block_id,
+            block_type: "cycle_for_block",
             varuable_name: var_name,
             varuable_value: value,
-            assignment_value: null,
-            assignment_type: null
+
         });
     }
 }
@@ -700,7 +726,7 @@ function findEndForBlockId(for_block_id) {
     return null;
 }
 
-// ВЕРНУТЬ
+
 function HandleCycleWhileBlock(block_id ) {
     let block = document.getElementById(block_id); 
     if (!block) return null; 
@@ -709,7 +735,6 @@ function HandleCycleWhileBlock(block_id ) {
 
     if (!endwhile_id)
     {
-        InvalidSyntacsisError();
         return null;
     }
     
@@ -874,7 +899,7 @@ function findEndWhileBlockId(while_block_id) {
             }
         }
     }
-
+    console.log("end_while не найден")
     InvalidSyntacsisError();
     return null;
 }
