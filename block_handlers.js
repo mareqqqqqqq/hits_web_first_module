@@ -285,18 +285,29 @@ function HandleOutputBlock(block_id) {
         console.log("вы ничего не ввели в output блок")
     }
 
-    let found_varuable = varuable_list.find(varuable => 
-        varuable.varuable_name === output
+    let found_array = ArrayName.find(array => 
+        array.array_name === output
     );
 
-    if (!found_varuable) {
-        console.log(output);
+    if (found_array) {
+        console.log(found_array.array_elements);
     }
 
     else {
-        console.log(found_varuable.varuable_value);
-    }
+        let found_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === output
+        );
+        
+        if (!found_varuable) {
+            console.log(output);
+        }
 
+        else {
+            console.log(found_varuable.varuable_value);
+        }
+    }
+    
+    
     let connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "output_block"
     );
@@ -304,7 +315,7 @@ function HandleOutputBlock(block_id) {
     return connection ? connection.child : null;
 }
 
-// ВЕРНУТЬ
+
 function HandleVaruableBlock(block_id) {
     let block = document.getElementById(block_id);
 
@@ -313,35 +324,11 @@ function HandleVaruableBlock(block_id) {
         return;
     }
 
-    let block_type = block.dataset.block_type;  
+      
+    let next_varuable_connection = connections.find(conn => 
+        conn.parent_block_type === "varuable_block" && conn.parent === block_id && conn.position === "vertical");
 
-    let current_varuable_connection = connections.find(conn => 
-        conn.child_block_type === "varuable_block" && conn.child === block_id);
-
-    let current_varuable_name = getVaruableBlockValue(block_id);
-    
-
-
-    // соедиенение где присваивание блок 
-    let current_assignment_connection = connections.find(conn => 
-        conn.parent === block_id && conn.child_block_type === "assignment_block" && conn.parent_block_type === "assignment_block"
-    );
-
-    let current_assignment_block_id = current_assignment_connection ? current_assignment_connection.child : null; 
-    let current_assignment_block_type = current_assignment_connection ? current_assignment_connection.child_block_type : null; 
-    let current_varuable_block_value = current_assignment_connection ?  getAssignmentBlockValue(block_id) : null; 
-
-    // тут надо будет записывать в масисив varuable_list(пока лень)
-    // записываем в varuable_list
-
-    varuable_list.push({
-        varuable_block_id: block_id,
-        varuable_block_type: block_type,
-        varuable_name: current_varuable_name, 
-        varuable_value: current_varuable_block_value, 
-        assignment_value: current_assignment_block_id,
-        assignment_type: current_assignment_block_type 
-    })
+    return next_varuable_connection ? next_varuable_connection.child : null; 
 }
 
 
