@@ -354,7 +354,7 @@
     }
 
     if (data_type === "logic_not_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v10 l10,10 v25 l-10,10 v10   h-45 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175    v10 l10,10 v25 l-10,10 v10   h-175 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     if (data_type === "endfor_block") {
@@ -688,6 +688,12 @@
     }
 
     if (data_type === "logic_or_block") {
+        group.appendChild(createValueSelector(15));
+        group.appendChild(createOperatorSelect(95, [">", "<", "=", "!=", ">=", "<="]));
+        group.appendChild(createValueSelector(155));
+}
+
+    if (data_type === "logic_not_block") {
         group.appendChild(createValueSelector(15));
         group.appendChild(createOperatorSelect(95, [">", "<", "=", "!=", ">=", "<="]));
         group.appendChild(createValueSelector(155));

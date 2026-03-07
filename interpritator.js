@@ -201,6 +201,13 @@ function LeftPartOfCodeBlock() {
 }
 
 start_button.addEventListener('click', e => {
+    const body = document.getElementById("outputBody");
+    if (body) {
+        const cursor = body.querySelector('.cursor_line');
+        body.innerHTML = '';
+        if (cursor) body.appendChild(cursor);
+    }
+
     resetAllVariables();
     GetAllArrays();
     LeftPartOfCodeBlock();

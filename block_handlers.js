@@ -280,7 +280,7 @@ function HandleOutputBlock(block_id) {
     let output = getOutputBlockValue(block.id); 
 
     if (!output) {
-        console.log("вы ничего не ввели в output блок")
+        addLine("вы ничего не ввели в output блок", "error");
     }
 
     let found_varuable = varuable_list.find(varuable => 
@@ -288,11 +288,11 @@ function HandleOutputBlock(block_id) {
     );
 
     if (!found_varuable) {
-        console.log(output);
+        addLine(String(output), 'output');
     }
 
     else {
-        console.log(found_varuable.varuable_value);
+        addLine(String(found_varuable.varuable_value), 'output');
     }
 
     let connection = connections.find(conn => 
