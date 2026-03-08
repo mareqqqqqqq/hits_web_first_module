@@ -890,7 +890,6 @@ function HandleArrayIndexBlock(block_id) {
 
     if (left_match) {
         let array_name  = left_match[1];
-        // индекс тоже может быть выражением: arr[n - i + 1]
         let array_index = Number(evaluateExpression(left_match[2]));
 
         let found_array = ArrayName.find(a => a.array_name === array_name);
@@ -903,7 +902,6 @@ function HandleArrayIndexBlock(block_id) {
     }
 
     else {
-        // просто переменная
         let found_varuable = varuable_list.find(v => v.varuable_name === left_str);
         if (found_varuable) {
             found_varuable.varuable_value = right_value;

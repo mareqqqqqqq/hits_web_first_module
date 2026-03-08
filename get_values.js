@@ -359,25 +359,22 @@ function evaluateExpression(expr) {
     
     expr = String(expr).trim();
 
-    // сначала заменяем все переменные и arr[i] на их значения
-    // arr[index] — массивы
     expr = expr.replace(/([a-zA-Z_][a-zA-Z0-9_]*)\[([^\]]+)\]/g, (match, arrName, indexExpr) => {
-        let index = evaluateExpression(indexExpr); // рекурсия для индекса
+        let index = evaluateExpression(indexExpr); 
         let found_array = ArrayName.find(a => a.array_name === arrName);
         if (!found_array) { console.log("массив не найден: " + arrName); return 0; }
         return found_array.array_elements[index] ?? 0;
     });
 
-    // переменные — заменяем имена на значения
+
     expr = expr.replace(/([a-zA-Z_][a-zA-Z0-9_]*)/g, (match) => {
         let found = varuable_list.find(v => v.varuable_name === match);
         if (found) return found.varuable_value ?? 0;
-        return match; // если не переменная — оставляем как есть (может быть часть числа)
+        return match; 
     });
 
-    // вычисляем выражение
+
     try {
-        // Function безопаснее чем eval — нет доступа к локальным переменным
         let result = new Function('return (' + expr + ')')();
         return result;
     } catch (e) {
