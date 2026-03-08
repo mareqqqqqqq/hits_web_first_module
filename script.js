@@ -1,3 +1,38 @@
+function addLine(text, type = "output") {
+    const body = document.getElementById("outputBody");
+    if (!body) return;
+    const div = document.createElement("div");
+    div.className = "line " + type;
+    div.textContent = text;
+    body.insertBefore(div, body.lastElementChild);
+    body.scrollTop = body.scrollHeight;
+}
+
+(function () {
+    const _log = console.log.bind(console);
+    const _warn = console.log.bind(console);
+    const _error = console.error.bind(console);
+
+    function toLine (args, type) {
+        const text = args.map(a =>
+            (a !== null && typeof a === 'object') ? JSON.stringify(a) : String(a)
+        ).join(' ');
+        if (typeof addLine === 'function') {
+            addLine(text, type);
+        }
+    }
+
+    console.log = function (...args) { _log(...args); toLine(args, 'info');};
+    console.warn = function (...args) { _warn(...args); toLine(args, 'info');};
+    console.error = function (...args) { _error(...args); toLine(args, 'error');};
+
+    window.addEventListener('error', (e) => {
+        if (typeof addLine === 'function') {
+            addLine('Error: ' + e.message, 'error');
+        }
+    });
+})();
+
 const canvas = document.getElementById('canvas');
 const viewport = document.getElementById('viewport'); 
 const trash_bin = document.getElementById('trash_bin');

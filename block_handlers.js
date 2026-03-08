@@ -248,7 +248,7 @@ function HandleOutputBlock(block_id) {
     let output = getOutputBlockValue(block.id); 
 
     if (!output) {
-        console.log("вы ничего не ввели в output блок")
+        addLine("вы ничего не ввели в output блок", "error");
     }
 
     let found_array = ArrayName.find(arr => 
@@ -256,21 +256,20 @@ function HandleOutputBlock(block_id) {
     ); 
 
     if (found_array) {
-        console.log(found_array.array_elements);
+        addLine(found_array.array_elements);
     }
 
     else {
         let found_varuable = varuable_list.find(varuable =>
             varuable.varuable_name === output
         );
-
-        if (found_varuable) {
-            console.log(found_varuable.varuable_name); 
+        
+        if (!found_varuable) {
+            addLine(output);
         }
 
-        else {
-            console.log(output);
-        }
+    else {
+        addLine(String(found_varuable.varuable_value), 'output');
     }
     
     let connection = connections.find(conn => 
@@ -279,7 +278,7 @@ function HandleOutputBlock(block_id) {
 
     return connection ? connection.child : null;
 }
-
+}
 
 function HandleVaruableBlock(block_id) {
     let block = document.getElementById(block_id);
