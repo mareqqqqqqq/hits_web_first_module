@@ -154,14 +154,14 @@ function createBlock(x, y, color, id, data_type) {
                 input.style.outline = "none";
                 input.style.padding = "2px 4px";
 
-                input.addEventListener("input", function() {
-                    let value = this.value;
-                    value = value.replace(/[^0-9\-]/g, "");
-                    if (value.includes("-")) {
-                        value = "-" + value.replace(/-/g, "");
-                    }
-                    this.value = value;
-                });
+                // input.addEventListener("input", function() {
+                //     let value = this.value;
+                //     value = value.replace(/[^0-9\-]/g, "");
+                //     if (value.includes("-")) {
+                //         value = "-" + value.replace(/-/g, "");
+                //     }
+                //     this.value = value;
+                // });
 
                 input.addEventListener("mousedown", e => e.stopPropagation());
                 foreign.addEventListener("mousedown", e => e.stopPropagation());
@@ -682,7 +682,7 @@ function createBlock(x, y, color, id, data_type) {
 
         group.appendChild(createTextInput(140, "cycle var"));
         group.appendChild(createOperatorSelect(195, [">", "<", "=", "!=", ">=", "<="]));
-        group.appendChild(createNumberInput(250, "end cycle"))
+        group.appendChild(createNumberInput(250, "end cycle"));
 
         group.appendChild(createOperatorSelect(315, ["+", "-", "*", "//"]));
         group.appendChild(createNumberInput(370, "cycle step"));
