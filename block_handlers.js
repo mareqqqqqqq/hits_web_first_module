@@ -272,12 +272,12 @@ function HandleOutputBlock(block_id) {
         addLine(String(found_varuable.varuable_value), 'output');
     }
     
+    }
     let connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "output_block"
     );
 
     return connection ? connection.child : null;
-}
 }
 
 function HandleVaruableBlock(block_id) {
@@ -295,127 +295,6 @@ function HandleVaruableBlock(block_id) {
     return next_varuable_connection ? next_varuable_connection.child : null; 
 }
 
-
-function HandleArifBlock(block_id) {
-    let block = document.getElementById(block_id);
-    if (!block) return; 
-
-    let arif_block_input = getArifBlockValue(block_id);
-
-    if (!arif_block_input) {
-        console.log("что то вы не то ввели");
-    }
-
-    let left_varuable_name = arif_block_input.left;
-    let left_varuable_value; 
-
-    let check_left_varuable_is_array = checkIsArray(left_varuable_name);
-    if (check_left_varuable_is_array) {
-        left_varuable_value = Number(check_left_varuable_is_array.array_element_value);
-    }
-
-    else {
-        let found_left_varuable = varuable_list.find(varuable => 
-            varuable.varuable_name === left_varuable_name
-        ); 
-        
-        if (found_left_varuable) {
-            left_varuable_value = Number(found_left_varuable.varuable_value);  
-        }
-
-        else {
-            left_varuable_value = Number(left_varuable_name);
-        }
-    }
-
-    let right_varuable_name = arif_block_input.right;
-    let right_varuable_value; 
-
-    let check_right_varuable_is_array = checkIsArray(right_varuable_name);
-    if (check_right_varuable_is_array) {
-        right_varuable_value = Number(check_right_varuable_is_array.array_element_value);
-    }
-
-    else {
-        let found_right_varuable = varuable_list.find(varuable => 
-            varuable.varuable_name === right_varuable_name
-        ); 
-        
-        if (found_right_varuable) {
-            right_varuable_value = Number(found_right_varuable.varuable_value);  
-        }
-
-        else {
-            right_varuable_value = Number(right_varuable_name);
-        }
-    }
-
-    
-
-
-    let operator = arif_block_input.operator;
-
-    if (!operator) {
-        conosle.log("вы не выбрали оператор");
-    }
-
-    let arif_result; 
-
-    if (arif_block_input.operator) {
-        switch (operator) {
-            case "+": arif_result = left_varuable_value + right_varuable_value;
-                break; 
-            case "-": arif_result = left_varuable_value - right_varuable_value;
-                break; 
-            case "*": arif_result = left_varuable_value * right_varuable_value;
-                break; 
-            case "//": arif_result = left_varuable_value / right_varuable_value;
-                break; 
-            case "%": arif_result = left_varuable_value % right_varuable_value;
-                break;
-        }
-    }
-
-    let main_varuable_name = arif_block_input.varuable_name; 
-    let check_main_varuable_is_array = checkIsArray(main_varuable_name);
-
-    if (check_main_varuable_is_array) {
-        let array_name = check_main_varuable_is_array.array_name;
-        let array_index = check_main_varuable_is_array.array_index; 
-
-        let found_array = ArrayName.find(array => 
-            array.array_name === array_name
-        );
-
-        if (!found_array) {
-            console.log("не получилось обратиться к элементу массива")
-            return null;
-        }
-
-        found_array.array_elements[array_index] = arif_result;
-    }
-
-    else {
-        let found_main_varuable = varuable_list.find(varuable => 
-            varuable.varuable_name === main_varuable_name
-        );
-
-        if (found_main_varuable) {
-            found_main_varuable.varuable_value = arif_result;
-        }
-
-        else {
-            console.log("переменная не найдена")
-            return null;
-        }
-    }
-
-    connection = connections.find(conn => 
-        conn.parent === block_id && conn.parent_block_type === "arif_block"
-    );
-
-    return connection ? connection.child : null;
-}
 
 function HandleArrayBlock(block_id) {
     let block = document.getElementById(block_id);
@@ -977,5 +856,7 @@ function HandeAndBlock(block_id) {
     
     return bool_result; 
 }
+
+
 
 //window.script = this; 
