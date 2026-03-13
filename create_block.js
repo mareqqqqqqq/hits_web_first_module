@@ -1,6 +1,6 @@
 function createBlock(x, y, color, id, data_type) {
         const ns = "http://www.w3.org/2000/svg";
-        const group = document.createElementNS(ns, "g"); // обтект svg 
+        const group = document.createElementNS(ns, "g"); 
         const path = document.createElementNS(ns, "path");
 
         
@@ -49,7 +49,7 @@ function createBlock(x, y, color, id, data_type) {
                     input.focus();
                 }
             });
-//при потере фокуса отрабаотывается
+
             input.addEventListener("blur", () => {
                 if (input.value.trim() === "") {
                     input.style.display = "none";
@@ -154,14 +154,7 @@ function createBlock(x, y, color, id, data_type) {
                 input.style.outline = "none";
                 input.style.padding = "2px 4px";
 
-                // input.addEventListener("input", function() {
-                //     let value = this.value;
-                //     value = value.replace(/[^0-9\-]/g, "");
-                //     if (value.includes("-")) {
-                //         value = "-" + value.replace(/-/g, "");
-                //     }
-                //     this.value = value;
-                // });
+
 
                 input.addEventListener("mousedown", e => e.stopPropagation());
                 foreign.addEventListener("mousedown", e => e.stopPropagation());
@@ -220,7 +213,7 @@ function createBlock(x, y, color, id, data_type) {
             }
 
             function createInputSlot(x, slotName, y = 20) {
-                // выглядит как первая дырка у arif — foreignObject с белым фоном
+
                 const foreign = document.createElementNS(ns, "foreignObject");
                 foreign.setAttribute("x", x);
                 foreign.setAttribute("y", y);
@@ -267,7 +260,7 @@ function createBlock(x, y, color, id, data_type) {
                     input.focus();
                 }
             });
-//при потере фокуса отрабаотывается
+
             input.addEventListener("blur", () => {
                 if (input.value.trim() === "") {
                     input.style.display = "none";
@@ -302,27 +295,24 @@ function createBlock(x, y, color, id, data_type) {
             return text;
         }
         
-        // вот тут поменяли 
-        // вот тут поменяли 
-        // group.classList.add("block"); 
-        group.setAttribute("fill", color); // заливка color как параметр
-        group.setAttribute("transform", `translate(${x},${y})`); // куда сдвигаем svgшку
-        group.setAttribute("id", id); // присваивает уникальный id короче(для дибилдо): он там ниже генерится в ф-ии где вызывается
-        group.classList.add("block"); // добавляет клаасс block к svg тчоб можно было обратиться 
+
+        group.setAttribute("fill", color);
+        group.setAttribute("transform", `translate(${x},${y})`); 
+        group.setAttribute("id", id); 
+        group.classList.add("block"); 
         group.dataset.data_type = data_type;
 
-        // устиановл стили для блоков от лёхи 
-        // устиановл стили для блоков от лёхи 
-        if (data_type === "varuable_block") {    //прямоугольник h100 v60 h -100 Z
-            // создание svg M0,0 старт h80 гор прямая итд d - атрибут для создания 
+
+        if (data_type === "varuable_block") {   
+
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45         v10 l10,10 v25 l-10,10 v10       h-45  l-10,10 h-25 l-10,-10 h-10  Z");
         }
 
-    if (data_type === "assignment_block") { //прямоульник h65 v50 h-65 Z
+    if (data_type === "assignment_block") { 
         path.setAttribute("d", "M0,0 h65 v65 h-65 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
         }
     
-    if (data_type === "if_block") { //прямоугольник h100 v60 h -100 Z 
+    if (data_type === "if_block") {
           path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v10 l10,10 v25 l-10,10 v10     h-165 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
@@ -330,7 +320,7 @@ function createBlock(x, y, color, id, data_type) {
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165 v65 h-165 l-10,10 h-25 l-10,-10 h-10 Z");
     }
 
-    if (data_type === "output_block") { //прямоугольник h100 v60 h -100 Z
+    if (data_type === "output_block") { 
         path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v65 h-45 l-10,10 h-25 l-10,-10 h-10  v-65 Z");
     }
 
@@ -375,7 +365,7 @@ function createBlock(x, y, color, id, data_type) {
     }
 
     if (data_type === "logic_not_block") {
-            path.setAttribute("d", "M0,0 h100 v10 l-10,10 v25 l10,10 v10 h-100 v-10 l10,-10 v-25 l-10,-10 v-10  Z");
+            path.setAttribute("d", "M0,0 h100 v10 l10,10 v25 l-10,10 v10 h-100 v-10 l10,-10 v-25 l-10,-10 v-10  Z");
     }
 
     if (data_type === "endfor_block") {
@@ -396,7 +386,7 @@ function createBlock(x, y, color, id, data_type) {
 
     group.appendChild(path);
 
-    // input_arif_block: добавляем дочерние элементы ПОСЛЕ path, чтобы они рендерились поверх
+
     if (data_type === "input_arif_block") {
         const op = createOperatorSelect(90, ["+", "-", "*", "//", "%"], 8);
         group.appendChild(createInputSlot(5, "slot_left", 8));
@@ -406,7 +396,7 @@ function createBlock(x, y, color, id, data_type) {
     
     if (data_type === "varuable_block") {
 
-                //добавляем стили для норомального скрола
+
         if (!document.getElementById('custom-scroll-style')){
             const style = document.createElement('style');
             style.id = 'custom-scroll-style';
@@ -434,7 +424,7 @@ function createBlock(x, y, color, id, data_type) {
                     document.head.appendChild(style);
         }
 
-            // вроде как создание формы для двух блоков приписали 
+
             const foreign = document.createElementNS(ns, "foreignObject"); 
 
             foreign.setAttribute("x", 20);
@@ -471,7 +461,7 @@ function createBlock(x, y, color, id, data_type) {
                 }
             });
 
-        //Фильтрация ввода от некорректных названий
+
         div.addEventListener("input", function() {
             
             let text = div.textContent;
@@ -513,7 +503,7 @@ function createBlock(x, y, color, id, data_type) {
         }
 
             if (data_type === "assignment_block") {
-        //добавляем стили для норомального скрола
+
         if (!document.getElementById('custom-scroll-style')){
             const style = document.createElement('style');
             style.id = 'custom-scroll-style';
@@ -541,7 +531,7 @@ function createBlock(x, y, color, id, data_type) {
                     document.head.appendChild(style);
         }
         
-                // вроде как создание формы для двух блоков приписали 
+
             const foreign = document.createElementNS(ns, "foreignObject"); 
 
             foreign.setAttribute("x", 8);
@@ -638,7 +628,7 @@ function createBlock(x, y, color, id, data_type) {
         }
 
 
-        //Доработка блока if чтобы было 3 вариативных менюшек
+
         if (data_type === "if_block") {
 
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v10 l10,10 v25 l-10,10 v10     h-165 l-10,10 h-25 l-10,-10 h-10 Z");
@@ -651,7 +641,7 @@ function createBlock(x, y, color, id, data_type) {
         }
 
 
-    //Для вариативного меню в аутпут блок
+
 
     if (data_type === "output_block") {
  
@@ -940,7 +930,7 @@ function createBlock(x, y, color, id, data_type) {
 
     else if (data_type === "logic_not_block")
     {
-        group.dataset.connectionTop = "true";
+        group.dataset.connectionTop = "false";
         group.dataset.connectionLeft = "true";
         group.dataset.connectionRight = "false";
         group.dataset.connectionBottom = "false";
@@ -948,7 +938,7 @@ function createBlock(x, y, color, id, data_type) {
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
         group.dataset.connectorRight = "true";
-        group.dataset.connectorBottom = "true"; 
+        group.dataset.connectorBottom = "false"; 
     }
 
 
@@ -994,7 +984,7 @@ function createBlock(x, y, color, id, data_type) {
     }
 
         const viewport = document.getElementById('viewport');
-        viewport.appendChild(group);// добавляет path в svg html
+        viewport.appendChild(group);
 
         refreshAllVariableSelectors();
 
