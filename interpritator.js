@@ -33,7 +33,85 @@ function updateVaruableValue(block_id, value) {
     }
 }
 
-// получает имена переменных для выпадающей менюшки 
+function checkDuplicateNames() {
+    const varNames = varuable_list
+        .map(v => v.varuable_name)
+        .filter(n => n && n.trim() !== "");
+
+        const array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
+        const arrayNames = [];
+        array_blocks.forEach(block => {
+            const data = getArrayBlockValue(block.id);
+            if (data && data.array_name && data.array_name.trim() !== "") {
+                arrayNames.push(data.array_name.trim());
+            }
+        });
+
+        const allNames = [...varNames, ...arrayNames];
+        const seen = new Set();
+        for (const name of allNames) {
+            if (seen.has(name)) {
+                console.log(`Ошибка: имя "${name}" уже использованно`);
+                return false;
+            }
+            seen.add(name);
+        }
+        return true;
+}
+
+
+function checkDuplicateNames() {
+    const varNames = varuable_list
+        .map(v => v.varuable_name)
+        .filter(n => n && n.trim() !== "");
+
+        const array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
+        const arrayNames = [];
+        array_blocks.forEach(block => {
+            const data = getArrayBlockValue(block.id);
+            if (data && data.array_name && data.array_name.trim() !== "") {
+                arrayNames.push(data.array_name.trim());
+            }
+        });
+
+        const allNames = [...varNames, ...arrayNames];
+        const seen = new Set();
+        for (const name of allNames) {
+            if (seen.has(name)) {
+                console.log(`Ошибка: имя "${name}" уже использованно`);
+                return false;
+            }
+            seen.add(name);
+        }
+        return true;
+}
+
+function GetAllArrays() {
+    ArrayName = [];
+    let array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
+
+    array_blocks.forEach(block => {
+        let array_id = block.id;
+        let array_data = getArrayBlockValue(array_id);
+        if (!array_data) return;
+
+        let array_elements = array_data.array_elements.slice();
+        let array_length = array_data.array_length;
+
+        if (array_data.array_name) {
+            ArrayName.push({
+                array_length: array_length,
+                array_name: array_data.array_name,
+                array_id: array_id,
+                array_elements: array_elements
+            });
+        }
+    });
+
+    return;
+}
+
+
 function getAllVaruableName() {
     const variables = varuable_list
     .map(v => v.varuable_name)
@@ -183,12 +261,12 @@ function HandleAnyBlock(block_type, block_id) {
 }
 
 function LeftPartOfCodeBlock() {
-    const connection_array_element_with_start_block = connections.find(conn => // нашли соеденение где старт где: родитель - старт, а сын - переменная  
+    const connection_array_element_with_start_block = connections.find(conn =>  
             conn.parent_block_type === "start_block");
 
     if (!connection_array_element_with_start_block) return; 
 
-    // получаем next блок
+
     let block_id = connection_array_element_with_start_block.child; 
     
     while (block_id) {
@@ -211,6 +289,9 @@ start_button.addEventListener('click', e => {
 
     resetAllVariables();
     GetAllArrays();
+
+    if (!checkDuplicateNames()) return;
+
     LeftPartOfCodeBlock();
 })
 

@@ -35,23 +35,23 @@ function getIfBlockValue(block_id) {
     const block = document.getElementById(block_id); 
     if (!block) return null;
 
-    // получаем обььект с этими кака их формами
+
     const foreign_objects = block.querySelectorAll('foreignObject');
 
-    // в функцию и будем передать формы из обьекта, в нём как в масисве 
+
     function GetForeignObjectsValue(foreign_object) {
-        // одна из кентов будет скрыта 
+
         let select = foreign_object.querySelector('select'); 
         let input = foreign_object.querySelector('input');
 
-        // если есть селект 
+
         if (select && select.style.display !== "none") {
-            // console.log("считано селект форма");
+
             return select.value; 
         }
 
         else if (input && input.style.display !== "none") {
-            // console.log("считано инпут форма");
+
             return input.value;
         }
     }
@@ -97,23 +97,23 @@ function getArifBlockValue(block_id) {
     const block = document.getElementById(block_id); 
     if (!block) return null;
 
-    // получаем обььект с этими кака их формами
+
     const foreign_objects = block.querySelectorAll('foreignObject');
     
-    // в функцию и будем передать формы из обьекта, в нём как в масисве 
+
     function GetForeignObjectsValue(foreign_object) {
-        // одна из кентов будет скрыта 
+
         let select = foreign_object.querySelector('select'); 
         let input = foreign_object.querySelector('input');
 
-        // если есть селект 
+
         if (select && select.style.display !== "none") {
-            // console.log("считано селект форма");
+
             return select.value; 
         }
 
         else if (input && input.style.display !== "none") {
-            // console.log("считано инпут форма");
+
             return input.value;
         }
     }
@@ -297,7 +297,7 @@ function checkIsArray(str) {
 
     const match = str.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\[(.+)\]$/);
 
-    // если это не введённое назвение не корректтное то null
+
     if (!match) {
         return null; 
     }
@@ -306,14 +306,13 @@ function checkIsArray(str) {
     let array_index = match[2]; 
 
     let index;
-    // dsfgsdfg
-    // пытаемся найти перменную с таким именем
+
     if (isNaN(array_index)) {
         let found_varuable = varuable_list.find(varuable =>
             varuable.varuable_name === array_index
         );
 
-        // если не нашли то кидаем ошибку 
+
         if (!found_varuable) {
             return null;
         }
@@ -325,7 +324,7 @@ function checkIsArray(str) {
         index = Number(array_index);
     }
 
-    // крч индекс это либо значение переменной, либо значение просто число которое пользователь ввёл 
+
 
     let found_array = ArrayName.find(array => 
         array.array_name === array_name

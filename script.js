@@ -91,28 +91,6 @@ const sidebarBlocks = document.querySelectorAll(
 sidebarBlocks.forEach(el => {
     el.addEventListener('mousedown', e => {
         e.preventDefault();
-        
-        const color = 
-            el.classList.contains('if_block') ? '#ffac3e' :
-            el.classList.contains('else_block') ? '#fd4a4a' :
-            el.classList.contains('assignment_block') ? '#4e4fbe' :
-            el.classList.contains('varuable_block') ? 'rgb(76, 94, 170)' :
-            el.classList.contains('output_block') ? '#a3a669' :
-            el.classList.contains('arif_block') ? '#5caeb9' :
-            el.classList.contains('input_arif_block') ? '#3a7d8c' :
-            el.classList.contains('cycle_for_block') ? '#0066ff' :
-            el.classList.contains('endfor_block') ? '#0066ff' :
-            el.classList.contains('cycle_while_block') ? '#0066ff' :
-            el.classList.contains('endwhile_block') ? '#0066ff' :
-            el.classList.contains('start_block') ? '#25c733' :
-            el.classList.contains('endif_block') ? '#ffac3e' :
-            el.classList.contains('endelse_block') ? '#fd4a4a' :
-            el.classList.contains('logic_and_block') ? '#734f96' :
-            el.classList.contains('logic_or_block') ? '#8FBC8F' :
-            el.classList.contains('logic_not_block') ? '#551118' :
-            el.classList.contains('array_block') ? '#004af7' :
-            el.classList.contains('array_index_block') ? '#004af7' :
-            '#4caf50';
 
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left - currentTranslate.x;
@@ -120,6 +98,9 @@ sidebarBlocks.forEach(el => {
 
         const classes = Array.from(el.classList);
         const dataType = classes.find(c => c.endsWith('_block'));
+
+        const svgPath = el.querySelector('path');
+        const color = svgPath ? getComputedStyle(svgPath).fill : '#4caf50';
 
         const path = createBlock(x, y, color, 'block_' + Date.now(), dataType);
 
@@ -140,7 +121,7 @@ function rebuildPath(group) {
     if (isNaN(W)) return;
     if (group.dataset.data_type === "arif_block") {
         path.setAttribute("d",
-            `M0,0 h10 l10,10 h25 l10,-10 h${W} v65 h-${W} l-10,10 h-25 l-10,-10 h-10 v-10 l10,-10 v-25 l-10,-10 v-10 Z`
+            `M0,0 h10 l10,10 h25 l10,-10 h${W} v65 h-${W} l-10,10 h-25 l-10,-10 h-10 v-65 Z`
         );
     } else if (group.dataset.data_type === "input_arif_block") {
         path.setAttribute("d", `M0,0 h${W} v40 h-${W} Z`);
@@ -548,10 +529,18 @@ function addConnection(parentId, childId, pos, parentType, childType) {
     }
 }
 
+trash_bin.addEventListener('mouseenter', () => {
+    trash_bin.classList.add('shaking');
+});
+
+trash_bin.addEventListener('mouseleave', () => {
+    trash_bin.classList.remove('shaking');
+});
+
 trash_bin.addEventListener('mouseup', () => {
     if (!selected) return; 
     const id = selected.id;
-    // также удаляем все slot-вложения
+
     function removeWithChildren(blockId) {
         const childConns = connections.filter(c => 
             c.parent === blockId && (c.position === "slot_left" || c.position === "slot_right")
