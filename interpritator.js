@@ -1,3 +1,5 @@
+export {LeftPartOfCodeBlock};
+
 const start_button = document.getElementById('start_button');
 let varuable_list = [];
 let ArrayName = [];
@@ -108,10 +110,10 @@ function GetAllArrays() {
     let array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
     
     array_blocks.forEach(block => {
-        let array_id = block.id;
-        let array_data = getArrayBlockValue(array_id);
-        let array_elements = array_data.array_elements; 
-        let array_length = array_data.array_length; 
+        const array_id = block.id;
+        const array_data = getArrayBlockValue(array_id);
+        const array_elements = array_data.array_elements; 
+        const array_length = array_data.array_length; 
 
 
         if (array_data && array_data.array_name) {

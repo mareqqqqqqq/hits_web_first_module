@@ -19,6 +19,7 @@ function getRawSlotUIValue(parent_block_id, slot_name) {
     const slotEl = Array.from(block.querySelectorAll("[data-slot]")).find(el =>
         el.dataset.slot === slot_name && el.closest(".block") === block
     );
+    
     if (!slotEl) return null;
 
     const select = slotEl.querySelector("select");
@@ -52,7 +53,7 @@ function resolveSlotValue(parent_block_id, slot_name) {
         c.child_block_type === "input_arif_block"
     );
 
-    if (slotConn) {
+    if (slotConn) { 
         return evaluateInputArifBlock(slotConn.child);
     }
 
@@ -96,12 +97,14 @@ function HandleArifBlock(block_id) {
     }
 
     const main_varuable_name = getFOValue(foreignObjects[0]);
+
     if (!main_varuable_name) {
         InvalidSyntacsisError();
         return null;
     }
 
     const left = resolveSlotValue(block_id, "slot_left");
+
     if (left === null) {
         InvalidSyntacsisError();
         return null;
@@ -139,13 +142,17 @@ function HandleArifBlock(block_id) {
             InvalidSyntacsisError();
             return null;
         }
+
         found_array.array_elements[check_main_is_array.array_index] = arif_result;
-    } else {
+    } 
+
+    else {
         const found_var = varuable_list.find(v => v.varuable_name === main_varuable_name);
         if (!found_var) {
             InvalidSyntacsisError();
             return null;
         }
+
         found_var.varuable_value = arif_result;
     }
 
