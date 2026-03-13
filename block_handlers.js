@@ -247,8 +247,12 @@ function HandleOutputBlock(block_id) {
 
     let output = getOutputBlockValue(block.id); 
 
-    if (!output) {
-        addLine("вы ничего не ввели в output блок", "error");
+    if (!output || output.trim() === "" || output === "custom") {
+        addLine("Вы ничего не ввели в output блок :(", "error");
+        let connection = connections.find(conn => 
+            conn.parent === block_id && conn.parent_block_type === "output_block"
+        );
+        return connection ? connection.child : null;
     }
 
     let found_array = ArrayName.find(arr => 
@@ -859,4 +863,3 @@ function HandeAndBlock(block_id) {
 
 
 
-//window.script = this; 

@@ -331,7 +331,7 @@ function createBlock(x, y, color, id, data_type) {
     }
 
     if (data_type === "output_block") { //прямоугольник h100 v60 h -100 Z
-        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v65 h-45 l-10,10 h-25 l-10,-10 h-10  v-10 l10,-10 v-25 l-10,-10 Z");
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45    v65 h-45 l-10,10 h-25 l-10,-10 h-10  v-65 Z");
     }
 
     if (data_type === "arif_block") { 
@@ -367,15 +367,15 @@ function createBlock(x, y, color, id, data_type) {
     }
 
     if (data_type === "logic_and_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175    v10 l10,10 v25 l-10,10 v10   h-175 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+            path.setAttribute("d", "M0,0 h55 h175    v10 l10,10 v25 l-10,10 v10   h-175 h-55    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     if (data_type === "logic_or_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175    v10 l10,10 v25 l-10,10 v10   h-175 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+            path.setAttribute("d", "M0,0 h55 h175    v10 l10,10 v25 l-10,10 v10   h-175 h-55    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     if (data_type === "logic_not_block") {
-            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175    v10 l10,10 v25 l-10,10 v10   h-175 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+            path.setAttribute("d", "M0,0 h100 v10 l-10,10 v25 l10,10 v10 h-100 v-10 l10,-10 v-25 l-10,-10 v-10  Z");
     }
 
     if (data_type === "endfor_block") {
@@ -660,7 +660,7 @@ function createBlock(x, y, color, id, data_type) {
     }
 
     if (data_type === "arif_block") {
-        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h310 v65 h-310 l-10,10 h-25 l-10,-10 h-10 v-10 l10,-10 v-25 l-10,-10 v-10 Z");
+        path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h310 v65 h-310 l-10,10 h-25 l-10,-10 h-10 v-65 Z");
         group.dataset.baseInnerW = "310";
         group.dataset.currentInnerW = "310";
 
@@ -801,7 +801,7 @@ function createBlock(x, y, color, id, data_type) {
     else if (data_type === "arif_block")
     {
         group.dataset.connectionTop = "true";
-        group.dataset.connectionLeft = "true";
+        group.dataset.connectionLeft = "false";
         group.dataset.connectionRight = "false";
         group.dataset.connectionBottom = "false";
 
@@ -814,7 +814,7 @@ function createBlock(x, y, color, id, data_type) {
      else if (data_type === "output_block")
     {
         group.dataset.connectionTop = "true";
-        group.dataset.connectionLeft = "true";
+        group.dataset.connectionLeft = "false";
         group.dataset.connectionRight = "false";
         group.dataset.connectionBottom = "false";
 
@@ -918,7 +918,7 @@ function createBlock(x, y, color, id, data_type) {
 
     else if (data_type === "logic_or_block")
     {
-        group.dataset.connectionTop = "true";
+        group.dataset.connectionTop = "false";
         group.dataset.connectionLeft = "true";
         group.dataset.connectionRight = "false";
         group.dataset.connectionBottom = "false";
@@ -926,12 +926,12 @@ function createBlock(x, y, color, id, data_type) {
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
         group.dataset.connectorRight = "true";
-        group.dataset.connectorBottom = "true";
+        group.dataset.connectorBottom = "false"; 
     }
 
     else if (data_type === "logic_and_block")
     {
-        group.dataset.connectionTop = "true";
+        group.dataset.connectionTop = "false";
         group.dataset.connectionLeft = "true";
         group.dataset.connectionRight = "false";
         group.dataset.connectionBottom = "false";
@@ -939,7 +939,7 @@ function createBlock(x, y, color, id, data_type) {
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
         group.dataset.connectorRight = "true";
-        group.dataset.connectorBottom = "true"; 
+        group.dataset.connectorBottom = "false"; 
     }
 
     else if (data_type === "logic_not_block")
