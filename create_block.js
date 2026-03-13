@@ -661,11 +661,11 @@ function createBlock(x, y, color, id, data_type) {
         group.appendChild(createValueSelector(155));
 }
 
-    if (data_type === "logic_not_block") {
-        group.appendChild(createValueSelector(15));
-        group.appendChild(createOperatorSelect(95, [">", "<", "=", "!=", ">=", "<="]));
-        group.appendChild(createValueSelector(155));
-}
+    // if (data_type === "logic_not_block") {
+    //     group.appendChild(createValueSelector(15));
+    //     group.appendChild(createOperatorSelect(95, [">", "<", "=", "!=", ">=", "<="]));
+    //     group.appendChild(createValueSelector(155));
+    // }
     
     if (data_type === "assignment_block") {
         group.dataset.connectionTop = "false";
