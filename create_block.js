@@ -153,9 +153,6 @@ function createBlock(x, y, color, id, data_type) {
                 input.style.border = "none";
                 input.style.outline = "none";
                 input.style.padding = "2px 4px";
-
-
-
                 input.addEventListener("mousedown", e => e.stopPropagation());
                 foreign.addEventListener("mousedown", e => e.stopPropagation());
                 foreign.appendChild(input);
@@ -213,7 +210,6 @@ function createBlock(x, y, color, id, data_type) {
             }
 
             function createInputSlot(x, slotName, y = 20) {
-
                 const foreign = document.createElementNS(ns, "foreignObject");
                 foreign.setAttribute("x", x);
                 foreign.setAttribute("y", y);
@@ -260,7 +256,6 @@ function createBlock(x, y, color, id, data_type) {
                     input.focus();
                 }
             });
-
             input.addEventListener("blur", () => {
                 if (input.value.trim() === "") {
                     input.style.display = "none";
@@ -295,7 +290,6 @@ function createBlock(x, y, color, id, data_type) {
             return text;
         }
         
-
         group.setAttribute("fill", color);
         group.setAttribute("transform", `translate(${x},${y})`); 
         group.setAttribute("id", id); 
@@ -303,8 +297,7 @@ function createBlock(x, y, color, id, data_type) {
         group.dataset.data_type = data_type;
 
 
-        if (data_type === "varuable_block") {   
-
+        if (data_type === "varuable_block") {  
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h45         v10 l10,10 v25 l-10,10 v10       h-45  l-10,10 h-25 l-10,-10 h-10  Z");
         }
 
@@ -365,7 +358,7 @@ function createBlock(x, y, color, id, data_type) {
     }
 
     if (data_type === "logic_not_block") {
-            path.setAttribute("d", "M0,0 h100 v10 l10,10 v25 l-10,10 v10 h-100 v-10 l10,-10 v-25 l-10,-10 v-10  Z");
+            path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h175    v10 l10,10 v25 l-10,10 v10   h-175 l-10,10 h-25 l-10,-10 h-10    v-10 l10,-10 v-25 l-10,-10 v-10 Z");
     }
 
     if (data_type === "endfor_block") {
@@ -386,7 +379,6 @@ function createBlock(x, y, color, id, data_type) {
 
     group.appendChild(path);
 
-
     if (data_type === "input_arif_block") {
         const op = createOperatorSelect(90, ["+", "-", "*", "//", "%"], 8);
         group.appendChild(createInputSlot(5, "slot_left", 8));
@@ -395,36 +387,6 @@ function createBlock(x, y, color, id, data_type) {
     }
     
     if (data_type === "varuable_block") {
-
-
-        if (!document.getElementById('custom-scroll-style')){
-            const style = document.createElement('style');
-            style.id = 'custom-scroll-style';
-            style.textContent = `
-                div[contenteditable = "true"]::-webkit-scrollbar {
-                width: 4px;
-                height: 4px;
-                }
-                div[contenteditable = "true"]::-webkit-scrollbar-track {
-                background: #F1F1F1;
-                border-radius: 10px;
-                }
-                div[contenteditable = "true"]::-webkit-scrollbar-thumb {
-                background: #c1c1c1;
-                border-radius: 10px;
-                }
-                div[contenteditable = "true"]::-webkit-scrollbar-thumb:hover {
-                background: #a8a8a8;
-                }
-                    div[contenteditable = "true"] {
-                    scrollbar-width: thin;
-                    scrollbar-color: #c1c1c1 #f1f1f1;
-                    }
-                    `;
-                    document.head.appendChild(style);
-        }
-
-
             const foreign = document.createElementNS(ns, "foreignObject"); 
 
             foreign.setAttribute("x", 20);
@@ -460,7 +422,6 @@ function createBlock(x, y, color, id, data_type) {
                     this.style.color = "black";
                 }
             });
-
 
         div.addEventListener("input", function() {
             
@@ -503,35 +464,6 @@ function createBlock(x, y, color, id, data_type) {
         }
 
             if (data_type === "assignment_block") {
-
-        if (!document.getElementById('custom-scroll-style')){
-            const style = document.createElement('style');
-            style.id = 'custom-scroll-style';
-            style.textContent = `
-                div[contenteditable = "true"]::-webkit-scrollbar {
-                width: 4px;
-                height: 4px;
-                }
-                div[contenteditable = "true"]::-webkit-scrollbar-track {
-                background: #F1F1F1;
-                border-radius: 10px;
-                }
-                div[contenteditable = "true"]::-webkit-scrollbar-thumb {
-                background: #c1c1c1;
-                border-radius: 10px;
-                }
-                div[contenteditable = "true"]::-webkit-scrollbar-thumb:hover {
-                background: #a8a8a8;
-                }
-                    div[contenteditable = "true"] {
-                    scrollbar-width: thin;
-                    scrollbar-color: #c1c1c1 #f1f1f1;
-                    }
-                    `;
-                    document.head.appendChild(style);
-        }
-        
-
             const foreign = document.createElementNS(ns, "foreignObject"); 
 
             foreign.setAttribute("x", 8);
@@ -628,7 +560,6 @@ function createBlock(x, y, color, id, data_type) {
         }
 
 
-
         if (data_type === "if_block") {
 
             path.setAttribute("d", "M0,0 h10 l10,10 h25 l10,-10 h165    v10 l10,10 v25 l-10,10 v10     h-165 l-10,10 h-25 l-10,-10 h-10 Z");
@@ -639,7 +570,6 @@ function createBlock(x, y, color, id, data_type) {
 
             group.appendChild(createValueSelector(145, "variable", true));
         }
-
 
 
 
@@ -731,7 +661,11 @@ function createBlock(x, y, color, id, data_type) {
         group.appendChild(createValueSelector(155));
 }
 
-
+    if (data_type === "logic_not_block") {
+        group.appendChild(createValueSelector(15));
+        group.appendChild(createOperatorSelect(95, [">", "<", "=", "!=", ">=", "<="]));
+        group.appendChild(createValueSelector(155));
+}
     
     if (data_type === "assignment_block") {
         group.dataset.connectionTop = "false";
@@ -930,7 +864,7 @@ function createBlock(x, y, color, id, data_type) {
 
     else if (data_type === "logic_not_block")
     {
-        group.dataset.connectionTop = "false";
+        group.dataset.connectionTop = "true";
         group.dataset.connectionLeft = "true";
         group.dataset.connectionRight = "false";
         group.dataset.connectionBottom = "false";
@@ -938,7 +872,7 @@ function createBlock(x, y, color, id, data_type) {
         group.dataset.connectorTop = "false";
         group.dataset.connectorLeft = "false";
         group.dataset.connectorRight = "true";
-        group.dataset.connectorBottom = "false"; 
+        group.dataset.connectorBottom = "true"; 
     }
 
 

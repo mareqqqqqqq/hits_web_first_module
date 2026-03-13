@@ -31,7 +31,7 @@ function updateVaruableValue(block_id, value) {
     }
 }
 
-// получает имена переменных для выпадающей менюшки 
+
 function getAllVaruableName() {
     const variables = varuable_list
     .map(v => v.varuable_name)
@@ -181,12 +181,12 @@ function HandleAnyBlock(block_type, block_id) {
 }
 
 function LeftPartOfCodeBlock() {
-    const connection_array_element_with_start_block = connections.find(conn => // нашли соеденение где старт где: родитель - старт, а сын - переменная  
+    const connection_array_element_with_start_block = connections.find(conn =>  
             conn.parent_block_type === "start_block");
 
     if (!connection_array_element_with_start_block) return; 
 
-    // получаем next блок
+
     let block_id = connection_array_element_with_start_block.child; 
     
     while (block_id) {
