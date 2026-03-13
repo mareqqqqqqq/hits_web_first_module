@@ -339,10 +339,7 @@ function HandleCycleForBlock(block_id) {
     // знач
     let for_cycle_data = getForCycleValue(block_id); 
 
-    if (!for_cycle_data) {
-        console.log("значения в for не найдены");
-        return;
-    }
+
 
     let var_name = for_cycle_data.cycle_varuable;
     let start_value = Number(evaluateExpression(for_cycle_data.cycle_start_value));
@@ -353,6 +350,10 @@ function HandleCycleForBlock(block_id) {
     
     let current_value = start_value;
 
+    if (!for_cycle_data || !var_name || start_value === null || stop_value === null || !step_sign || step_value === null) {
+        InvalidSyntacsisError();
+        return null;
+    }
 
     updateVaruable(block_id, var_name);
     updateVaruableValue(block_id, start_value);

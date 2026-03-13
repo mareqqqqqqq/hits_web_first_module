@@ -548,6 +548,14 @@ function addConnection(parentId, childId, pos, parentType, childType) {
     }
 }
 
+trash_bin.addEventListener('mouseenter', () => {
+    trash_bin.classList.add('shaking');
+});
+
+trash_bin.addEventListener('mouseleave', () => {
+    trash_bin.classList.remove('shaking');
+});
+
 trash_bin.addEventListener('mouseup', () => {
     if (!selected) return; 
     const id = selected.id;
