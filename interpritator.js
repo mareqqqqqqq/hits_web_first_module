@@ -57,30 +57,6 @@ function checkDuplicateNames() {
         return true;
 }
 
-function GetAllArrays() {
-    ArrayName = [];
-    let array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
-
-    array_blocks.forEach(block => {
-        let array_id = block.id;
-        let array_data = getArrayBlockValue(array_id);
-        if (!array_data) return;
-
-        let array_elements = array_data.array_elements.slice();
-        let array_length = array_data.array_length;
-
-        if (array_data.array_name) {
-            ArrayName.push({
-                array_length: array_length,
-                array_name: array_data.array_name,
-                array_id: array_id,
-                array_elements: array_elements
-            });
-        }
-    });
-
-    return;
-}
 
 function checkDuplicateNames() {
     const varNames = varuable_list
