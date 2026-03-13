@@ -306,7 +306,7 @@ function checkIsArray(str) {
     let array_index = match[2]; 
 
     let index;
-
+    // dsfgsdfg
     // пытаемся найти перменную с таким именем
     if (isNaN(array_index)) {
         let found_varuable = varuable_list.find(varuable =>
