@@ -42,8 +42,18 @@ function HandleIfBlock(block_id) {
     );
 
     if (find_horizontal_and_connection_with_if) {
-        let result = HandeAndBlock(find_horizontal_and_connection_with_if.child);
+        let result = HandleLogicBlocks(find_horizontal_and_connection_with_if.child, "logic_and_block");
         bool_result = bool_result && result;
+    }
+
+
+    let find_horizontal_or_connection_with_if = connections.find(conn => 
+        conn.parent === block_id && conn.position === "horizontal" && conn.child_block_type === "logic_or_block"
+    );
+
+    if (find_horizontal_or_connection_with_if) {
+        let result = HandleLogicBlocks(find_horizontal_or_connection_with_if.child, "logic_or_block");
+        bool_result = bool_result || result; 
     }
 
     let next_block_id; 
@@ -251,28 +261,9 @@ function HandleOutputBlock(block_id) {
         addLine("вы ничего не ввели в output блок", "error");
     }
 
-    let found_array = ArrayName.find(arr => 
-        arr.array_name === output
-    ); 
-
-    if (found_array) {
-        addLine(found_array.array_elements);
-    }
-
-    else {
-        let found_varuable = varuable_list.find(varuable =>
-            varuable.varuable_name === output
-        );
-        
-        if (!found_varuable) {
-            addLine(output);
-        }
-
-    else {
-        addLine(String(found_varuable.varuable_value), 'output');
-    }
+    let output_in_console = evaluateExpression(output);
+    addLine(output_in_console);
     
-    }
     let connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "output_block"
     );
@@ -284,11 +275,37 @@ function HandleVaruableBlock(block_id) {
     let block = document.getElementById(block_id);
 
     if (!block) {
-        console.log("Блок переменной не найден")
+        console.log("Блок переменной не найден")    
         return;
     }
 
-      
+    let varuable_data = getVaruableBlockValue(block_id); 
+    if (!varuable_data) { console.log("Вы ничего не написали в блок переменной"); return null; }
+
+    let varuable_name = varuable_data;
+
+    let find_varuable_connection_with_assignment = connections.find(conn => 
+        conn.parent_block_type === "varuable_block" && conn.parent === block_id && conn.position === "horizontal" && conn.child_block_type === "assignment_block"
+    );
+
+    if (!find_varuable_connection_with_assignment) {
+        console.log("Не найдено присваивание");
+    }
+
+    else {
+        let find_varuable = varuable_list.find(varuable =>
+            varuable.varuable_name == varuable_name
+        );
+
+        if (find_varuable) {
+            let assignment_text = getAssignmentBlockValue(find_varuable_connection_with_assignment.child);
+            if (!assignment_text) {console.log("Вы ничего не ввели в присваивание"); return null; }
+            let assignment_value = evaluateExpression(assignment_text);
+            
+            find_varuable.varuable_value = assignment_value;  
+        }
+    }
+
     let next_varuable_connection = connections.find(conn => 
         conn.parent_block_type === "varuable_block" && conn.parent === block_id && conn.position === "vertical");
 
@@ -457,7 +474,7 @@ function HandleCycleForBlock(block_id) {
             
 
             let next_connection = connections.find(conn => 
-                conn.parent === current_block_id && conn.parent_block_type === current_block_type
+                conn.parent === current_block_id && conn.parent_block_type === current_block_type && conn.position === "vertical"
             );
             
             if (next_connection) {
@@ -546,7 +563,7 @@ function findEndForBlockId(for_block_id) {
     
     while (current_id) {
         let next_connection = connections.find(conn => 
-            conn.parent === current_id && conn.parent_block_type === current_type
+            conn.parent === current_id && conn.parent_block_type === current_type && conn.position === "vertical"
         );
         
         if (!next_connection) break;
@@ -572,7 +589,6 @@ function findEndForBlockId(for_block_id) {
     InvalidSyntacsisError();
     return null;
 }
-
 
 function HandleCycleWhileBlock(block_id ) {
     let block = document.getElementById(block_id); 
@@ -799,9 +815,9 @@ function HandleArrayIndexBlock(block_id) {
     return connection ? connection.child : null;
 } 
 
-function HandeAndBlock(block_id) {
-    let block = connections.find(conn => 
-        conn.child === block_id && conn.child_block_type === "logic_and_block" && conn.position === "horizontal" && conn.parent_block_type === "if_block"
+function HandleLogicBlocks(block_id, block_type) {
+        let block = connections.find(conn => 
+        conn.child === block_id && conn.child_block_type === block_type && conn.position === "horizontal" && conn.parent_block_type === "if_block"
     );
 
     if (!block) { console.log("блок не найден"); return null; }
@@ -835,6 +851,28 @@ function HandeAndBlock(block_id) {
         }
     }
 
+    let right
+    let right_array_check = checkIsArray(right_str);
+
+    if (right_array_check) {
+        right = right_array_check.array_element_value;
+    }
+
+    else {
+        let found_right_varuable = varuable_list.find(varuable => 
+            varuable.varuable_name === right_str
+        );
+
+        if (found_right_varuable) {
+            right = found_right_varuable.varuable_value;
+        }
+
+        else {
+            right = Number(right_str);
+        }
+    }
+
+
     let operator = forms_data.operator; 
     let bool_result; 
 
@@ -857,6 +895,3 @@ function HandeAndBlock(block_id) {
     return bool_result; 
 }
 
-
-
-//window.script = this; 
