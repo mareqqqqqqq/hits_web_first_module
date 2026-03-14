@@ -262,17 +262,18 @@ function HandleOutputBlock(block_id) {
     }
 
     let is_array = checkIsArray(output.trim());
+
     if (is_array) {
         addLine(is_array.array_element_value); 
     }
 
-    else if ( ArrayName.find(array => array.array_name === output)) {
+    else if (ArrayName.find(array => array.array_name === output)) {
         const foundArray = ArrayName.find(array => array.array_name === output);
         addLine(foundArray.array_elements);
     }
 
     else if (varuable_list.find(varuable => varuable.name === output)) {
-        const found_varuable = varuable_list.find(varuable => varuable.name === output);
+        const found_varuable = varuable_list.find(varuable => varuable.varuable_name === output);
         addLine(found_varuable.varuable_value);
     }
 

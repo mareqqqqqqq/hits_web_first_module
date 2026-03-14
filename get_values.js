@@ -376,7 +376,9 @@ function evaluateExpression(expr) {
     try {
         let result = new Function('return (' + expr + ')')();
         return result;
-    } catch (e) {
+    } 
+    
+    catch (e) {
         console.log("ошибка в выражении: " + expr, e);
         return null;
     }
