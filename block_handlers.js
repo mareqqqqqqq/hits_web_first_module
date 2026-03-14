@@ -39,7 +39,7 @@ function HandleIfBlock(block_id) {
 
     let currentChainId = block_id; 
 
-    while(true) {
+     while(true) {
         let next_horizontal = connections.find(conn => 
             conn.parent === currentChainId && conn.position === "horizontal"
         ); 
@@ -71,9 +71,6 @@ function HandleIfBlock(block_id) {
     let next_block_id; 
     let next_block_type; 
     let next_block;
-
-    find_current_connection_with_if; 
-
 
     if (bool_result) {
         // соединение с if блоком 
@@ -260,27 +257,32 @@ function HandleIfBlock(block_id) {
 
 function HandleOutputBlock(block_id) {
     const block = document.getElementById(block_id);
-
     if (!block) {
         InvalidSyntacsisError();
         return null;
     }
 
-    const output = getOutputBlockValue(block.id); 
+    const output = getOutputBlockValue(block.id);
 
     if (!output) {
         addLine("вы ничего не ввели в output блок", "error");
+    } else {
+        const isJustArrayName = ArrayName.find(a => a.array_name === output);
+
+        if (isJustArrayName) {
+            for (const element of isJustArrayName.array_elements) {
+                addLine(element);
+            }
+        } else {
+            const result = evaluateExpression(output);
+            if (result === null || result === undefined) {
+                addLine(output);
+            } else {
+                addLine(result);
+            }
+        }
     }
 
-    const output_expression = evaluateExpression(output);
-    if (!output_expression) { 
-        addLine(output);
-    }
-
-    else {
-        addLine(output_expression);
-    }
-    
     const connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "output_block"
     );

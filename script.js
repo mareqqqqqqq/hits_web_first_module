@@ -542,18 +542,12 @@ trash_bin.addEventListener('mouseup', () => {
     const id = selected.id;
 
     function removeWithChildren(blockId) {
-        const childConns = connections.filter(c => 
-            c.parent === blockId && (c.position === "slot_left" || c.position === "slot_right")
-        );
-
-        for (const c of childConns) {
-            removeWithChildren(c.child);
-        }
-
-        const el = document.getElementById(blockId); 
-        if (el) el.remove(); 
+        connections
+            .filter(c => c.parent === blockId && (c.position === "slot_left" || c.position === "slot_right"))
+            .forEach(c => removeWithChildren(c.child));
+        const el = document.getElementById(blockId);
+        if (el) el.remove();
     }
-
     removeWithChildren(id);
     connections = connections.filter(conn => conn.parent !== id && conn.child !== id);
     selected.remove(); 
@@ -562,12 +556,10 @@ trash_bin.addEventListener('mouseup', () => {
 
 clearButton.addEventListener("click", () => { 
     const blocks = viewport.querySelectorAll(".block");
-
-    for (const block of blocks) {
-        block.classList.add("clear"); 
-        setTimeout(() => block.romove(), 300);
-    }
-
+    blocks.forEach(block => {
+        block.classList.add("clear");
+        setTimeout(() => block.remove(), 300);
+    });
     varuable_list.length = 0;
     connections = []; 
     ArrayName = [];

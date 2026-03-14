@@ -1,5 +1,3 @@
-export {LeftPartOfCodeBlock};
-
 const start_button = document.getElementById('start_button');
 let varuable_list = [];
 let ArrayName = [];
@@ -59,32 +57,6 @@ function checkDuplicateNames() {
         return true;
 }
 
-
-function checkDuplicateNames() {
-    const varNames = varuable_list
-        .map(v => v.varuable_name)
-        .filter(n => n && n.trim() !== "");
-
-        const array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
-        const arrayNames = [];
-        array_blocks.forEach(block => {
-            const data = getArrayBlockValue(block.id);
-            if (data && data.array_name && data.array_name.trim() !== "") {
-                arrayNames.push(data.array_name.trim());
-            }
-        });
-
-        const allNames = [...varNames, ...arrayNames];
-        const seen = new Set();
-        for (const name of allNames) {
-            if (seen.has(name)) {
-                console.log(`Ошибка: имя "${name}" уже использованно`);
-                return false;
-            }
-            seen.add(name);
-        }
-        return true;
-}
 
 function GetAllArrays() {
     ArrayName = [];
@@ -183,29 +155,6 @@ function resetAllVariables() {
     });
 }
 
-function GetAllArrays() {
-    ArrayName = [];
-    let array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
-    
-    array_blocks.forEach(block => {
-        const array_id = block.id;
-        const array_data = getArrayBlockValue(array_id);
-        const array_elements = array_data.array_elements; 
-        const array_length = array_data.array_length; 
-
-
-        if (array_data && array_data.array_name) {
-            ArrayName.push ({
-                array_length: array_length, 
-                array_name: array_data.array_name,
-                array_id: array_id, 
-                array_elements: array_elements 
-            });
-        }
-    });
-
-    return;
-} 
 
 function updateArray(block_id) {
     const data = getArrayBlockValue(block_id);
