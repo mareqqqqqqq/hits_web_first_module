@@ -77,14 +77,14 @@ function HandleIfBlock(block_id) {
         const find_current_connection_with_if = connections.find(conn =>    
             conn.parent_block_type === "if_block" && conn.parent === block_id && conn.position === "vertical"); // block_id эт айдишка if блока нашли это соеднение 
 
-
+        // просто находим нект блок который после if
         if (find_current_connection_with_if) {
-            next_block_id = find_current_connection_with_if.child; 
-            next_block_type = find_current_connection_with_if.child_block_type; 
-            next_block = document.getElementById(next_block_id);  
+            next_block_id = find_current_connection_with_if.child; // это будет блок котоырый сын if
+            next_block_type = find_current_connection_with_if.child_block_type; // тип сына 
+            next_block = document.getElementById(next_block_id); // сам блок как обьект 
         }
 
-
+        // если нет соединения
         else {
             console.log("вы не добавили блоки после if");
             InvalidSyntacsisError();
@@ -93,18 +93,18 @@ function HandleIfBlock(block_id) {
 
         let endif_block_id; 
 
-
+        // по идее пока есть next блок мы его обрабатываем и находим next 
         while (next_block_type) {
-
+            // если дошли до конца if 
             if (next_block_type == "endif_block") {
                 endif_block_id = next_block_id;  
-                break; 
+                break; // стоп обработки конструкции 
             }
 
             else {
                 HandleAnyBlock(next_block_type, next_block_id);
 
-
+                // нашли соеденения где родитель наш next блок 
                 let find_current_connection = connections.find(conn => 
                     conn.parent_block_type === next_block_type && conn.parent === next_block_id);
 
@@ -163,7 +163,7 @@ function HandleIfBlock(block_id) {
             conn.parent_block_type === "if_block" && conn.parent === block_id && conn.position === "vertical"
         );
 
-
+        // если есть что то после if 
         if (!current_connection) {
             InvalidSyntacsisError(); 
             return null; 
@@ -217,15 +217,16 @@ function HandleIfBlock(block_id) {
 
         let endelse_block_id; 
 
+        // обрабатываем else ветку до endelse_block
         while (else_block_id && else_block_type) {
             if (else_block_type === "endelse_block") {
                 endelse_block_id = else_block_id;
                 break;
             }
-
+            // обрабатываем текущий блок в else ветке
             HandleAnyBlock(else_block_type, else_block_id);
 
-
+            // ищем следующий блок в else ветке
             let next_else_connection = connections.find(conn => 
                 conn.parent === else_block_id && conn.parent_block_type === else_block_type
             );
@@ -351,11 +352,11 @@ function HandleArrayBlock(block_id) {
 
 
 function HandleCycleForBlock(block_id) {
-
+    // получаем блок 
     let block = document.getElementById(block_id);
     if (!block) return null; 
 
-
+    // знач
     let for_cycle_data = getForCycleValue(block_id); 
 
 
