@@ -4,7 +4,7 @@ function getVaruableBlockValue(blockId) {
 
     const input_value = block.querySelector('div[contenteditable="true"]'); 
     if (input_value) {
-        if (input_value.textContent.trim() != "Переменная")
+        if (input_value.textContent.trim() !== "Переменная")
         return input_value.textContent.trim(); 
 
         else {
@@ -21,7 +21,7 @@ function getAssignmentBlockValue(blockId) {
 
     const input_value = block.querySelector('div[contenteditable="true"]');
     if (input_value) {
-        if (input_value.textContent.trim() != "Присвоить:") 
+        if (input_value.textContent.trim() !== "Присвоить:") 
             return input_value.textContent.trim();
         else { 
             return 0; 
@@ -377,13 +377,11 @@ function evaluateExpression(expr) {
         let result = new Function('return (' + expr + ')')();
         return result;
     } 
-    
+
     catch (e) {
-        console.log("ошибка в выражении: " + expr, e);
         return null;
     }
 }
-// sdfsdfsd
 
 window.script = this;
 

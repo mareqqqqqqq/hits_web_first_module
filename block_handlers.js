@@ -1,5 +1,5 @@
 function HandleIfBlock(block_id) {
-    let block = document.getElementById(block_id);
+    const block = document.getElementById(block_id);
     if (!block) {
         InvalidSyntacsisError();
         return null; 
@@ -19,7 +19,7 @@ function HandleIfBlock(block_id) {
         return null;
     }
 
-    let operator = forms_data.operator; 
+    const operator = forms_data.operator; 
     let bool_result; 
 
     switch(operator) {
@@ -37,35 +37,45 @@ function HandleIfBlock(block_id) {
             break; 
     }
 
-    let find_horizontal_and_connection_with_if = connections.find(conn => 
-        conn.parent === block_id && conn.position === "horizontal" && conn.child_block_type === "logic_and_block"
-    );
+    let currentChainId = block_id; 
 
-    if (find_horizontal_and_connection_with_if) {
-        let result = HandleLogicBlocks(find_horizontal_and_connection_with_if.child, "logic_and_block");
-        bool_result = bool_result && result;
+     while(true) {
+        let next_horizontal = connections.find(conn => 
+            conn.parent === currentChainId && conn.position === "horizontal"
+        ); 
+
+        if (!next_horizontal) break;
+
+        let next_type = next_horizontal.child_block_type; 
+        let next_id = next_horizontal.child; 
+
+        if (next_type === "logic_and_block") {
+            let result = getLogicBlockResult(next_id); 
+            if (result === null) { InvalidSyntacsisError(); return null; }
+            bool_result = bool_result && result; 
+        }
+
+        else if (next_type === "logic_or_block") {
+            let result = getLogicBlockResult(next_id);
+            if (result === null) { InvalidSyntacsisError(); return null; }
+            bool_result = bool_result || result;
+        }
+
+        else if (next_type === "logic_not_block") {
+            bool_result = !bool_result; 
+        }
+
+        currentChainId = next_id; 
     }
 
-
-    let find_horizontal_or_connection_with_if = connections.find(conn => 
-        conn.parent === block_id && conn.position === "horizontal" && conn.child_block_type === "logic_or_block"
-    );
-
-    if (find_horizontal_or_connection_with_if) {
-        let result = HandleLogicBlocks(find_horizontal_or_connection_with_if.child, "logic_or_block");
-        bool_result = bool_result || result; 
-    }
-
+    // sadfsadf
     let next_block_id; 
     let next_block_type; 
     let next_block;
 
-    let find_current_connection_with_if; 
-
-
-    if (bool_result == true) {
+    if (bool_result) {
         // соединение с if блоком 
-        find_current_connection_with_if = connections.find(conn =>    
+        const find_current_connection_with_if = connections.find(conn =>    
             conn.parent_block_type === "if_block" && conn.parent === block_id && conn.position === "vertical"); // block_id эт айдишка if блока нашли это соеднение 
 
         // просто находим нект блок который после if
@@ -148,7 +158,7 @@ function HandleIfBlock(block_id) {
         return null;
     }
 
-    else if (bool_result == false) {
+    else if (!bool_result) {
         // стартовое 
         let current_connection = connections.find(conn => 
             conn.parent_block_type === "if_block" && conn.parent === block_id && conn.position === "vertical"
@@ -248,40 +258,33 @@ function HandleIfBlock(block_id) {
 
 
 function HandleOutputBlock(block_id) {
-    let block = document.getElementById(block_id);
-
+    const block = document.getElementById(block_id);
     if (!block) {
         InvalidSyntacsisError();
         return null;
     }
 
-    let output = getOutputBlockValue(block.id); 
-    
+    const output = getOutputBlockValue(block.id);
+
     if (!output) {
         addLine("вы ничего не ввели в output блок", "error");
+    } else {
+        const isJustArrayName = ArrayName.find(a => a.array_name === output);
+
+        if (isJustArrayName) {
+            for (const element of isJustArrayName.array_elements) {
+                addLine(element);
+            }
+        } else {
+            const result = evaluateExpression(output);
+            if (result === null || result === undefined) {
+                addLine(output);
+            } else {
+                addLine(result);
+            }
+        }
     }
 
-    let is_array = checkIsArray(output.trim());
-
-    if (is_array) {
-        addLine(is_array.array_element_value); 
-    }
-
-    else if (ArrayName.find(array => array.array_name === output)) {
-        const foundArray = ArrayName.find(array => array.array_name === output);
-        addLine(foundArray.array_elements);
-    }
-
-    else if (varuable_list.find(varuable => varuable.name === output)) {
-        const found_varuable = varuable_list.find(varuable => varuable.varuable_name === output);
-        addLine(found_varuable.varuable_value);
-    }
-
-    else {
-        const result = evaluateExpression(output);
-        addLine(result !== null && result !== undefined ? result : output);
-    }
-    
     const connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "output_block"
     );
@@ -332,7 +335,7 @@ function HandleVaruableBlock(block_id) {
 
 
 function HandleArrayBlock(block_id) {
-    let block = document.getElementById(block_id);
+    const block = document.getElementById(block_id);
     if (!block) return;
 
     const array_data = getArrayBlockValue(block_id);
@@ -341,7 +344,7 @@ function HandleArrayBlock(block_id) {
         console.log("ошибка ввода значений массива");
     }
 
-    let connection = connections.find(conn => 
+    const connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "array_block"
     );
 
@@ -787,10 +790,10 @@ function findEndWhileBlockId(while_block_id) {
 }
 
 function HandleArrayIndexBlock(block_id) {
-    let block = document.getElementById(block_id);
+    const block = document.getElementById(block_id);
 
     if (!block) return null; 
-    let array_index_block_data = getArrayIndexValue(block_id);
+    const array_index_block_data = getArrayIndexValue(block_id);
 
     if (!array_index_block_data) {
         console.log("вы не ввели ничего");
@@ -798,9 +801,9 @@ function HandleArrayIndexBlock(block_id) {
     }
 
     let right_value = evaluateExpression(array_index_block_data.right); 
-    let left_str = array_index_block_data.left; 
+    const left_str = array_index_block_data.left; 
 
-   const left_match = String(left_str).trim().match(/^([a-zA-Z_][a-zA-Z0-9_]*)\[(.+)\]$/);
+    const left_match = String(left_str).trim().match(/^([a-zA-Z_][a-zA-Z0-9_]*)\[(.+)\]$/);
 
     if (left_match) {
         let array_name  = left_match[1];
@@ -827,75 +830,25 @@ function HandleArrayIndexBlock(block_id) {
     
 
 
-    let connection = connections.find(conn => 
+    const connection = connections.find(conn => 
         conn.parent === block_id && conn.parent_block_type === "array_index_block"
     );
 
     return connection ? connection.child : null;
 } 
 
-function HandleLogicBlocks(block_id, block_type) {
-        let block = connections.find(conn => 
-        conn.child === block_id && conn.child_block_type === block_type && conn.position === "horizontal" && conn.parent_block_type === "if_block"
-    );
+function getLogicBlockResult(block_id) {
+    const forms_data = getIfBlockValue(block_id); 
+    if (!forms_data) return null;
 
-    if (!block) { console.log("блок не найден"); return null; }
+    const left = evaluateExpression(forms_data.left); 
+    const right = evaluateExpression(forms_data.right);
 
-    let forms_data = getIfBlockValue(block_id);
-
-    if (!forms_data) {console.log("Что то не то с вводом"); return null; }
+    if (left === null || right === null) return null;
     
-
-    let left_str = evaluateExpression(forms_data.left);
-    let right_str = evaluateExpression(forms_data.right);
-
-    let left; 
-    let left_array_check = checkIsArray(left_str);
-
-    if (left_array_check !== null) {
-        left = left_array_check.array_element_value; 
-    } 
-    
-    else {
-        let found_left_varuable = varuable_list.find(varuable => 
-            varuable.varuable_name === left_str
-        );
-
-        if (found_left_varuable) {
-            left = found_left_varuable.varuable_value;
-        }
-
-        else {
-            left = Number(left_str);
-        }
-    }
-
-    let right
-    let right_array_check = checkIsArray(right_str);
-
-    if (right_array_check) {
-        right = right_array_check.array_element_value;
-    }
-
-    else {
-        let found_right_varuable = varuable_list.find(varuable => 
-            varuable.varuable_name === right_str
-        );
-
-        if (found_right_varuable) {
-            right = found_right_varuable.varuable_value;
-        }
-
-        else {
-            right = Number(right_str);
-        }
-    }
-
-
-    let operator = forms_data.operator; 
     let bool_result; 
 
-    switch(operator) {
+    switch(forms_data.operator) {
         case ">": bool_result = left > right;
             break; 
         case "<": bool_result = left < right;
@@ -908,9 +861,9 @@ function HandleLogicBlocks(block_id, block_type) {
             break;  
         case "<=": bool_result = left <= right;
             break; 
+        default: return null; 
     }
 
-    
     return bool_result; 
 }
 

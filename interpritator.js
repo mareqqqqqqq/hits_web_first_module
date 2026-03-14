@@ -58,32 +58,6 @@ function checkDuplicateNames() {
 }
 
 
-function checkDuplicateNames() {
-    const varNames = varuable_list
-        .map(v => v.varuable_name)
-        .filter(n => n && n.trim() !== "");
-
-        const array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
-        const arrayNames = [];
-        array_blocks.forEach(block => {
-            const data = getArrayBlockValue(block.id);
-            if (data && data.array_name && data.array_name.trim() !== "") {
-                arrayNames.push(data.array_name.trim());
-            }
-        });
-
-        const allNames = [...varNames, ...arrayNames];
-        const seen = new Set();
-        for (const name of allNames) {
-            if (seen.has(name)) {
-                console.log(`Ошибка: имя "${name}" уже использованно`);
-                return false;
-            }
-            seen.add(name);
-        }
-        return true;
-}
-
 function GetAllArrays() {
     ArrayName = [];
     let array_blocks = document.querySelectorAll('[data-data_type="array_block"]');
