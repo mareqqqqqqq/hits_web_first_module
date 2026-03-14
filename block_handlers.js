@@ -68,6 +68,7 @@ function HandleIfBlock(block_id) {
         currentChainId = next_id; 
     }
 
+    // sadfsadf
     let next_block_id; 
     let next_block_type; 
     let next_block;
